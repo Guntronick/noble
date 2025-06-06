@@ -69,7 +69,7 @@ export default function CartPage() {
   });
   const [showRemovedProductToast, setShowRemovedProductToast] = useState(false);
   const removedProductToastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [removedProductToastKey, setRemovedProductToastKey] = useState(0);
+  const [removedProductToastKey, setRemovedProductToastKey] = useState(0); // Key for toast re-render
   const [progressWidth, setProgressWidth] = useState('100%');
 
 
@@ -88,12 +88,13 @@ export default function CartPage() {
   useEffect(() => {
     if (showRemovedProductToast) {
       setProgressWidth('100%'); 
+      // Force reflow/repaint before starting transition to 0%
       const frameId = requestAnimationFrame(() => {
          setProgressWidth('0%'); 
       });
       return () => cancelAnimationFrame(frameId);
     }
-  }, [showRemovedProductToast, removedProductToastKey]);
+  }, [showRemovedProductToast, removedProductToastKey]); // Depend on key change
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -123,7 +124,7 @@ export default function CartPage() {
       setCartItems(prevItems => prevItems.filter(item => item.id !== productId && !item.isRemoving)); 
       
       setShowRemovedProductToast(true);
-      setRemovedProductToastKey(prev => prev + 1);
+      setRemovedProductToastKey(prevKey => prevKey + 1); // Increment key to force re-render
 
       if (removedProductToastTimeoutRef.current) {
         clearTimeout(removedProductToastTimeoutRef.current);
@@ -144,6 +145,7 @@ export default function CartPage() {
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    // TODO: Implement actual order submission logic (e.g., API call)
     console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: cartItems.filter(item => !item.isRemoving), total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
   };
@@ -157,6 +159,7 @@ export default function CartPage() {
       </div>
 
       <form onSubmit={handleSubmitOrder} className="grid lg:grid-cols-2 gap-12 items-start">
+        {/* Billing Details Section */}
         <div className="space-y-8">
           <Card>
             <CardHeader>
@@ -206,6 +209,7 @@ export default function CartPage() {
           </Card>
         </div>
 
+        {/* Order Summary Section */}
         <div className="sticky top-24 self-start space-y-6">
           <Card className="shadow-xl relative overflow-hidden"> {/* Added overflow-hidden */}
             <CardHeader className="pt-16"> {/* Increased padding-top to make space for the toast */}
@@ -213,22 +217,24 @@ export default function CartPage() {
             </CardHeader>
             {showRemovedProductToast && (
               <div
-                key={`toast-${removedProductToastKey}`}
+                key={`toast-${removedProductToastKey}`} // Use the key here
+                id="removed-product-toast"
                 className={cn(
                   "absolute left-1/2 -translate-x-1/2 w-auto min-w-[280px] max-w-[90%] bg-card border border-destructive p-4 rounded-lg shadow-xl z-50 transition-all ease-in-out",
-                  `duration-${TOAST_ANIMATION_DURATION}ms`,
-                  showRemovedProductToast
-                    ? 'top-4 opacity-100 scale-100 pointer-events-auto'
-                    : 'top-4 opacity-0 scale-95 pointer-events-none' 
+                  `duration-${TOAST_ANIMATION_DURATION}ms`, // Matched duration with TOAST_TIMER_DURATION for consistency
+                  showRemovedProductToast // This will control initial visibility but animation is handled by Tailwind's data-state
+                    ? 'top-4 opacity-100 scale-100 pointer-events-auto' // Appears
+                    : 'top-4 opacity-0 scale-95 pointer-events-none' // Hides
                 )}
               >
                 <div className="flex items-center space-x-3">
                   <XCircle className="h-6 w-6 text-destructive shrink-0" />
                   <span className="text-sm font-medium text-destructive">Producto eliminado</span>
                 </div>
+                {/* Progress Bar */}
                 <div className="mt-3 h-1.5 w-full bg-destructive/20 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-destructive transition-all ease-linear"
+                    className="h-full bg-destructive transition-all ease-linear" // Tailwind handles animation
                     style={{ width: progressWidth, transitionDuration: `${TOAST_TIMER_DURATION}ms` }}
                   />
                 </div>
@@ -240,7 +246,7 @@ export default function CartPage() {
                 <span>SUBTOTAL</span>
               </div>
               <Separator />
-              {cartItems.filter(item => !item.isRemoving || item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? ( 
+              {cartItems.filter(item => !item.isRemoving || item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? ( // Check if all items are removed or being removed
                 <p className="text-muted-foreground text-center py-4">Tu carrito está vacío.</p>
               ) : (
                 cartItems.map(item => (
@@ -248,12 +254,12 @@ export default function CartPage() {
                     key={item.id} 
                     className={cn(
                       "flex items-center justify-between space-x-2",
-                      "py-3 border-b border-border last:border-b-0",
-                      "transition-all ease-in-out overflow-hidden",
-                      `duration-${ITEM_REMOVAL_ANIMATION_DURATION}ms`,
+                      "py-3 border-b border-border last:border-b-0", // Add consistent bottom border, remove last one
+                      "transition-all ease-in-out overflow-hidden", // Needed for height animation
+                      `duration-${ITEM_REMOVAL_ANIMATION_DURATION}ms`, // Tailwind JIT should pick this up
                       item.isRemoving
-                        ? "max-h-0 opacity-0 -translate-x-full !py-0 !my-0 !border-opacity-0"
-                        : "max-h-48 opacity-100 translate-x-0" 
+                        ? "max-h-0 opacity-0 -translate-x-full !py-0 !my-0 !border-opacity-0" // Animate out: shrink, fade, slide
+                        : "max-h-48 opacity-100 translate-x-0" // Animate in or normal state
                     )}
                   >
                     <div className="flex items-center space-x-3">
@@ -302,7 +308,7 @@ export default function CartPage() {
                                     // Allow clearing, will be handled onBlur or if user types valid number next
                                 }
                             }}
-                            onBlur={(e) => { 
+                            onBlur={(e) => { // Ensure quantity is at least 1 on blur if input is cleared or invalid
                                 if (item.quantityInCart < 1 || isNaN(item.quantityInCart)) {
                                    handleQuantityChange(item.id, 1);
                                 }
@@ -358,3 +364,5 @@ export default function CartPage() {
   );
 }
 
+
+    
