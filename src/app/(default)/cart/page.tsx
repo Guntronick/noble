@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import { X as XIcon, Minus, Plus } from 'lucide-react';
+import { X as XIcon, Minus, Plus, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CartItem extends Product {
@@ -53,7 +53,9 @@ const mockCartItems: CartItem[] = [
   },
 ];
 
-const ANIMATION_DURATION = 300; // ms
+const ITEM_REMOVAL_ANIMATION_DURATION = 300; // ms for item sliding out
+const TOAST_TIMER_DURATION = 1200; // ms for how long the toast is visible
+const TOAST_ANIMATION_DURATION = 300; // ms for toast fade/scale animation
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -67,10 +69,11 @@ export default function CartPage() {
   });
   const [showRemovedProductToast, setShowRemovedProductToast] = useState(false);
   const removedProductToastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [removedProductToastKey, setRemovedProductToastKey] = useState(0);
+  const [progressWidth, setProgressWidth] = useState('100%');
 
 
   useEffect(() => {
-    // Initialize with a clone to avoid mutating mockCartItems directly if it were imported from elsewhere
     setCartItems(mockCartItems.map(item => ({ ...item })));
   }, []);
 
@@ -82,6 +85,17 @@ export default function CartPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (showRemovedProductToast) {
+      setProgressWidth('100%'); 
+      const frameId = requestAnimationFrame(() => {
+         setProgressWidth('0%'); 
+      });
+      return () => cancelAnimationFrame(frameId);
+    }
+  }, [showRemovedProductToast, removedProductToastKey]);
+
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -92,7 +106,6 @@ export default function CartPage() {
       prevItems.map(item =>
         item.id === productId ? { ...item, quantityInCart: Math.max(1, newQuantity) } : item
       )
-      // Do not filter here if quantity becomes 0, let remove item handle that
     );
   };
 
@@ -100,25 +113,25 @@ export default function CartPage() {
     const itemToRemove = cartItems.find(item => item.id === productId);
     if (!itemToRemove) return;
 
-    // Mark for removal to trigger animation
     setCartItems(prevItems =>
       prevItems.map(it =>
         it.id === productId ? { ...it, isRemoving: true } : it
       )
     );
 
-    // After animation, actually remove and show toast
     setTimeout(() => {
-      setCartItems(prevItems => prevItems.filter(item => item.id !== productId && !item.isRemoving)); // Ensure only non-removing items are kept
+      setCartItems(prevItems => prevItems.filter(item => item.id !== productId && !item.isRemoving)); 
       
       setShowRemovedProductToast(true);
+      setRemovedProductToastKey(prev => prev + 1);
+
       if (removedProductToastTimeoutRef.current) {
         clearTimeout(removedProductToastTimeoutRef.current);
       }
       removedProductToastTimeoutRef.current = setTimeout(() => {
         setShowRemovedProductToast(false);
-      }, 3000);
-    }, ANIMATION_DURATION);
+      }, TOAST_TIMER_DURATION);
+    }, ITEM_REMOVAL_ANIMATION_DURATION);
   };
 
 
@@ -194,23 +207,40 @@ export default function CartPage() {
         </div>
 
         <div className="sticky top-24 self-start space-y-6">
-          <Card className="shadow-xl relative">
-            <CardHeader>
+          <Card className="shadow-xl relative overflow-hidden"> {/* Added overflow-hidden */}
+            <CardHeader className="pt-16"> {/* Increased padding-top to make space for the toast */}
               <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {showRemovedProductToast && (
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-card border border-destructive text-destructive p-3 rounded-md shadow-lg z-10 flex items-center space-x-2 animate-pulse">
-                  <span>Producto eliminado</span>
-                  <XIcon size={18} className="text-destructive" />
+            {showRemovedProductToast && (
+              <div
+                key={`toast-${removedProductToastKey}`}
+                className={cn(
+                  "absolute left-1/2 -translate-x-1/2 w-auto min-w-[280px] max-w-[90%] bg-card border border-destructive p-4 rounded-lg shadow-xl z-50 transition-all ease-in-out",
+                  `duration-${TOAST_ANIMATION_DURATION}ms`,
+                  showRemovedProductToast
+                    ? 'top-4 opacity-100 scale-100 pointer-events-auto'
+                    : 'top-4 opacity-0 scale-95 pointer-events-none' 
+                )}
+              >
+                <div className="flex items-center space-x-3">
+                  <XCircle className="h-6 w-6 text-destructive shrink-0" />
+                  <span className="text-sm font-medium text-destructive">Producto eliminado</span>
                 </div>
-              )}
+                <div className="mt-3 h-1.5 w-full bg-destructive/20 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-destructive transition-all ease-linear"
+                    style={{ width: progressWidth, transitionDuration: `${TOAST_TIMER_DURATION}ms` }}
+                  />
+                </div>
+              </div>
+            )}
+            <CardContent className="space-y-4">
               <div className="flex justify-between text-sm font-medium text-muted-foreground">
                 <span>PRODUCTO</span>
                 <span>SUBTOTAL</span>
               </div>
               <Separator />
-              {cartItems.filter(item => !item.isRemoving || item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? ( // Show only if no items or all are animating out.
+              {cartItems.filter(item => !item.isRemoving || item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? ( 
                 <p className="text-muted-foreground text-center py-4">Tu carrito está vacío.</p>
               ) : (
                 cartItems.map(item => (
@@ -220,10 +250,10 @@ export default function CartPage() {
                       "flex items-center justify-between space-x-2",
                       "py-3 border-b border-border last:border-b-0",
                       "transition-all ease-in-out overflow-hidden",
-                      `duration-${ANIMATION_DURATION}`,
+                      `duration-${ITEM_REMOVAL_ANIMATION_DURATION}ms`,
                       item.isRemoving
                         ? "max-h-0 opacity-0 -translate-x-full !py-0 !my-0 !border-opacity-0"
-                        : "max-h-48 opacity-100 translate-x-0" // max-h-48 is approx 192px, should be enough
+                        : "max-h-48 opacity-100 translate-x-0" 
                     )}
                   >
                     <div className="flex items-center space-x-3">
@@ -269,8 +299,7 @@ export default function CartPage() {
                                 if (val >=1) {
                                      handleQuantityChange(item.id, val)
                                 } else if (e.target.value === '' || val < 1) {
-                                    // Keep current value or set to 1 on invalid input
-                                    // For this version, let's keep it simple and expect valid numbers or rely on blur.
+                                    // Allow clearing, will be handled onBlur or if user types valid number next
                                 }
                             }}
                             onBlur={(e) => { 
@@ -328,3 +357,4 @@ export default function CartPage() {
     </div>
   );
 }
+
