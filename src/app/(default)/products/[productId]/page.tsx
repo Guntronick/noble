@@ -38,7 +38,6 @@ interface ProductDetailPageProps {
   params: { productId: string }; 
 }
 
-const LENS_SIZE = 100; 
 const ZOOM_FACTOR = 2.5; 
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
@@ -55,7 +54,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   const [showZoom, setShowZoom] = useState(false);
-  const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 });
+  const [lensRect, setLensRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState({ x: 0, y: 0 });
   
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -89,7 +88,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       const rect = imageContainerRef.current.getBoundingClientRect();
       setImageDimensions({ width: rect.width, height: rect.height });
     }
-  }, [currentImageIndex, product, showZoom]);
+  }, [currentImageIndex, product, showZoom, typeof window !== 'undefined' ? window.innerWidth : 0]); // Re-check on window resize
 
   useEffect(() => {
     if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product) {
@@ -100,7 +99,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
     
     const panelWidth = purchaseBoxRef.current.offsetWidth;
-    const panelHeight = imageDimensions.height; 
+    const panelHeight = imageDimensions.height; // Panel de zoom tiene la altura de la imagen principal
     
     const panelLeft = purchaseBoxRef.current.offsetLeft;
     const panelTop = purchaseBoxRef.current.offsetTop;
@@ -188,29 +187,30 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageContainerRef.current || !purchaseBoxRef.current || imageDimensions.width === 0 || imageDimensions.height === 0) return;
-
-    const rect = imageContainerRef.current.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
-
-    x = Math.max(0, Math.min(x, imageDimensions.width));
-    y = Math.max(0, Math.min(y, imageDimensions.height));
-
-    let newLensX = x - LENS_SIZE / 2;
-    let newLensY = y - LENS_SIZE / 2;
-
-    newLensX = Math.max(0, Math.min(newLensX, imageDimensions.width - LENS_SIZE));
-    newLensY = Math.max(0, Math.min(newLensY, imageDimensions.height - LENS_SIZE));
+    if (!imageContainerRef.current || !purchaseBoxRef.current || imageDimensions.width === 0 || imageDimensions.height === 0) {
+      return;
+    }
+  
+    const imgRect = imageContainerRef.current.getBoundingClientRect();
+    const cursorX_onImg = e.clientX - imgRect.left;
+    const cursorY_onImg = e.clientY - imgRect.top;
+  
+    const currentPanelWidth = purchaseBoxRef.current.offsetWidth;
+    const currentPanelHeight = imageDimensions.height; 
+  
+    if (currentPanelWidth === 0 || currentPanelHeight === 0) return;
+  
+    const effectiveLensWidth = currentPanelWidth / ZOOM_FACTOR;
+    const effectiveLensHeight = currentPanelHeight / ZOOM_FACTOR;
+  
+    let newLensX = cursorX_onImg - effectiveLensWidth / 2;
+    let newLensY = cursorY_onImg - effectiveLensHeight / 2;
+  
+    newLensX = Math.max(0, Math.min(newLensX, imageDimensions.width - effectiveLensWidth));
+    newLensY = Math.max(0, Math.min(newLensY, imageDimensions.height - effectiveLensHeight));
     
-    setLensPosition({ x: newLensX, y: newLensY });
-    
-    const panelWidth = purchaseBoxRef.current.offsetWidth;
-    const panelHeight = imageDimensions.height;
-
-    const bgX = -(newLensX * ZOOM_FACTOR) + (panelWidth / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
-    const bgY = -(newLensY * ZOOM_FACTOR) + (panelHeight / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
-    setZoomBackgroundPosition({ x: bgX, y: bgY });
+    setLensRect({ x: newLensX, y: newLensY, width: effectiveLensWidth, height: effectiveLensHeight });
+    setZoomBackgroundPosition({ x: -newLensX * ZOOM_FACTOR, y: -newLensY * ZOOM_FACTOR });
   };
 
   const handleMouseEnter = () => {
@@ -265,7 +265,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="lg:col-start-2 space-y-6">
             <div 
               ref={imageContainerRef}
-              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl"
+              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl cursor-crosshair"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -279,15 +279,14 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 priority 
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
               />
-              {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && (
+              {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && lensRect.width > 0 && lensRect.height > 0 && (
                 <div 
                   className="absolute border-2 border-primary/50 bg-white/20 pointer-events-none"
                   style={{
-                    left: `${lensPosition.x}px`,
-                    top: `${lensPosition.y}px`,
-                    width: `${LENS_SIZE}px`,
-                    height: `${LENS_SIZE}px`,
-                    cursor: 'crosshair',
+                    left: `${lensRect.x}px`,
+                    top: `${lensRect.y}px`,
+                    width: `${lensRect.width}px`,
+                    height: `${lensRect.height}px`,
                   }}
                 />
               )}
