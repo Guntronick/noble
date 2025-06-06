@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Twitter, Facebook, Instagram, Mail, MessageSquare, Truck, RotateCcw, ShieldCheck } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Mail, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect, use } from 'react';
@@ -95,9 +95,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   const handleRequestQuoteOnly = () => {
-    // Simulate adding current product to cart/quote list
     console.log("Solicitando presupuesto solo para:", product?.name, quantity, selectedColor);
-    // For now, just navigate. In a real app, you'd update cart state here.
     router.push('/cart'); 
     setIsQuoteModalOpen(false);
   };
@@ -128,7 +126,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     setIsQuoteModalOpen(false);
   };
 
-
   if (loading) {
     return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-muted-foreground">Cargando detalles del producto...</p></div>;
   }
@@ -141,9 +138,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_2fr] xl:grid-cols-[1fr_3fr_2fr] gap-6 lg:gap-8 items-start">
-        {/* Column 1: Thumbnails */}
-        <div className="hidden lg:flex lg:flex-col space-y-3 sticky top-24 self-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(100px,0.7fr)_3fr_2fr] xl:grid-cols-[minmax(120px,0.5fr)_3fr_2fr] gap-6 lg:gap-8 items-start">
+        
+        {/* Column 1: Thumbnails (Sticky) */}
+        <div className="hidden lg:flex lg:flex-col space-y-3 sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
           {product.images.map((img, index) => (
             <button 
               key={index} 
@@ -157,80 +155,71 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           ))}
         </div>
 
-        {/* Column 2: Main Image + Product Info Below It */}
+        {/* Column 2: Main Image + Product Info Below It (Scrollable Content) */}
         <div className="lg:col-start-2 space-y-6">
-          <div className="relative aspect-square w-full overflow-hidden rounded-lg shadow-xl">
-            <Image 
-              src={mainImageSrc} 
-              alt={product.name} 
-              layout="fill" 
-              objectFit="contain" 
-              priority 
-              data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-            />
-          </div>
-          <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
-            {product.images.map((img, index) => (
-              <button
-                key={`mobile-thumb-${index}`}
-                onClick={() => setCurrentImageIndex(index)}
-                className={`aspect-square rounded-md overflow-hidden border-2 transition-all
-                            ${currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"}`}
-                aria-label={`Ver imagen ${index + 1} (móvil)`}
-              >
-                <Image src={img} alt={`${product.name} miniatura ${index + 1}`} layout="fill" objectFit="cover" className="hover:opacity-80"/>
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-6 space-y-4">
-            <div className="flex items-center space-x-2 flex-wrap">
-              <Badge variant="outline">Categoría: {product.category}</Badge>
-              <Badge variant="secondary">Código: {product.productCode}</Badge>
+            <div className="relative aspect-square w-full overflow-hidden rounded-lg shadow-xl">
+              <Image 
+                src={mainImageSrc} 
+                alt={product.name} 
+                layout="fill" 
+                objectFit="contain" 
+                priority 
+                data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+              />
             </div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-primary font-headline">{product.name}</h1>
-            <p className="text-4xl lg:text-5xl font-semibold text-olive-green">${product.price.toFixed(2)}</p>
-            
-            <Separator/>
-            
-            <h2 className="text-xl font-semibold mt-4 mb-2 font-headline">Lo que tenés que saber de este producto:</h2>
-            <div className="text-muted-foreground leading-relaxed space-y-2">
-                <p>{product.description}</p>
+            <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
+              {product.images.map((img, index) => (
+                <button
+                  key={`mobile-thumb-${index}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`aspect-square rounded-md overflow-hidden border-2 transition-all
+                              ${currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"}`}
+                  aria-label={`Ver imagen ${index + 1} (móvil)`}
+                >
+                  <Image src={img} alt={`${product.name} miniatura ${index + 1}`} layout="fill" objectFit="cover" className="hover:opacity-80"/>
+                </button>
+              ))}
             </div>
-            
-            <Separator className="my-6"/>
 
-            {product.colors.length > 0 && (
-              <div>
-                <Label htmlFor="color-select" className="text-base font-medium">Color:</Label>
-                <Select value={selectedColor} onValueChange={setSelectedColor} disabled={product.stock <= 0}>
-                  <SelectTrigger id="color-select" className="w-full md:w-2/3 mt-1">
-                    <SelectValue placeholder="Selecciona un color" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {product.colors.map((color) => (
-                      <SelectItem key={color} value={color}>
-                        {color}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center space-x-2 flex-wrap">
+                <Badge variant="outline">Categoría: {product.category}</Badge>
+                <Badge variant="secondary">Código: {product.productCode}</Badge>
               </div>
-            )}
-          </div>
+              <h1 className="text-3xl lg:text-4xl font-bold text-primary font-headline">{product.name}</h1>
+              <p className="text-4xl lg:text-5xl font-semibold text-olive-green">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              
+              <Separator/>
+              
+              <h2 className="text-xl font-semibold mt-4 mb-2 font-headline">Lo que tenés que saber de este producto:</h2>
+              <div className="text-muted-foreground leading-relaxed space-y-2">
+                  <p>{product.description}</p>
+              </div>
+              
+              <Separator className="my-6"/>
+
+              {product.colors.length > 0 && (
+                <div>
+                  <Label htmlFor="color-select" className="text-base font-medium">Color:</Label>
+                  <Select value={selectedColor} onValueChange={setSelectedColor} disabled={product.stock <= 0}>
+                    <SelectTrigger id="color-select" className="w-full md:w-2/3 mt-1">
+                      <SelectValue placeholder="Selecciona un color" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {product.colors.map((color) => (
+                        <SelectItem key={color} value={color}>
+                          {color}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
         </div>
 
-        {/* Column 3: Purchase Box */}
-        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 lg:sticky lg:top-24 self-start">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Truck className="h-6 w-6 text-green-600" />
-              <p className="font-semibold text-green-600">Llega gratis <span className="font-normal text-muted-foreground">entre el X y el Y de Mes</span></p>
-            </div>
-          </div>
-          
-          <Separator/>
-
+        {/* Column 3: Purchase Box (Sticky) */}
+        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 lg:sticky lg:top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto">
           <div>
             <p className="text-lg font-semibold">
               {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
@@ -253,6 +242,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                     if (val >=1 && val <= product.stock) setQuantity(val);
                     else if (val < 1) setQuantity(1);
                     else if (val > product.stock) setQuantity(product.stock);
+                    else { // If NaN or invalid, reset to 1 or stock
+                       const currentStock = product.stock || 1;
+                       if (Number.isNaN(val) || val < 1) setQuantity(1);
+                       else if (val > currentStock) setQuantity(currentStock);
+                    }
                   }} 
                   className="w-20 h-10"
                   aria-label="Cantidad"
@@ -310,3 +304,4 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+
