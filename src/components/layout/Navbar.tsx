@@ -29,15 +29,15 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
-          {/* Botón del carrito rehecho */}
+          {/* Botón del carrito rehecho con clases explícitas */}
           <Button variant="ghost" asChild>
-            <Link href="/cart" aria-label="Ir al carrito de compras" className="flex items-center">
-              <ShoppingCart className="h-5 w-5" />
-              {/* El componente Button de ShadCN ya aplica un gap,
-                  así que no necesitamos ml-2 aquí si el span es un hijo directo del flex container (Link).
-                  Aseguramos que el texto tenga el estilo de fuente correcto.
-              */}
-              <span className="text-sm font-medium">Ir al Carrito</span>
+            <Link 
+              href="/cart" 
+              aria-label="Ir al carrito de compras" 
+              className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground" // Aplicamos flex, gap y estilos de hover directamente aquí
+            >
+              <ShoppingCart className="h-5 w-5 shrink-0" />
+              <span className="text-sm font-medium text-foreground group-hover:text-accent-foreground">Ir al Carrito</span>
             </Link>
           </Button>
           <div className="md:hidden">
