@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import type { Product } from '@/lib/types'; 
+import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,9 +25,9 @@ const mockCartItems: CartItem[] = [
     id: 'prod_001',
     name: 'BOLSO / MOCHILA "SPIRIT" GATTI',
     description: 'Un bolso muy espacioso.',
-    images: ['https://placehold.co/100x100.png'], 
+    images: ['https://placehold.co/100x100.png'],
     dataAiHint: "grey backpack",
-    price: 19174.84, 
+    price: 19174.84,
     colors: ['Gris'],
     selectedColorInCart: 'Gris',
     category: 'Accesorios',
@@ -55,7 +55,7 @@ const mockCartItems: CartItem[] = [
 
 const ITEM_REMOVAL_ANIMATION_DURATION = 300; // ms for item sliding out
 const TOAST_TIMER_DURATION = 1200; // ms for how long the toast is visible
-const TOAST_ANIMATION_DURATION = 300; // ms for toast fade/scale animation
+const TOAST_ANIMATION_DURATION = 500; // ms for toast fade/scale animation
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -87,10 +87,10 @@ export default function CartPage() {
 
   useEffect(() => {
     if (showRemovedProductToast) {
-      setProgressWidth('100%'); 
+      setProgressWidth('100%');
       // Force reflow/repaint before starting transition to 0%
       const frameId = requestAnimationFrame(() => {
-         setProgressWidth('0%'); 
+         setProgressWidth('0%');
       });
       return () => cancelAnimationFrame(frameId);
     }
@@ -121,8 +121,8 @@ export default function CartPage() {
     );
 
     setTimeout(() => {
-      setCartItems(prevItems => prevItems.filter(item => item.id !== productId && !item.isRemoving)); 
-      
+      setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+
       setShowRemovedProductToast(true);
       setRemovedProductToastKey(prevKey => prevKey + 1); // Increment key to force re-render
 
@@ -141,7 +141,7 @@ export default function CartPage() {
   };
 
   const subtotal = calculateSubtotal();
-  const total = subtotal; 
+  const total = subtotal;
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,10 +197,10 @@ export default function CartPage() {
             </CardHeader>
             <CardContent>
               <Label htmlFor="orderNotes">Notas del pedido (opcional)</Label>
-              <Textarea 
-                id="orderNotes" 
-                name="orderNotes" 
-                value={formData.orderNotes} 
+              <Textarea
+                id="orderNotes"
+                name="orderNotes"
+                value={formData.orderNotes}
                 onChange={handleInputChange}
                 placeholder="Notas sobre tu pedido, por ejemplo, notas especiales para la entrega."
                 rows={4}
@@ -211,31 +211,36 @@ export default function CartPage() {
 
         {/* Order Summary Section */}
         <div className="sticky top-24 self-start space-y-6">
-          <Card className="shadow-xl relative overflow-hidden"> {/* Added overflow-hidden */}
-            <CardHeader className="pt-16"> {/* Increased padding-top to make space for the toast */}
+           <Card className="shadow-xl relative overflow-hidden">
+            <CardHeader className="pt-20"> {/* Increased padding-top for toast */}
               <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
             </CardHeader>
             {showRemovedProductToast && (
               <div
-                key={`toast-${removedProductToastKey}`} // Use the key here
+                key={`toast-${removedProductToastKey}`}
                 id="removed-product-toast"
                 className={cn(
                   "absolute left-1/2 -translate-x-1/2 w-auto min-w-[280px] max-w-[90%] bg-card border border-destructive p-4 rounded-lg shadow-xl z-50 transition-all ease-in-out",
-                  `duration-${TOAST_ANIMATION_DURATION}ms`, // Matched duration with TOAST_TIMER_DURATION for consistency
-                  showRemovedProductToast // This will control initial visibility but animation is handled by Tailwind's data-state
-                    ? 'top-4 opacity-100 scale-100 pointer-events-auto' // Appears
-                    : 'top-4 opacity-0 scale-95 pointer-events-none' // Hides
+                  `duration-${TOAST_ANIMATION_DURATION}ms`,
+                  showRemovedProductToast
+                    ? 'top-4 opacity-100 scale-100 pointer-events-auto'
+                    : 'top-4 opacity-0 scale-95 pointer-events-none'
                 )}
+                // data-state={showRemovedProductToast ? "open" : "closed"} // For animate-in/out if needed
               >
                 <div className="flex items-center space-x-3">
                   <XCircle className="h-6 w-6 text-destructive shrink-0" />
                   <span className="text-sm font-medium text-destructive">Producto eliminado</span>
                 </div>
-                {/* Progress Bar */}
                 <div className="mt-3 h-1.5 w-full bg-destructive/20 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-destructive transition-all ease-linear" // Tailwind handles animation
-                    style={{ width: progressWidth, transitionDuration: `${TOAST_TIMER_DURATION}ms` }}
+                    className="h-full bg-destructive"
+                    style={{
+                      width: progressWidth,
+                      transitionProperty: 'width',
+                      transitionDuration: `${TOAST_TIMER_DURATION}ms`,
+                      transitionTimingFunction: 'linear'
+                    }}
                   />
                 </div>
               </div>
@@ -246,27 +251,27 @@ export default function CartPage() {
                 <span>SUBTOTAL</span>
               </div>
               <Separator />
-              {cartItems.filter(item => !item.isRemoving || item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? ( // Check if all items are removed or being removed
+              {cartItems.filter(item => !item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? (
                 <p className="text-muted-foreground text-center py-4">Tu carrito está vacío.</p>
               ) : (
                 cartItems.map(item => (
-                  <div 
-                    key={item.id} 
+                  <div
+                    key={item.id}
                     className={cn(
                       "flex items-center justify-between space-x-2",
-                      "py-3 border-b border-border last:border-b-0", // Add consistent bottom border, remove last one
-                      "transition-all ease-in-out overflow-hidden", // Needed for height animation
-                      `duration-${ITEM_REMOVAL_ANIMATION_DURATION}ms`, // Tailwind JIT should pick this up
+                      "py-3 border-b border-border last:border-b-0",
+                      "transition-all ease-in-out overflow-hidden",
+                      `duration-${ITEM_REMOVAL_ANIMATION_DURATION}ms`,
                       item.isRemoving
-                        ? "max-h-0 opacity-0 -translate-x-full !py-0 !my-0 !border-opacity-0" // Animate out: shrink, fade, slide
-                        : "max-h-48 opacity-100 translate-x-0" // Animate in or normal state
+                        ? "max-h-0 opacity-0 -translate-x-full !py-0 !my-0 !border-opacity-0"
+                        : "max-h-48 opacity-100 translate-x-0"
                     )}
                   >
                     <div className="flex items-center space-x-3">
-                       <Button 
-                         type="button" 
-                         variant="ghost" 
-                         size="icon" 
+                       <Button
+                         type="button"
+                         variant="ghost"
+                         size="icon"
                          className="text-destructive hover:text-destructive/80 p-1 h-7 w-7"
                          onClick={() => handleRemoveItem(item.id)}
                          aria-label="Eliminar producto"
@@ -274,30 +279,30 @@ export default function CartPage() {
                         <XIcon size={16} />
                       </Button>
                       <Link href={`/products/${item.slug}`}>
-                        <Image 
-                          src={item.images[0]} 
-                          alt={item.name} 
-                          width={60} 
-                          height={60} 
+                        <Image
+                          src={item.images[0]}
+                          alt={item.name}
+                          width={60}
+                          height={60}
                           className="rounded-md object-cover aspect-square"
-                          data-ai-hint={item.dataAiHint || "product image"} 
+                          data-ai-hint={item.dataAiHint || "product image"}
                         />
                       </Link>
                       <div className="flex-grow">
                         <Link href={`/products/${item.slug}`} className="font-medium text-foreground hover:text-primary">{item.name}</Link>
                         {item.selectedColorInCart && <p className="text-xs text-muted-foreground">- {item.selectedColorInCart}</p>}
                         <div className="flex items-center mt-1">
-                           <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="icon" 
+                           <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
                             className="h-7 w-7 p-1"
                             onClick={() => handleQuantityChange(item.id, item.quantityInCart - 1)}
                             disabled={item.quantityInCart <= 1}
                           >
                             <Minus size={14} />
                           </Button>
-                          <Input 
+                          <Input
                             type="number"
                             value={item.quantityInCart}
                             onChange={(e) => {
@@ -317,10 +322,10 @@ export default function CartPage() {
                             className="w-14 h-7 text-center mx-1 hide-arrows [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             aria-label={`Cantidad de ${item.name}`}
                           />
-                           <Button 
-                            type="button" 
-                            variant="outline" 
-                            size="icon" 
+                           <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
                             className="h-7 w-7 p-1"
                             onClick={() => handleQuantityChange(item.id, item.quantityInCart + 1)}
                             disabled={item.quantityInCart >= item.stock}
@@ -345,14 +350,14 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
-              
+
               <Separator />
 
               <div className="text-sm text-muted-foreground space-y-2 mt-4 p-3 bg-muted/50 rounded-md">
                 <p className="font-semibold text-foreground">Solicitar Presupuesto</p>
                 <p>No efectuaremos cargos de ningún tipo. En breve te enviaremos el presupuesto por los productos solicitados.</p>
               </div>
-              
+
               <Button type="submit" size="lg" className="w-full bg-olive-green text-primary-foreground hover:bg-olive-green/90 mt-6 text-base py-3">
                 REALIZAR EL PEDIDO
               </Button>
@@ -363,6 +368,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-
-    
