@@ -403,39 +403,35 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   id="quantity-input-purchasebox" 
                   type="number" 
                   min="1" 
-                  max={product.stock > 0 ? product.stock : undefined} 
                   value={quantity} 
                   onChange={(e) => {
                     const inputValue = e.target.value;
                     const currentStock = product.stock;
 
                     if (inputValue === "") {
-                      setQuantity(1); // Reset to 1 if input is cleared
+                      setQuantity(1); 
                       return;
                     }
 
                     const parsedValue = parseInt(inputValue, 10);
 
                     if (Number.isNaN(parsedValue)) {
-                      // If not a number (e.g. user typed 'e' or '-'), do nothing to state.
-                      // Input field will show invalid char, user can correct.
                       return;
                     }
 
                     let newQuantity = parsedValue;
 
                     if (newQuantity < 1) {
-                      newQuantity = 1; // Min quantity is 1
+                      newQuantity = 1; 
                     }
                     
                     if (currentStock > 0 && newQuantity > currentStock) {
-                      newQuantity = currentStock; // Max quantity is stock
+                      newQuantity = currentStock; 
                     }
-                    // If stock is 0, input is disabled, this logic path is less critical for that case.
-                    
+                                        
                     setQuantity(newQuantity);
                   }} 
-                  className="w-20 h-10"
+                  className="w-24 h-10"
                   aria-label="Cantidad"
                   disabled={product.stock <=0}
                 />
@@ -508,3 +504,4 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+

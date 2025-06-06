@@ -21,7 +21,7 @@ export const products: Product[] = [
     category: 'Apparel',
     productCode: 'AIMC-APP-001',
     slug: 'ai-designed-tee',
-    stock: 50,
+    stock: 1200, // Increased stock for testing 4-digit quantities
   },
   {
     id: 'prod_002',
@@ -164,3 +164,4 @@ export const getProductBySlug = (slug: string): Product | undefined => {
 export const getProductById = (id: string): Product | undefined => {
   return products.find(product => product.id === id);
 };
+
