@@ -14,14 +14,14 @@ export const products: Product[] = [
     id: 'prod_001',
     name: 'AI-Designed Tee',
     description: 'A unique t-shirt with an AI-generated design. Made from 100% organic cotton.',
-    images: ['https://placehold.co/500x500.png', 'https://placehold.co/450x450.png'], 
-    dataAiHint: 'square placeholder one', 
+    images: ['https://placehold.co/500x500.png', 'https://placehold.co/450x450.png'],
+    dataAiHint: 'square placeholder one',
     price: 29.99,
     colors: ['Black', 'White', 'Navy'],
     category: 'Apparel',
     productCode: 'AIMC-APP-001',
     slug: 'ai-designed-tee',
-    stock: 1200, // Increased stock for testing 4-digit quantities
+    stock: 9999,
   },
   {
     id: 'prod_002',
@@ -34,7 +34,7 @@ export const products: Product[] = [
     category: 'Apparel',
     productCode: 'AIMC-APP-002',
     slug: 'cyber-hoodie',
-    stock: 30,
+    stock: 9999,
   },
   // Electronics
   {
@@ -48,7 +48,7 @@ export const products: Product[] = [
     category: 'Electronics',
     productCode: 'AIMC-ELE-001',
     slug: 'smart-neural-speaker',
-    stock: 20,
+    stock: 9999,
   },
   {
     id: 'prod_004',
@@ -61,7 +61,7 @@ export const products: Product[] = [
     category: 'Electronics',
     productCode: 'AIMC-ELE-002',
     slug: 'ai-powered-earbuds',
-    stock: 40,
+    stock: 9999,
   },
   // Home Goods
   {
@@ -75,7 +75,7 @@ export const products: Product[] = [
     category: 'Home Goods',
     productCode: 'AIMC-HOM-001',
     slug: 'algorithmic-art-print',
-    stock: 25,
+    stock: 9999,
   },
   {
     id: 'prod_006',
@@ -88,7 +88,7 @@ export const products: Product[] = [
     category: 'Home Goods',
     productCode: 'AIMC-HOM-002',
     slug: 'robo-chef-assistant',
-    stock: 15,
+    stock: 9999,
   },
   // Accessories
   {
@@ -102,7 +102,7 @@ export const products: Product[] = [
     category: 'Accessories',
     productCode: 'AIMC-ACC-001',
     slug: 'neural-network-scarf',
-    stock: 35,
+    stock: 9999,
   },
   {
     id: 'prod_008',
@@ -115,7 +115,7 @@ export const products: Product[] = [
     category: 'Accessories',
     productCode: 'AIMC-ACC-002',
     slug: 'data-weave-watch',
-    stock: 22,
+    stock: 9999,
   },
 ];
 
@@ -147,7 +147,7 @@ for (let i = 0; i < 25 - baseProductsCount; i++) {
     images: cloneImages.slice(0,2), // Ensure max 2 images for clones as well
     dataAiHint: baseProduct.dataAiHint ? `${baseProduct.dataAiHint} clone ${i+1}` : `product clone ${i+1}`,
     price: parseFloat((baseProduct.price * (1 + (i % 5) * 0.1)).toFixed(2)),
-    stock: Math.floor(Math.random() * 50) + 10,
+    stock: 9999, // Set stock to 9999 for cloned products as well
   });
 }
 
