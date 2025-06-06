@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/button';
@@ -28,8 +29,11 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" aria-label="Carrito de Compras">
-            <ShoppingCart className="h-5 w-5" />
+          <Button variant="ghost" asChild>
+            <Link href="/cart" aria-label="Ir al Carrito de Compras">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="ml-2 hidden sm:inline">Ir al Carrito</span>
+            </Link>
           </Button>
           <div className="md:hidden">
             <Sheet>
