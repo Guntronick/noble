@@ -12,10 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import { X as XIcon, Minus, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CartItem extends Product {
   quantityInCart: number;
   selectedColorInCart?: string;
+  isRemoving?: boolean; // For animation
 }
 
 const mockCartItems: CartItem[] = [
@@ -51,6 +53,7 @@ const mockCartItems: CartItem[] = [
   },
 ];
 
+const ANIMATION_DURATION = 300; // ms
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -67,7 +70,8 @@ export default function CartPage() {
 
 
   useEffect(() => {
-    setCartItems(mockCartItems);
+    // Initialize with a clone to avoid mutating mockCartItems directly if it were imported from elsewhere
+    setCartItems(mockCartItems.map(item => ({ ...item })));
   }, []);
 
   useEffect(() => {
@@ -87,20 +91,36 @@ export default function CartPage() {
     setCartItems(prevItems =>
       prevItems.map(item =>
         item.id === productId ? { ...item, quantityInCart: Math.max(1, newQuantity) } : item
-      ).filter(item => item.quantityInCart > 0) 
+      )
+      // Do not filter here if quantity becomes 0, let remove item handle that
     );
   };
 
   const handleRemoveItem = (productId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-    setShowRemovedProductToast(true);
-    if (removedProductToastTimeoutRef.current) {
-      clearTimeout(removedProductToastTimeoutRef.current);
-    }
-    removedProductToastTimeoutRef.current = setTimeout(() => {
-      setShowRemovedProductToast(false);
-    }, 3000);
+    const itemToRemove = cartItems.find(item => item.id === productId);
+    if (!itemToRemove) return;
+
+    // Mark for removal to trigger animation
+    setCartItems(prevItems =>
+      prevItems.map(it =>
+        it.id === productId ? { ...it, isRemoving: true } : it
+      )
+    );
+
+    // After animation, actually remove and show toast
+    setTimeout(() => {
+      setCartItems(prevItems => prevItems.filter(item => item.id !== productId && !item.isRemoving)); // Ensure only non-removing items are kept
+      
+      setShowRemovedProductToast(true);
+      if (removedProductToastTimeoutRef.current) {
+        clearTimeout(removedProductToastTimeoutRef.current);
+      }
+      removedProductToastTimeoutRef.current = setTimeout(() => {
+        setShowRemovedProductToast(false);
+      }, 3000);
+    }, ANIMATION_DURATION);
   };
+
 
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantityInCart, 0);
@@ -111,7 +131,7 @@ export default function CartPage() {
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Pedido/Presupuesto Enviado:", { formData, cartItems, total });
+    console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: cartItems.filter(item => !item.isRemoving), total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
   };
 
@@ -174,7 +194,7 @@ export default function CartPage() {
         </div>
 
         <div className="sticky top-24 self-start space-y-6">
-          <Card className="shadow-xl relative"> {/* Added position: relative here */}
+          <Card className="shadow-xl relative">
             <CardHeader>
               <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
             </CardHeader>
@@ -190,11 +210,22 @@ export default function CartPage() {
                 <span>SUBTOTAL</span>
               </div>
               <Separator />
-              {cartItems.length === 0 ? (
+              {cartItems.filter(item => !item.isRemoving || item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? ( // Show only if no items or all are animating out.
                 <p className="text-muted-foreground text-center py-4">Tu carrito está vacío.</p>
               ) : (
                 cartItems.map(item => (
-                  <div key={item.id} className="flex items-center justify-between space-x-2 py-3 border-b border-border last:border-b-0">
+                  <div 
+                    key={item.id} 
+                    className={cn(
+                      "flex items-center justify-between space-x-2",
+                      "py-3 border-b border-border last:border-b-0",
+                      "transition-all ease-in-out overflow-hidden",
+                      `duration-${ANIMATION_DURATION}`,
+                      item.isRemoving
+                        ? "max-h-0 opacity-0 -translate-x-full !py-0 !my-0 !border-opacity-0"
+                        : "max-h-48 opacity-100 translate-x-0" // max-h-48 is approx 192px, should be enough
+                    )}
+                  >
                     <div className="flex items-center space-x-3">
                        <Button 
                          type="button" 
@@ -238,10 +269,11 @@ export default function CartPage() {
                                 if (val >=1) {
                                      handleQuantityChange(item.id, val)
                                 } else if (e.target.value === '' || val < 1) {
-                                    handleQuantityChange(item.id, 1) // or set to 1 if you prefer
+                                    // Keep current value or set to 1 on invalid input
+                                    // For this version, let's keep it simple and expect valid numbers or rely on blur.
                                 }
                             }}
-                            onBlur={(e) => { // Ensure value is at least 1 on blur if empty or invalid
+                            onBlur={(e) => { 
                                 if (item.quantityInCart < 1 || isNaN(item.quantityInCart)) {
                                    handleQuantityChange(item.id, 1);
                                 }
