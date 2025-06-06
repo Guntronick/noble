@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 interface AddToCartButtonProps {
   product: Product;
   selectedColor: string;
-  quantity: number; // This quantity can be unvalidated from ProductDetailPage state
+  quantity: number; 
   variant?: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link" | null | undefined;
   className?: string;
 }
@@ -31,7 +31,8 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
   const handleAddToCart = () => {
     if (typeof window === 'undefined' || !product) return;
 
-    const currentQuantity = getValidatedQuantity(rawQuantity);
+    const userOriginalQuantity = rawQuantity; // This is the potentially unvalidated quantity from ProductDetailPage state
+    const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
 
     if (!selectedColor && product.colors.length > 0) {
        toast({
@@ -42,8 +43,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
       return;
     }
     
-    // currentQuantity is already validated by getValidatedQuantity
-    if (currentQuantity <= 0) { // Defensive check
+    if (validatedQuantityForAction <= 0) { 
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",
@@ -52,17 +52,23 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
       return;
     }
 
+    if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
+      toast({
+        title: "Cantidad ajustada",
+        description: `La cantidad se procesó como ${validatedQuantityForAction} debido a disponibilidad o mínimo requerido.`,
+        variant: "default",
+      });
+    }
+
     const storedCart = localStorage.getItem('aiMerchCart');
     let cart: CartItemBase[] = storedCart ? JSON.parse(storedCart) : [];
 
     const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedColor === (product.colors.length > 0 ? selectedColor : undefined));
 
     if (existingItemIndex > -1) {
-      // Update quantity if item exists
-      const newTotalQuantity = cart[existingItemIndex].quantityInCart + currentQuantity;
-      cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock); // Respect stock
+      const newTotalQuantity = cart[existingItemIndex].quantityInCart + validatedQuantityForAction;
+      cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock); 
     } else {
-      // Add new item
       const newItem: CartItemBase = {
         id: product.id,
         name: product.name,
@@ -74,7 +80,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
         productCode: product.productCode,
         slug: product.slug,
         stock: product.stock,
-        quantityInCart: Math.min(currentQuantity, product.stock), // currentQuantity already respects stock, but Math.min is safe
+        quantityInCart: Math.min(validatedQuantityForAction, product.stock),
         dataAiHint: product.dataAiHint,
       };
       cart.push(newItem);
@@ -84,7 +90,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
 
     toast({
       title: "¡Artículo Añadido!",
-      description: `${currentQuantity} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
+      description: `${validatedQuantityForAction} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
     });
   };
 

@@ -151,7 +151,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
   
   const getValidatedQuantity = (currentQty: number): number => {
-    if (!product) return 1; // Should not happen if product is loaded
+    if (!product) return 1; 
     let newQuantity = currentQty;
     if (typeof newQuantity !== 'number' || isNaN(newQuantity) || newQuantity <= 0) {
       newQuantity = 1;
@@ -173,8 +173,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       return false;
     }
 
-    // quantityToAdd is already validated
-    if (quantityToAdd <= 0) { // This check is defensive, should be caught by getValidatedQuantity
+    if (quantityToAdd <= 0) { 
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",
@@ -212,26 +211,44 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   const handleRequestQuoteOnly = () => {
-    const finalQuantity = getValidatedQuantity(quantity);
-    setQuantity(finalQuantity); // Update state to reflect validation
     if (!product) return;
-    const addedToCart = addItemToCartStorage(finalQuantity); 
+    const userOriginalQuantity = quantity;
+    const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
+
+    if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
+      toast({
+        title: "Cantidad ajustada",
+        description: `La cantidad se procesó como ${validatedQuantityForAction} debido a disponibilidad o mínimo requerido.`,
+        variant: "default",
+      });
+    }
+    
+    const addedToCart = addItemToCartStorage(validatedQuantityForAction); 
     if (addedToCart) {
-      console.log("Solicitando presupuesto solo para:", product.name, finalQuantity, selectedColor);
+      console.log("Solicitando presupuesto solo para:", product.name, validatedQuantityForAction, selectedColor);
       router.push('/cart'); 
     }
     setIsQuoteModalOpen(false);
   };
 
   const handleAddToCartAndContinue = () => {
-    const finalQuantity = getValidatedQuantity(quantity);
-    setQuantity(finalQuantity); // Update state to reflect validation
     if (!product) return;
-    const addedSuccessfully = addItemToCartStorage(finalQuantity);
+    const userOriginalQuantity = quantity;
+    const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
+
+    if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
+      toast({
+        title: "Cantidad ajustada",
+        description: `La cantidad se procesó como ${validatedQuantityForAction} debido a disponibilidad o mínimo requerido.`,
+        variant: "default",
+      });
+    }
+
+    const addedSuccessfully = addItemToCartStorage(validatedQuantityForAction);
     if (addedSuccessfully) {
         toast({
         title: "¡Artículo Añadido!",
-        description: `${finalQuantity} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
+        description: `${validatedQuantityForAction} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
         });
     }
     setIsQuoteModalOpen(false);
@@ -406,6 +423,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div ref={purchaseBoxRef} className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
           <p className="text-lg font-semibold">
             {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
+            {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
           </p>
           {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="bg-yellow-500 text-black mt-1">¡Pocas unidades!</Badge>}
          
@@ -420,17 +438,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   onChange={(e) => {
                     const valStr = e.target.value;
                     if (valStr === "") {
-                      setQuantity(0); // Use 0 as sentinel for empty
+                      setQuantity(0); 
                       return;
                     }
                     const num = parseInt(valStr, 10);
                     if (!isNaN(num)) {
-                      setQuantity(num); // Allow any number during typing
+                      setQuantity(num); 
                     }
-                    // If not a number, quantity state remains, input might show browser default behavior
-                  }}
-                  onBlur={() => {
-                    setQuantity(getValidatedQuantity(quantity));
                   }}
                   className="w-24 h-10"
                   aria-label="Cantidad"
@@ -447,10 +461,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   size="lg" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-base py-3" 
                   disabled={product.stock <= 0}
-                  onClick={() => { // Validate quantity before opening modal too
-                    const validatedQty = getValidatedQuantity(quantity);
-                    if (quantity !== validatedQty) setQuantity(validatedQty);
-                  }}
                 >
                   Solicitar Presupuesto
                 </Button>
