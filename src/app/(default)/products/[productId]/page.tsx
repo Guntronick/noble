@@ -222,7 +222,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="lg:col-start-2 space-y-6 relative">
             <div 
               ref={imageContainerRef}
-              className="relative aspect-[6/5] w-full max-w-[600px] mx-auto overflow-hidden rounded-lg shadow-xl"
+              className="relative aspect-[6/5] w-full overflow-hidden rounded-lg shadow-xl"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
