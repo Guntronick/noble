@@ -30,9 +30,9 @@ export function Navbar() {
         </nav>
         <div className="flex items-center space-x-4">
           <Button variant="ghost" asChild>
-            <Link href="/cart" aria-label="Ir al Carrito de Compras">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="ml-2">Ir al Carrito</span>
+            <Link href="/cart" aria-label="Carrito de Compras">
+              <ShoppingCart className="h-5 w-5" /> {/* El icono */}
+              Ir al Carrito {/* El texto directamente después del icono */}
             </Link>
           </Button>
           <div className="md:hidden">
