@@ -29,14 +29,14 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
+          {/* Botón del carrito rehecho */}
           <Button variant="ghost" asChild>
-            {/* El Link se convierte en el botón. El Button padre (con variant ghost)
-                debería aplicar 'gap-2' a sus hijos directos si es un flex container.
-                Los estilos por defecto de Button son 'inline-flex items-center justify-center gap-2'.
-            */}
-            <Link href="/cart" aria-label="Ir al carrito de compras">
+            <Link href="/cart" aria-label="Ir al carrito de compras" className="flex items-center">
               <ShoppingCart className="h-5 w-5" />
-              {/* Envolvemos el texto en un span y le damos estilos explícitos. */}
+              {/* El componente Button de ShadCN ya aplica un gap,
+                  así que no necesitamos ml-2 aquí si el span es un hijo directo del flex container (Link).
+                  Aseguramos que el texto tenga el estilo de fuente correcto.
+              */}
               <span className="text-sm font-medium">Ir al Carrito</span>
             </Link>
           </Button>
