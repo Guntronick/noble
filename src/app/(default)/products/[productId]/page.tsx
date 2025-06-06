@@ -85,7 +85,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       const rect = imageContainerRef.current.getBoundingClientRect();
       setImageDimensions({ width: rect.width, height: rect.height });
     }
-  }, [currentImageIndex, product]); // Recalculate if image or product changes (which implies mainImageSrc might change)
+  }, [currentImageIndex, product, showZoom]); // Recalculate if image or product changes or zoom is shown
 
   const handleShare = (platform: string) => {
     if (typeof window === "undefined" || !product) return;
@@ -171,8 +171,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   const handleMouseEnter = () => {
-    if (imageDimensions.width > 0) { // Only activate zoom if image dimensions are known
-        setShowZoom(true);
+    if (imageContainerRef.current) { // Ensure ref is available
+        const rect = imageContainerRef.current.getBoundingClientRect();
+        setImageDimensions({ width: rect.width, height: rect.height }); // Update dimensions on enter
+        if (rect.width > 0) {
+            setShowZoom(true);
+        }
     }
   };
   const handleMouseLeave = () => setShowZoom(false);
@@ -192,7 +196,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     <div className="container mx-auto px-4 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(100px,0.7fr)_3fr_2fr] xl:grid-cols-[minmax(120px,0.5fr)_3fr_2fr] gap-6 lg:gap-8 items-start">
         
-        <div className="hidden lg:flex lg:flex-col space-y-3 self-start pr-2">
+        <div className="self-start hidden lg:flex lg:flex-col space-y-3 pr-2">
           {product.images.map((img, index) => (
             <button 
               key={index} 
@@ -218,7 +222,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="lg:col-start-2 space-y-6 relative">
             <div 
               ref={imageContainerRef}
-              className="relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden rounded-lg shadow-xl"
+              className="relative aspect-[6/5] w-full max-w-[600px] mx-auto overflow-hidden rounded-lg shadow-xl"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -249,9 +253,9 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <div 
                 className="absolute border border-gray-300 shadow-lg hidden lg:block bg-white pointer-events-none"
                 style={{
-                  left: `calc(50% + ${imageDimensions.width / 2 + 16}px)`, // Position to the right of the centered image
-                  transform: 'translateX(-50%)', // Adjust if mx-auto centers it perfectly
-                  top: `0px`,
+                  // Position next to the image container based on its actual rendered width
+                  left: imageContainerRef.current ? `calc(${imageContainerRef.current.offsetLeft + imageDimensions.width + 16}px)` : 'calc(100% + 16px)',
+                  top: imageContainerRef.current ? `${imageContainerRef.current.offsetTop}px` : `0px`,
                   width: `${imageDimensions.width}px`, 
                   height: `${imageDimensions.height}px`, 
                   backgroundImage: `url(${mainImageSrc})`,
@@ -324,13 +328,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         </div>
 
         <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
-          <div>
-            <p className="text-lg font-semibold">
-              {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
-            </p>
-            {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="bg-yellow-500 text-black mt-1">¡Pocas unidades!</Badge>}
-          </div>
-
+          <p className="text-lg font-semibold">
+            {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
+          </p>
+          {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="bg-yellow-500 text-black mt-1">¡Pocas unidades!</Badge>}
+         
           {product.stock > 0 && (
             <div>
               <Label htmlFor="quantity-input-purchasebox" className="text-base font-medium">Cantidad:</Label>
@@ -343,12 +345,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   value={quantity} 
                   onChange={(e) => {
                     const val = parseInt(e.target.value, 10);
-                    const currentStock = product.stock || 1; // Default to 1 if stock is 0 to prevent NaN issues with min
+                    const currentStock = product.stock || 1; 
                      if (Number.isNaN(val) || val < 1) {
                         setQuantity(1);
-                    } else if (val > currentStock && currentStock > 0) { // Only cap if stock is actually positive
+                    } else if (val > currentStock && currentStock > 0) { 
                         setQuantity(currentStock);
-                    } else if (currentStock === 0) { // If stock is 0, force quantity to 1 (or handle as error)
+                    } else if (currentStock === 0) { 
                         setQuantity(1); 
                     }
                      else {
