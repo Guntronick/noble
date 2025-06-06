@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -20,7 +21,24 @@ export interface Category {
   dataAiHint?: string;
 }
 
-export interface CartItem extends Product {
-  quantity: number;
-  selectedColor: string;
+// Type for items stored in localStorage and used in cart state
+// It does not include UI-specific properties like 'isRemoving'
+export interface CartItemBase {
+  id: string;
+  name: string;
+  description: string;
+  images: string[];
+  price: number;
+  selectedColor?: string;
+  category: string;
+  productCode: string;
+  slug: string;
+  stock: number;
+  quantityInCart: number;
+  dataAiHint?: string;
+}
+
+// Type used in the CartPage component's state, including UI properties
+export interface CartItemType extends CartItemBase {
+  isRemoving?: boolean;
 }

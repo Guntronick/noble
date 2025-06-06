@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import type { Product } from '@/lib/types';
+import type { CartItemType } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,51 +14,13 @@ import Link from 'next/link';
 import { X as XIcon, Minus, Plus, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface CartItem extends Product {
-  quantityInCart: number;
-  selectedColorInCart?: string;
-  isRemoving?: boolean; // For animation
-}
-
-const mockCartItems: CartItem[] = [
-  {
-    id: 'prod_001',
-    name: 'BOLSO / MOCHILA "SPIRIT" GATTI',
-    description: 'Un bolso muy espacioso.',
-    images: ['https://placehold.co/100x100.png'],
-    dataAiHint: "grey backpack",
-    price: 19174.84,
-    colors: ['Gris'],
-    selectedColorInCart: 'Gris',
-    category: 'Accesorios',
-    productCode: 'BG-001',
-    slug: 'bolso-spirit-gatti',
-    stock: 10,
-    quantityInCart: 1,
-  },
-  {
-    id: 'prod_002',
-    name: 'AI-Designed Tee',
-    description: 'Unique AI Tee.',
-    images: ['https://placehold.co/100x100.png'],
-    dataAiHint: "ai t-shirt",
-    price: 29.99,
-    colors: ['Black', 'White'],
-    selectedColorInCart: 'Black',
-    category: 'Apparel',
-    productCode: 'AIMC-APP-001',
-    slug: 'ai-designed-tee',
-    stock: 50,
-    quantityInCart: 2,
-  },
-];
-
 const ITEM_REMOVAL_ANIMATION_DURATION = 300; // ms for item sliding out
 const TOAST_TIMER_DURATION = 1200; // ms for how long the toast is visible
 const TOAST_ANIMATION_DURATION = 500; // ms for toast fade/scale animation
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
+  const [isCartLoaded, setIsCartLoaded] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -69,15 +31,36 @@ export default function CartPage() {
   });
   const [showRemovedProductToast, setShowRemovedProductToast] = useState(false);
   const removedProductToastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [removedProductToastKey, setRemovedProductToastKey] = useState(0); // Key for toast re-render
+  const [removedProductToastKey, setRemovedProductToastKey] = useState(0); 
   
   const progressBarRef = useRef<HTMLDivElement>(null);
   const animationFrameIdRef = useRef<number | null>(null);
 
-
+  // Load cart from localStorage on mount
   useEffect(() => {
-    setCartItems(mockCartItems.map(item => ({ ...item })));
+    if (typeof window !== 'undefined') {
+      const storedCartItems = localStorage.getItem('aiMerchCart');
+      if (storedCartItems) {
+        try {
+          const parsedItems: Omit<CartItemType, 'isRemoving'>[] = JSON.parse(storedCartItems);
+          setCartItems(parsedItems.map(item => ({ ...item, isRemoving: false })));
+        } catch (error) {
+          console.error("Error parsing cart items from localStorage:", error);
+          localStorage.removeItem('aiMerchCart'); // Clear corrupted data
+        }
+      }
+      setIsCartLoaded(true); // Mark cart as loaded
+    }
   }, []);
+
+  // Save cart to localStorage whenever it changes, but only after initial load
+  useEffect(() => {
+    if (typeof window !== 'undefined' && isCartLoaded) {
+      const itemsToStore = cartItems.map(({ isRemoving, ...rest }) => rest);
+      localStorage.setItem('aiMerchCart', JSON.stringify(itemsToStore));
+    }
+  }, [cartItems, isCartLoaded]);
+
 
   useEffect(() => {
     return () => {
@@ -94,49 +77,32 @@ export default function CartPage() {
     if (showRemovedProductToast && progressBarRef.current) {
       let startTime: number | null = null;
       const barElement = progressBarRef.current;
-
-      // Reset bar to full width before starting animation
       barElement.style.width = '100%';
-      // Ensure no CSS transition interferes with manual animation
       barElement.style.transition = 'none';
 
-
       const animate = (timestamp: number) => {
-        if (!startTime) {
-          startTime = timestamp;
-        }
+        if (!startTime) startTime = timestamp;
         const elapsedTime = timestamp - startTime;
         const progress = Math.max(0, (TOAST_TIMER_DURATION - elapsedTime) / TOAST_TIMER_DURATION);
         
-        if (barElement) { // Check if barElement still exists
-          barElement.style.width = `${progress * 100}%`;
-        }
+        if (barElement) barElement.style.width = `${progress * 100}%`;
 
         if (elapsedTime < TOAST_TIMER_DURATION) {
           animationFrameIdRef.current = requestAnimationFrame(animate);
         } else {
-          if (barElement) {
-            barElement.style.width = '0%'; // Ensure it ends at 0
-          }
+          if (barElement) barElement.style.width = '0%';
         }
       };
-
       animationFrameIdRef.current = requestAnimationFrame(animate);
-
     } else if (progressBarRef.current) {
-      // If toast is not shown, reset bar width (e.g., for next appearance)
       progressBarRef.current.style.width = '100%';
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
+      if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
     }
     
     return () => {
-      if (animationFrameIdRef.current) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
+      if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
     };
-  }, [showRemovedProductToast, removedProductToastKey]); // TOAST_TIMER_DURATION is constant
+  }, [showRemovedProductToast, removedProductToastKey]);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -146,9 +112,13 @@ export default function CartPage() {
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === productId ? { ...item, quantityInCart: Math.max(1, newQuantity) } : item
-      )
+      prevItems.map(item => {
+        if (item.id === productId) {
+          const quantity = Math.max(1, Math.min(newQuantity, item.stock));
+          return { ...item, quantityInCart: quantity };
+        }
+        return item;
+      })
     );
   };
 
@@ -164,7 +134,6 @@ export default function CartPage() {
 
     setTimeout(() => {
       setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-
       setShowRemovedProductToast(true);
       setRemovedProductToastKey(prevKey => prevKey + 1); 
 
@@ -173,10 +142,9 @@ export default function CartPage() {
       }
       removedProductToastTimeoutRef.current = setTimeout(() => {
         setShowRemovedProductToast(false);
-      }, TOAST_TIMER_DURATION + TOAST_ANIMATION_DURATION); // Give time for fade out too
+      }, TOAST_TIMER_DURATION + TOAST_ANIMATION_DURATION);
     }, ITEM_REMOVAL_ANIMATION_DURATION);
   };
-
 
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantityInCart, 0);
@@ -187,9 +155,17 @@ export default function CartPage() {
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: cartItems.filter(item => !item.isRemoving), total });
+    const orderItems = cartItems.filter(item => !item.isRemoving).map(({ isRemoving, ...rest}) => rest);
+    console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: orderItems, total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
+    // Optionally clear cart after order
+    // setCartItems([]); 
+    // localStorage.removeItem('aiMerchCart');
   };
+
+  if (!isCartLoaded) {
+    return <div className="container mx-auto px-4 py-12 text-center">Cargando carrito...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -260,11 +236,11 @@ export default function CartPage() {
                 id="removed-product-toast"
                 className={cn(
                   "absolute left-1/2 -translate-x-1/2 w-auto min-w-[280px] max-w-[90%] bg-card border border-destructive p-4 rounded-lg shadow-xl z-50 transition-all ease-in-out",
-                  `duration-${TOAST_ANIMATION_DURATION}ms`, // This is for the toast's own fade/scale
                   showRemovedProductToast
                     ? 'top-4 opacity-100 scale-100 pointer-events-auto'
                     : 'top-4 opacity-0 scale-95 pointer-events-none'
                 )}
+                style={{ transitionDuration: `${TOAST_ANIMATION_DURATION}ms` }}
               >
                 <div className="flex items-center space-x-3">
                   <XCircle className="h-6 w-6 text-destructive shrink-0" />
@@ -274,7 +250,6 @@ export default function CartPage() {
                   <div
                     ref={progressBarRef}
                     className="h-full bg-destructive"
-                    // Style is now managed by JS for width animation
                   />
                 </div>
               </div>
@@ -290,16 +265,16 @@ export default function CartPage() {
               ) : (
                 cartItems.map(item => (
                   <div
-                    key={item.id}
+                    key={`${item.id}-${item.selectedColor || 'no-color'}`}
                     className={cn(
                       "flex items-center justify-between space-x-2",
                       "py-3 border-b border-border last:border-b-0",
                       "transition-all ease-in-out overflow-hidden",
-                      `duration-${ITEM_REMOVAL_ANIMATION_DURATION}ms`,
                       item.isRemoving
                         ? "max-h-0 opacity-0 -translate-x-full !py-0 !my-0 !border-opacity-0"
                         : "max-h-48 opacity-100 translate-x-0"
                     )}
+                     style={{ transitionDuration: `${ITEM_REMOVAL_ANIMATION_DURATION}ms` }}
                   >
                     <div className="flex items-center space-x-3">
                        <Button
@@ -324,7 +299,7 @@ export default function CartPage() {
                       </Link>
                       <div className="flex-grow">
                         <Link href={`/products/${item.slug}`} className="font-medium text-foreground hover:text-primary">{item.name}</Link>
-                        {item.selectedColorInCart && <p className="text-xs text-muted-foreground">- {item.selectedColorInCart}</p>}
+                        {item.selectedColor && <p className="text-xs text-muted-foreground">- {item.selectedColor}</p>}
                         <div className="flex items-center mt-1">
                            <Button
                             type="button"
@@ -341,10 +316,8 @@ export default function CartPage() {
                             value={item.quantityInCart}
                             onChange={(e) => {
                                 const val = parseInt(e.target.value, 10);
-                                if (val >=1) {
+                                if (!isNaN(val) && val >=1) {
                                      handleQuantityChange(item.id, val)
-                                } else if (e.target.value === '' || val < 1) {
-                                    // Allow clearing
                                 }
                             }}
                             onBlur={(e) => { 
@@ -353,6 +326,7 @@ export default function CartPage() {
                                 }
                             }}
                             min="1"
+                            max={item.stock}
                             className="w-14 h-7 text-center mx-1 hide-arrows [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             aria-label={`Cantidad de ${item.name}`}
                           />
@@ -384,15 +358,12 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
-
               <Separator />
-
               <div className="text-sm text-muted-foreground space-y-2 mt-4 p-3 bg-muted/50 rounded-md">
                 <p className="font-semibold text-foreground">Solicitar Presupuesto</p>
                 <p>No efectuaremos cargos de ningún tipo. En breve te enviaremos el presupuesto por los productos solicitados.</p>
               </div>
-
-              <Button type="submit" size="lg" className="w-full bg-olive-green text-primary-foreground hover:bg-olive-green/90 mt-6 text-base py-3">
+              <Button type="submit" size="lg" className="w-full bg-olive-green text-primary-foreground hover:bg-olive-green/90 mt-6 text-base py-3" disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
                 REALIZAR EL PEDIDO
               </Button>
             </CardContent>
@@ -402,5 +373,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-    

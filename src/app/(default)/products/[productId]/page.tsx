@@ -1,7 +1,7 @@
 
 "use client"; 
 
-import type { Product } from '@/lib/types';
+import type { Product, CartItemBase } from '@/lib/types';
 import { getProductBySlug } from '@/lib/data';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
@@ -25,7 +25,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
@@ -88,7 +87,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       const rect = imageContainerRef.current.getBoundingClientRect();
       setImageDimensions({ width: rect.width, height: rect.height });
     }
-  }, [currentImageIndex, product, showZoom, typeof window !== 'undefined' ? window.innerWidth : 0]); // Re-check on window resize
+  }, [currentImageIndex, product, showZoom, typeof window !== 'undefined' ? window.innerWidth : 0]);
 
   useEffect(() => {
     if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product) {
@@ -99,7 +98,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
     
     const panelWidth = purchaseBoxRef.current.offsetWidth;
-    const panelHeight = imageDimensions.height; // Panel de zoom tiene la altura de la imagen principal
+    const panelHeight = imageDimensions.height; 
     
     const panelLeft = purchaseBoxRef.current.offsetLeft;
     const panelTop = purchaseBoxRef.current.offsetTop;
@@ -122,7 +121,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       overflow: 'hidden',
     });
   
-  }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition, ZOOM_FACTOR]);
+  }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition]); // Removed ZOOM_FACTOR as it's constant
 
   const handleShare = (platform: string) => {
     if (typeof window === "undefined" || !product) return;
@@ -156,17 +155,17 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     router.push('/cart'); 
     setIsQuoteModalOpen(false);
   };
+  
+  const addItemToCartStorage = () => {
+    if (!product || typeof window === 'undefined') return false;
 
-  const handleAddToCartAndContinue = () => {
-    if (!product) return;
-     if (!selectedColor && product.colors.length > 0) {
+    if (!selectedColor && product.colors.length > 0) {
        toast({
         title: "Selecciona un color",
         description: "Por favor, elige un color antes de añadir al carrito.",
         variant: "destructive",
       });
-      setIsQuoteModalOpen(false); 
-      return;
+      return false;
     }
     const currentQuantity = Number.isNaN(quantity) || quantity < 1 ? 1 : quantity;
     if (currentQuantity <= 0) {
@@ -175,14 +174,48 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         description: "Por favor, introduce una cantidad mayor que cero.",
         variant: "destructive",
       });
-      setIsQuoteModalOpen(false); 
-      return;
+      return false;
     }
-    console.log(`Añadido al carrito: ${product.name}, Color: ${selectedColor || 'N/A'}, Cantidad: ${currentQuantity}`);
-    toast({
-      title: "¡Artículo Añadido!",
-      description: `${currentQuantity} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
-    });
+
+    const storedCart = localStorage.getItem('aiMerchCart');
+    let cart: CartItemBase[] = storedCart ? JSON.parse(storedCart) : [];
+    const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedColor === (product.colors.length > 0 ? selectedColor : undefined));
+
+    if (existingItemIndex > -1) {
+      const newQuantity = cart[existingItemIndex].quantityInCart + currentQuantity;
+      cart[existingItemIndex].quantityInCart = Math.min(newQuantity, product.stock);
+    } else {
+      const newItem: CartItemBase = {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        images: product.images,
+        price: product.price,
+        selectedColor: product.colors.length > 0 ? selectedColor : undefined,
+        category: product.category,
+        productCode: product.productCode,
+        slug: product.slug,
+        stock: product.stock,
+        quantityInCart: Math.min(currentQuantity, product.stock),
+        dataAiHint: product.dataAiHint,
+      };
+      cart.push(newItem);
+    }
+    localStorage.setItem('aiMerchCart', JSON.stringify(cart));
+    return true;
+  };
+
+
+  const handleAddToCartAndContinue = () => {
+    if (!product) return;
+    const addedSuccessfully = addItemToCartStorage();
+    if (addedSuccessfully) {
+        const currentQuantity = Number.isNaN(quantity) || quantity < 1 ? 1 : quantity;
+        toast({
+        title: "¡Artículo Añadido!",
+        description: `${currentQuantity} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
+        });
+    }
     setIsQuoteModalOpen(false);
   };
 
@@ -454,4 +487,3 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
-    
