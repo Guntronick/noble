@@ -1,9 +1,8 @@
 
 "use client"; 
 
-import { useState, useEffect, use } from 'react';
-import { getProductBySlug } from '@/lib/data';
 import type { Product } from '@/lib/types';
+import { getProductBySlug } from '@/lib/data';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
 import { Badge } from '@/components/ui/badge';
@@ -11,10 +10,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Twitter, Facebook, Instagram, Mail, MessageSquare, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Mail, MessageSquare, Truck, RotateCcw, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 async function fetchProduct(slug: string): Promise<Product | null> {
   const product = getProductBySlug(slug);
@@ -26,6 +38,8 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
+  const router = useRouter();
+  const { toast } = useToast();
   const resolvedParams = use(params as Promise<{ productId: string }>);
   const { productId: productSlug } = resolvedParams;
 
@@ -34,6 +48,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadProduct() {
@@ -44,26 +59,19 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       if (fetchedProduct && fetchedProduct.colors.length > 0) {
         setSelectedColor(fetchedProduct.colors[0]);
       } else if (fetchedProduct) {
-        setSelectedColor(''); // Ensure selectedColor is reset if no colors
+        setSelectedColor(''); 
       }
-      setCurrentImageIndex(0); // Reset to first image on new product
-      setQuantity(1); // Reset quantity
+      setCurrentImageIndex(0); 
+      setQuantity(1); 
       setLoading(false);
     }
     loadProduct();
   }, [productSlug]);
 
-  if (loading) {
-    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-muted-foreground">Cargando detalles del producto...</p></div>;
-  }
-
-  if (!product) {
-    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Producto no encontrado.</p></div>;
-  }
-
   const handleShare = (platform: string) => {
+    if (typeof window === "undefined") return;
     const url = window.location.href;
-    const text = `Mira este increíble producto: ${product.name}`;
+    const text = `Mira este increíble producto: ${product?.name}`;
     let shareUrl = '';
 
     switch (platform) {
@@ -80,13 +88,56 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`;
         break;
       case 'email':
-        shareUrl = `mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(text + " " + url)}`;
+        shareUrl = `mailto:?subject=${encodeURIComponent(product?.name || 'Producto Interesante')}&body=${encodeURIComponent(text + " " + url)}`;
         break;
     }
     if (shareUrl) window.open(shareUrl, '_blank');
   };
 
-  const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x600.png'; // Fallback image
+  const handleRequestQuoteOnly = () => {
+    // Simulate adding current product to cart/quote list
+    console.log("Solicitando presupuesto solo para:", product?.name, quantity, selectedColor);
+    // For now, just navigate. In a real app, you'd update cart state here.
+    router.push('/cart'); 
+    setIsQuoteModalOpen(false);
+  };
+
+  const handleAddToCartAndContinue = () => {
+    if (!product) return;
+     if (!selectedColor && product.colors.length > 0) {
+       toast({
+        title: "Selecciona un color",
+        description: "Por favor, elige un color antes de añadir al carrito.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (quantity <= 0) {
+      toast({
+        title: "Cantidad inválida",
+        description: "Por favor, introduce una cantidad mayor que cero.",
+        variant: "destructive",
+      });
+      return;
+    }
+    console.log(`Añadido al carrito: ${product.name}, Color: ${selectedColor || 'N/A'}, Cantidad: ${quantity}`);
+    toast({
+      title: "¡Artículo Añadido!",
+      description: `${quantity} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
+    });
+    setIsQuoteModalOpen(false);
+  };
+
+
+  if (loading) {
+    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-muted-foreground">Cargando detalles del producto...</p></div>;
+  }
+
+  if (!product) {
+    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Producto no encontrado.</p></div>;
+  }
+  
+  const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x600.png';
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -108,7 +159,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
         {/* Column 2: Main Image + Product Info Below It */}
         <div className="lg:col-start-2 space-y-6">
-          {/* Main Image - with mobile thumbnails below */}
           <div className="relative aspect-square w-full overflow-hidden rounded-lg shadow-xl">
             <Image 
               src={mainImageSrc} 
@@ -119,7 +169,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
             />
           </div>
-          {/* Mobile Thumbnails */}
           <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
             {product.images.map((img, index) => (
               <button
@@ -148,7 +197,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             <div className="text-muted-foreground leading-relaxed space-y-2">
                 <p>{product.description}</p>
             </div>
-            {/* <Link href="#" className="text-sm text-primary hover:underline">Ver características completas</Link> */}
             
             <Separator className="my-6"/>
 
@@ -179,7 +227,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <Truck className="h-6 w-6 text-green-600" />
               <p className="font-semibold text-green-600">Llega gratis <span className="font-normal text-muted-foreground">entre el X y el Y de Mes</span></p>
             </div>
-            {/* <Link href="#" className="text-sm text-primary hover:underline ml-8">Más formas de entrega</Link> */}
           </div>
           
           <Separator/>
@@ -210,45 +257,40 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   className="w-20 h-10"
                   aria-label="Cantidad"
                 />
-                <span className="text-sm text-muted-foreground">({product.stock} {product.stock === 1 ? 'disponible' : 'disponibles'})</span>
               </div>
             </div>
           )}
           
           <div className="space-y-3 pt-2">
-            <Button 
-              size="lg" 
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-base py-3" 
-              disabled={product.stock <= 0}
-              onClick={() => console.log("Comprar ahora:", product.name, quantity, selectedColor)}
-            >
-              Comprar ahora
-            </Button>
-            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
+            <AlertDialog open={isQuoteModalOpen} onOpenChange={setIsQuoteModalOpen}>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  size="lg" 
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-base py-3" 
+                  disabled={product.stock <= 0}
+                >
+                  Solicitar Presupuesto
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmar Acción</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    ¿Desea solicitar el presupuesto solo de este producto o desea agregar más productos al carrito?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="gap-2 sm:gap-0">
+                  <AlertDialogAction onClick={handleRequestQuoteOnly}>Solicitar presupuesto</AlertDialogAction>
+                  <AlertDialogCancel onClick={handleAddToCartAndContinue}>Agregar al carrito</AlertDialogCancel>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            
+            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} variant="secondary" />
           </div>
           
           <Separator className="my-4"/>
-
-          <div className="space-y-3 text-sm">
-            <div className="flex items-start space-x-2">
-              <RotateCcw className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-              <p><span className="font-medium">Devolución gratis.</span> Tenés 30 días desde que lo recibís.</p>
-            </div>
-            <div className="flex items-start space-x-2">
-              <ShieldCheck className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-              <p><span className="font-medium">Compra Protegida.</span> Recibí el producto que esperabas o te devolvemos tu dinero.</p>
-            </div>
-          </div>
           
-          <Separator className="my-4"/>
-          
-          <div className="text-sm">
-            <p>Vendido por <Link href="#" className="text-primary hover:underline font-medium">Catálogo de Merch IA</Link></p>
-            {/* <p className="text-xs text-muted-foreground">MercadoLíder | +1000 ventas</p> */}
-          </div>
-
-          <Separator className="my-4"/>
-
           <div>
             <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3>
             <div className="flex space-x-2 flex-wrap">
