@@ -115,6 +115,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const handleRequestQuoteOnly = () => {
     console.log("Solicitando presupuesto solo para:", product?.name, quantity, selectedColor);
+    // Here you would typically add the single item to a cart/quote state
+    // and then redirect. For now, just redirecting.
     router.push('/cart'); 
     setIsQuoteModalOpen(false);
   };
@@ -213,10 +215,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           ))}
         </div>
 
-        <div className="lg:col-start-2 space-y-6 relative"> {/* Added relative for zoom pane positioning */}
+        <div className="lg:col-start-2 space-y-6 relative">
             <div 
               ref={imageContainerRef}
-              className="relative aspect-square w-full overflow-hidden rounded-lg shadow-xl"
+              className="relative aspect-square w-full max-w-[500px] mx-auto overflow-hidden rounded-lg shadow-xl"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -228,10 +230,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 objectFit="contain" 
                 priority 
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-                className="transition-opacity duration-300 ease-in-out" // Smooth transition if image source changes
+                className="transition-opacity duration-300 ease-in-out" 
               />
               {showZoom && imageDimensions.width > 0 && (
-                <div // Lens
+                <div 
                   className="absolute border-2 border-gray-400 bg-white/30 pointer-events-none"
                   style={{
                     left: `${lensPosition.x}px`,
@@ -244,13 +246,14 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </div>
 
             {showZoom && imageDimensions.width > 0 && (
-              <div // Zoom Pane
+              <div 
                 className="absolute border border-gray-300 shadow-lg hidden lg:block bg-white pointer-events-none"
                 style={{
-                  left: `calc(100% + 1rem)`, // Position to the right of the image container
+                  left: `calc(50% + ${imageDimensions.width / 2 + 16}px)`, // Position to the right of the centered image
+                  transform: 'translateX(-50%)', // Adjust if mx-auto centers it perfectly
                   top: `0px`,
-                  width: `${imageDimensions.width}px`, // Same width as main image container
-                  height: `${imageDimensions.height}px`, // Same height
+                  width: `${imageDimensions.width}px`, 
+                  height: `${imageDimensions.height}px`, 
                   backgroundImage: `url(${mainImageSrc})`,
                   backgroundPosition: `${zoomBackgroundPosition.x}px ${zoomBackgroundPosition.y}px`,
                   backgroundSize: `${imageDimensions.width * ZOOM_FACTOR}px ${imageDimensions.height * ZOOM_FACTOR}px`,
@@ -320,7 +323,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </div>
         </div>
 
-        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start lg:sticky lg:top-24">
+        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
           <div>
             <p className="text-lg font-semibold">
               {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
@@ -340,12 +343,15 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   value={quantity} 
                   onChange={(e) => {
                     const val = parseInt(e.target.value, 10);
-                    const currentStock = product.stock || 1;
+                    const currentStock = product.stock || 1; // Default to 1 if stock is 0 to prevent NaN issues with min
                      if (Number.isNaN(val) || val < 1) {
                         setQuantity(1);
-                    } else if (val > currentStock) {
+                    } else if (val > currentStock && currentStock > 0) { // Only cap if stock is actually positive
                         setQuantity(currentStock);
-                    } else {
+                    } else if (currentStock === 0) { // If stock is 0, force quantity to 1 (or handle as error)
+                        setQuantity(1); 
+                    }
+                     else {
                         setQuantity(val);
                     }
                   }} 
@@ -406,5 +412,3 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
-
-    

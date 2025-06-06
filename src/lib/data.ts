@@ -14,8 +14,8 @@ export const products: Product[] = [
     id: 'prod_001',
     name: 'AI-Designed Tee',
     description: 'A unique t-shirt with an AI-generated design. Made from 100% organic cotton.',
-    images: ['https://placehold.co/600x800.png', 'https://placehold.co/600x801.png', 'https://placehold.co/601x800.png'], // Updated images
-    dataAiHint: 'tshirt design one', // Updated hint
+    images: ['https://placehold.co/500x500.png', 'https://placehold.co/450x450.png'], 
+    dataAiHint: 'square placeholder one', 
     price: 29.99,
     colors: ['Black', 'White', 'Navy'],
     category: 'Apparel',
@@ -131,9 +131,9 @@ for (let i = 0; i < 25 - baseProductsCount; i++) {
     const url = new URL(img);
     const [dimensions] = url.pathname.substring(1).split('.');
     const [width, height] = dimensions.split('x').map(Number);
-    if (idx === 0) return `https://placehold.co/${width + i + 1}x${height + i + 1}.png`;
-    if (idx === 1) return `https://placehold.co/${width + i + 2}x${height + i + 2}.png`;
-    return `https://placehold.co/${width + i + 3}x${height + i + 3}.png`;
+    // Use a simple increment to vary placeholder images for clones
+    if (idx === 0) return `https://placehold.co/${width + i + idx + 1}x${height + i + idx + 1}.png`;
+    return `https://placehold.co/${width + i + idx + 2}x${height + i + idx + 2}.png`; // For second image if it exists
   });
 
 
@@ -144,7 +144,7 @@ for (let i = 0; i < 25 - baseProductsCount; i++) {
     slug: `${baseProduct.slug}-clone-${i + 1}`,
     productCode: `${baseProduct.productCode}-C${i}`,
     category: cat.name, // Ensure category exists
-    images: cloneImages,
+    images: cloneImages.slice(0,2), // Ensure max 2 images for clones as well
     dataAiHint: baseProduct.dataAiHint ? `${baseProduct.dataAiHint} clone ${i+1}` : `product clone ${i+1}`,
     price: parseFloat((baseProduct.price * (1 + (i % 5) * 0.1)).toFixed(2)),
     stock: Math.floor(Math.random() * 50) + 10,
@@ -164,5 +164,3 @@ export const getProductBySlug = (slug: string): Product | undefined => {
 export const getProductById = (id: string): Product | undefined => {
   return products.find(product => product.id === id);
 };
-
-    
