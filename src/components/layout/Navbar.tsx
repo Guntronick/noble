@@ -30,9 +30,14 @@ export function Navbar() {
         </nav>
         <div className="flex items-center space-x-4">
           <Button variant="ghost" asChild>
-            <Link href="/cart" aria-label="Ir al carrito de compras" className="flex items-center gap-x-2 px-3">
-              <ShoppingCart className="h-5 w-5 shrink-0" />
-              <span className="whitespace-nowrap text-sm font-medium">Ir al Carrito</span>
+            {/* El Link se convierte en el botón. El Button padre (con variant ghost)
+                debería aplicar 'gap-2' a sus hijos directos si es un flex container.
+                Los estilos por defecto de Button son 'inline-flex items-center justify-center gap-2'.
+            */}
+            <Link href="/cart" aria-label="Ir al carrito de compras">
+              <ShoppingCart className="h-5 w-5" />
+              {/* Envolvemos el texto en un span y le damos estilos explícitos. */}
+              <span className="text-sm font-medium">Ir al Carrito</span>
             </Link>
           </Button>
           <div className="md:hidden">
