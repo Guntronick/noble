@@ -96,6 +96,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const handleRequestQuoteOnly = () => {
     console.log("Solicitando presupuesto solo para:", product?.name, quantity, selectedColor);
+    // Aquí iría la lógica para agregar el producto actual al "carrito de presupuesto"
+    // y luego redirigir. Por ahora, solo redirige.
     router.push('/cart'); 
     setIsQuoteModalOpen(false);
   };
@@ -140,8 +142,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     <div className="container mx-auto px-4 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(100px,0.7fr)_3fr_2fr] xl:grid-cols-[minmax(120px,0.5fr)_3fr_2fr] gap-6 lg:gap-8 items-start">
         
-        {/* Column 1: Thumbnails (Sticky) */}
-        <div className="hidden lg:flex lg:flex-col space-y-3 sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+        {/* Column 1: Thumbnails */}
+        <div className="hidden lg:flex lg:flex-col space-y-3 self-start pr-2">
           {product.images.map((img, index) => (
             <button 
               key={index} 
@@ -155,7 +157,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           ))}
         </div>
 
-        {/* Column 2: Main Image + Product Info Below It (Scrollable Content) */}
+        {/* Column 2: Main Image + Product Info Below It */}
         <div className="lg:col-start-2 space-y-6">
             <div className="relative aspect-square w-full overflow-hidden rounded-lg shadow-xl">
               <Image 
@@ -218,8 +220,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </div>
         </div>
 
-        {/* Column 3: Purchase Box (Sticky) */}
-        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 lg:sticky lg:top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto">
+        {/* Column 3: Purchase Box */}
+        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
           <div>
             <p className="text-lg font-semibold">
               {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
@@ -239,13 +241,15 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   value={quantity} 
                   onChange={(e) => {
                     const val = parseInt(e.target.value, 10);
-                    if (val >=1 && val <= product.stock) setQuantity(val);
-                    else if (val < 1) setQuantity(1);
-                    else if (val > product.stock) setQuantity(product.stock);
-                    else { // If NaN or invalid, reset to 1 or stock
-                       const currentStock = product.stock || 1;
-                       if (Number.isNaN(val) || val < 1) setQuantity(1);
-                       else if (val > currentStock) setQuantity(currentStock);
+                    const currentStock = product.stock || 1;
+                    if (Number.isNaN(val)) {
+                      setQuantity(1); // Si no es un número, resetear a 1
+                    } else if (val < 1) {
+                      setQuantity(1);
+                    } else if (val > currentStock) {
+                      setQuantity(currentStock);
+                    } else {
+                      setQuantity(val);
                     }
                   }} 
                   className="w-20 h-10"
