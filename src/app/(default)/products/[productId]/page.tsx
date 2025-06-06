@@ -60,6 +60,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState({ x: 0, y: 0 });
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const [zoomPanelDynamicStyle, setZoomPanelDynamicStyle] = useState<React.CSSProperties>({});
 
 
   useEffect(() => {
@@ -85,7 +86,62 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       const rect = imageContainerRef.current.getBoundingClientRect();
       setImageDimensions({ width: rect.width, height: rect.height });
     }
-  }, [currentImageIndex, product, showZoom]); // Recalculate if image or product changes or zoom is shown
+  }, [currentImageIndex, product, showZoom]);
+
+  useEffect(() => {
+    if (!showZoom || !imageContainerRef.current || imageDimensions.width === 0 || !product) {
+      setZoomPanelDynamicStyle(prev => ({ ...prev, display: 'none' }));
+      return;
+    }
+  
+    const imageContainer = imageContainerRef.current;
+    const parentOfZoomPanel = imageContainer.offsetParent as HTMLElement;
+  
+    if (!parentOfZoomPanel) {
+      setZoomPanelDynamicStyle(prev => ({ ...prev, display: 'none' }));
+      return;
+    }
+  
+    const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x600.png';
+    const panelWidth = imageDimensions.width;
+    const panelHeight = imageDimensions.height;
+    const gap = 16; 
+  
+    const imageRect = imageContainer.getBoundingClientRect(); 
+    const parentRect = parentOfZoomPanel.getBoundingClientRect(); 
+  
+    let calculatedLeftStyle: number; 
+  
+    const spaceToRight = window.innerWidth - imageRect.right - gap;
+    if (spaceToRight >= panelWidth) {
+      calculatedLeftStyle = imageContainer.offsetLeft + imageDimensions.width + gap;
+    } else {
+      const spaceToLeft = imageRect.left - gap; 
+      if (spaceToLeft >= panelWidth + gap) { 
+        calculatedLeftStyle = imageContainer.offsetLeft - panelWidth - gap;
+      } else {
+        let defaultRightAlignedLeft = (window.innerWidth - panelWidth - gap) - parentRect.left;
+        calculatedLeftStyle = defaultRightAlignedLeft;
+      }
+    }
+  
+    const calculatedTopStyle = imageContainer.offsetTop;
+  
+    setZoomPanelDynamicStyle({
+      display: 'block', 
+      position: 'absolute',
+      left: `${calculatedLeftStyle}px`,
+      top: `${calculatedTopStyle}px`,
+      width: `${panelWidth}px`,
+      height: `${panelHeight}px`,
+      backgroundImage: `url(${mainImageSrc})`,
+      backgroundPosition: `${zoomBackgroundPosition.x}px ${zoomBackgroundPosition.y}px`,
+      backgroundSize: `${panelWidth * ZOOM_FACTOR}px ${panelHeight * ZOOM_FACTOR}px`,
+      backgroundRepeat: 'no-repeat',
+      zIndex: 50,
+    });
+  
+  }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition, ZOOM_FACTOR]);
 
   const handleShare = (platform: string) => {
     if (typeof window === "undefined" || !product) return;
@@ -115,8 +171,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const handleRequestQuoteOnly = () => {
     console.log("Solicitando presupuesto solo para:", product?.name, quantity, selectedColor);
-    // Here you would typically add the single item to a cart/quote state
-    // and then redirect. For now, just redirecting.
     router.push('/cart'); 
     setIsQuoteModalOpen(false);
   };
@@ -154,26 +208,23 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
 
-    // Calculate lens position
     let newLensX = x - LENS_SIZE / 2;
     let newLensY = y - LENS_SIZE / 2;
 
-    // Constrain lens within image boundaries
     newLensX = Math.max(0, Math.min(newLensX, imageDimensions.width - LENS_SIZE));
     newLensY = Math.max(0, Math.min(newLensY, imageDimensions.height - LENS_SIZE));
     
     setLensPosition({ x: newLensX, y: newLensY });
 
-    // Calculate background position for zoom pane
     const bgX = -(newLensX * ZOOM_FACTOR);
     const bgY = -(newLensY * ZOOM_FACTOR);
     setZoomBackgroundPosition({ x: bgX, y: bgY });
   };
 
   const handleMouseEnter = () => {
-    if (imageContainerRef.current) { // Ensure ref is available
+    if (imageContainerRef.current) { 
         const rect = imageContainerRef.current.getBoundingClientRect();
-        setImageDimensions({ width: rect.width, height: rect.height }); // Update dimensions on enter
+        setImageDimensions({ width: rect.width, height: rect.height }); 
         if (rect.width > 0) {
             setShowZoom(true);
         }
@@ -190,7 +241,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Producto no encontrado.</p></div>;
   }
   
-  const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x600.png';
+  const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -248,22 +299,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 />
               )}
             </div>
-
-            {showZoom && imageDimensions.width > 0 && (
-              <div 
+            
+            {/* Zoom Panel */}
+            {showZoom && imageDimensions.width > 0 && product && (
+              <div
                 className="absolute border border-gray-300 shadow-lg hidden lg:block bg-white pointer-events-none"
-                style={{
-                  // Position next to the image container based on its actual rendered width
-                  left: imageContainerRef.current ? `calc(${imageContainerRef.current.offsetLeft + imageDimensions.width + 16}px)` : 'calc(100% + 16px)',
-                  top: imageContainerRef.current ? `${imageContainerRef.current.offsetTop}px` : `0px`,
-                  width: `${imageDimensions.width}px`, 
-                  height: `${imageDimensions.height}px`, 
-                  backgroundImage: `url(${mainImageSrc})`,
-                  backgroundPosition: `${zoomBackgroundPosition.x}px ${zoomBackgroundPosition.y}px`,
-                  backgroundSize: `${imageDimensions.width * ZOOM_FACTOR}px ${imageDimensions.height * ZOOM_FACTOR}px`,
-                  backgroundRepeat: 'no-repeat',
-                  zIndex: 50, 
-                }}
+                style={zoomPanelDynamicStyle}
               />
             )}
             
@@ -414,3 +455,4 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+
