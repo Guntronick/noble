@@ -1,7 +1,8 @@
+
 "use client"; 
 
-import { useState, useEffect } from 'react';
-import { getProductBySlug, products as allProductsStatic } from '@/lib/data';
+import { useState, useEffect, use } from 'react'; // Added 'use'
+import { getProductBySlug } from '@/lib/data'; // Removed unused 'allProductsStatic'
 import type { Product } from '@/lib/types';
 import { ProductImageCarousel } from '@/components/products/ProductImageCarousel';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
@@ -13,7 +14,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Twitter, Facebook, Instagram, Mail, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+// Link import was unused, removing for cleanliness
+// import Link from 'next/link'; 
 
 async function fetchProduct(slug: string): Promise<Product | null> {
   const product = getProductBySlug(slug);
@@ -26,7 +28,10 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
-  const { productId: productSlug } = params;
+  // Resolve params using React.use() as per Next.js warning
+  const resolvedParams = use(params as Promise<{ productId: string }>);
+  const { productId: productSlug } = resolvedParams;
+
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -34,6 +39,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   useEffect(() => {
     async function loadProduct() {
+      if (!productSlug) return; // Guard against productSlug being undefined if params somehow fail to resolve (though 'use' should handle suspension)
       setLoading(true);
       const fetchedProduct = await fetchProduct(productSlug);
       setProduct(fetchedProduct);
@@ -87,7 +93,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         </div>
         <div className="space-y-6">
           <h1 className="text-4xl font-bold text-primary font-headline">{product.name}</h1>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 flex-wrap">
             <Badge variant="outline">Categoría: {product.category}</Badge>
             <Badge variant="secondary">Código: {product.productCode}</Badge>
             {product.stock <= 0 && <Badge variant="destructive">Agotado</Badge>}
@@ -138,7 +144,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
           <div>
             <h3 className="text-lg font-semibold mb-2 text-primary font-headline">Comparte este producto:</h3>
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 flex-wrap">
               <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5" /></Button>
               <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5" /></Button>
               <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5" /></Button>
@@ -152,3 +158,5 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+
+    
