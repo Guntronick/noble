@@ -29,15 +29,14 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
-          {/* Botón del carrito rehecho con clases explícitas */}
           <Button variant="ghost" asChild>
-            <Link 
-              href="/cart" 
-              aria-label="Ir al carrito de compras" 
-              className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground" // Aplicamos flex, gap y estilos de hover directamente aquí
+            <Link
+              href="/cart"
+              aria-label="Ir al carrito de compras"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
             >
               <ShoppingCart className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-medium text-foreground group-hover:text-accent-foreground">Ir al Carrito</span>
+              <span className="text-sm font-medium">Ir al Carrito</span>
             </Link>
           </Button>
           <div className="md:hidden">
