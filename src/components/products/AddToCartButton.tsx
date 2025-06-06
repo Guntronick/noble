@@ -9,16 +9,29 @@ import { useToast } from '@/hooks/use-toast';
 interface AddToCartButtonProps {
   product: Product;
   selectedColor: string;
-  quantity: number;
+  quantity: number; // This quantity can be unvalidated from ProductDetailPage state
   variant?: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link" | null | undefined;
   className?: string;
 }
 
-export function AddToCartButton({ product, selectedColor, quantity, variant = "secondary", className }: AddToCartButtonProps) {
+export function AddToCartButton({ product, selectedColor, quantity: rawQuantity, variant = "secondary", className }: AddToCartButtonProps) {
   const { toast } = useToast();
 
+  const getValidatedQuantity = (currentQty: number): number => {
+    if (!product) return 1; 
+    let newQuantity = currentQty;
+    if (typeof newQuantity !== 'number' || isNaN(newQuantity) || newQuantity <= 0) {
+      newQuantity = 1;
+    } else if (product.stock > 0 && newQuantity > product.stock) {
+      newQuantity = product.stock;
+    }
+    return newQuantity;
+  };
+
   const handleAddToCart = () => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !product) return;
+
+    const currentQuantity = getValidatedQuantity(rawQuantity);
 
     if (!selectedColor && product.colors.length > 0) {
        toast({
@@ -29,8 +42,8 @@ export function AddToCartButton({ product, selectedColor, quantity, variant = "s
       return;
     }
     
-    const currentQuantity = isNaN(quantity) || quantity < 1 ? 1 : quantity;
-    if (currentQuantity <= 0) {
+    // currentQuantity is already validated by getValidatedQuantity
+    if (currentQuantity <= 0) { // Defensive check
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",
@@ -46,8 +59,8 @@ export function AddToCartButton({ product, selectedColor, quantity, variant = "s
 
     if (existingItemIndex > -1) {
       // Update quantity if item exists
-      const newQuantity = cart[existingItemIndex].quantityInCart + currentQuantity;
-      cart[existingItemIndex].quantityInCart = Math.min(newQuantity, product.stock); // Respect stock
+      const newTotalQuantity = cart[existingItemIndex].quantityInCart + currentQuantity;
+      cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock); // Respect stock
     } else {
       // Add new item
       const newItem: CartItemBase = {
@@ -61,7 +74,7 @@ export function AddToCartButton({ product, selectedColor, quantity, variant = "s
         productCode: product.productCode,
         slug: product.slug,
         stock: product.stock,
-        quantityInCart: Math.min(currentQuantity, product.stock), // Respect stock
+        quantityInCart: Math.min(currentQuantity, product.stock), // currentQuantity already respects stock, but Math.min is safe
         dataAiHint: product.dataAiHint,
       };
       cart.push(newItem);
