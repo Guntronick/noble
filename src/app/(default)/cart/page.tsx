@@ -165,30 +165,6 @@ export default function CartPage() {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      {showRemovedProductToast && (
-        <div
-          key={`toast-${removedProductToastKey}`}
-          id="removed-product-toast"
-          className={cn(
-            "fixed right-8 w-auto min-w-[280px] max-w-sm bg-card border border-destructive p-4 rounded-lg shadow-xl z-[100] transition-all ease-in-out",
-            showRemovedProductToast
-              ? 'top-20 opacity-100 scale-100 pointer-events-auto'
-              : 'top-20 opacity-0 scale-95 pointer-events-none'
-          )}
-          style={{ transitionDuration: `${TOAST_ANIMATION_DURATION}ms` }}
-        >
-          <div className="flex items-center space-x-3">
-            <XCircle className="h-6 w-6 text-destructive shrink-0" />
-            <span className="text-sm font-medium text-destructive">Producto eliminado</span>
-          </div>
-          <div className="mt-3 h-1.5 w-full bg-destructive/20 rounded-full overflow-hidden">
-            <div
-              ref={progressBarRef}
-              className="h-full bg-destructive"
-            />
-          </div>
-        </div>
-      )}
       <div className="mb-6">
         <p className="text-muted-foreground">
           ¿Tienes un cupón? <Link href="#" className="text-primary hover:underline">Haz clic aquí para introducir tu código</Link>
@@ -247,7 +223,34 @@ export default function CartPage() {
 
         <div className="sticky top-24 self-start space-y-6">
            <Card className="shadow-xl relative overflow-hidden">
-            <CardHeader> {/* Reverted padding-top */}
+            {showRemovedProductToast && (
+              <div
+                key={`toast-${removedProductToastKey}`}
+                id="removed-product-toast"
+                className={cn(
+                  "absolute left-1/2 -translate-x-1/2 w-auto min-w-[280px] max-w-sm bg-card border border-destructive p-4 rounded-lg shadow-xl z-50 transition-all ease-in-out",
+                  showRemovedProductToast
+                    ? 'top-4 opacity-100 scale-100 pointer-events-auto'
+                    : 'top-4 opacity-0 scale-95 pointer-events-none'
+                )}
+                style={{ 
+                  transitionDuration: `${TOAST_ANIMATION_DURATION}ms`,
+                  // transform: 'translateX(-50%)' // Handled by translate-x-1/2
+                }}
+              >
+                <div className="flex items-center space-x-3">
+                  <XCircle className="h-6 w-6 text-destructive shrink-0" />
+                  <span className="text-sm font-medium text-destructive">Producto eliminado</span>
+                </div>
+                <div className="mt-3 h-1.5 w-full bg-destructive/20 rounded-full overflow-hidden">
+                  <div
+                    ref={progressBarRef}
+                    className="h-full bg-destructive"
+                  />
+                </div>
+              </div>
+            )}
+            <CardHeader className="px-6 pb-6 pt-16">
               <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -369,3 +372,6 @@ export default function CartPage() {
     </div>
   );
 }
+
+
+    
