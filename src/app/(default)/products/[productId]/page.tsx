@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Twitter, Facebook, Instagram, Mail, MessageSquare } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Mail, MessageSquare, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect, use, useRef } from 'react';
@@ -100,7 +100,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
     
     const panelWidth = purchaseBoxRef.current.offsetWidth;
-    const panelHeight = imageDimensions.height; // Use main image's height
+    const panelHeight = imageDimensions.height; 
     
     const panelLeft = purchaseBoxRef.current.offsetLeft;
     const panelTop = purchaseBoxRef.current.offsetTop;
@@ -153,9 +153,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const handleRequestQuoteOnly = () => {
     if (!product) return;
-     // Simulate adding the current product to a "quote cart" or similar logic
     console.log("Solicitando presupuesto solo para:", product.name, quantity, selectedColor);
-    // For now, just navigate to cart page. In a real app, you'd add to cart/quote state here.
     router.push('/cart'); 
     setIsQuoteModalOpen(false);
   };
@@ -168,7 +166,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         description: "Por favor, elige un color antes de añadir al carrito.",
         variant: "destructive",
       });
-      setIsQuoteModalOpen(false); // Close modal even if there's an error
+      setIsQuoteModalOpen(false); 
       return;
     }
     const currentQuantity = Number.isNaN(quantity) || quantity < 1 ? 1 : quantity;
@@ -178,7 +176,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         description: "Por favor, introduce una cantidad mayor que cero.",
         variant: "destructive",
       });
-      setIsQuoteModalOpen(false); // Close modal
+      setIsQuoteModalOpen(false); 
       return;
     }
     console.log(`Añadido al carrito: ${product.name}, Color: ${selectedColor || 'N/A'}, Cantidad: ${currentQuantity}`);
@@ -208,7 +206,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     setLensPosition({ x: newLensX, y: newLensY });
     
     const panelWidth = purchaseBoxRef.current.offsetWidth;
-    const panelHeight = imageDimensions.height; // Use main image's height
+    const panelHeight = imageDimensions.height;
 
     const bgX = -(newLensX * ZOOM_FACTOR) + (panelWidth / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
     const bgY = -(newLensY * ZOOM_FACTOR) + (panelHeight / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
@@ -219,7 +217,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     if (imageContainerRef.current && purchaseBoxRef.current) { 
         const rect = imageContainerRef.current.getBoundingClientRect();
         setImageDimensions({ width: rect.width, height: rect.height }); 
-        if (rect.width > 0 && rect.height > 0) { // Ensure dimensions are valid
+        if (rect.width > 0 && rect.height > 0) { 
             setShowZoom(true);
         }
     }
@@ -267,7 +265,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="lg:col-start-2 space-y-6">
             <div 
               ref={imageContainerRef}
-              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl" // aspect-[6/5] for 600x500 like
+              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -276,7 +274,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 src={mainImageSrc} 
                 alt={product.name} 
                 fill
-                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 600px"
+                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 100%"
                 className="object-contain transition-opacity duration-300 ease-in-out" 
                 priority 
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
@@ -399,18 +397,20 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   size="lg" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-base py-3" 
                   disabled={product.stock <= 0}
-                  onClick={(e) => { 
-                    if (product.stock <= 0) {
-                      e.preventDefault(); 
-                    } else {
-                      // setIsQuoteModalOpen(true); // This is implicitly handled by AlertDialogTrigger
-                    }
-                  }}
                 >
                   Solicitar Presupuesto
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsQuoteModalOpen(false)}
+                  className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  aria-label="Cerrar"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Confirmar Acción</AlertDialogTitle>
                   <AlertDialogDescription>
