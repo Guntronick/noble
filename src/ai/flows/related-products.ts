@@ -25,7 +25,7 @@ const RelatedProductsOutputSchema = z.array(
   z.object({
     productId: z.string().describe('The ID of the related product.'),
     name: z.string().describe('The name of the related product.'),
-    imageUrl: z.string().describe('URL of the product image.'),
+    imageUrl: z.string().describe("URL of the product image. Must be a placeholder from https://placehold.co (e.g., https://placehold.co/600x800.png)."),
     description: z.string().describe('A short description of the product.'),
   })
 );
@@ -54,7 +54,7 @@ const relatedProductsPrompt = ai.definePrompt({
   Return a JSON array of related products with the following fields:
   - productId: The ID of the related product.
   - name: The name of the related product.
-  - imageUrl: URL of the product image.
+  - imageUrl: URL of the product image. IMPORTANT: This URL MUST be a placeholder image from 'https://placehold.co'. For example, 'https://placehold.co/600x800.png'. Do not use any other domain.
   - description: A short description of the product.
   `,
 });
