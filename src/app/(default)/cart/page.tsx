@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { Product } from '@/lib/types'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,10 +62,20 @@ export default function CartPage() {
     email: '',
     orderNotes: '',
   });
+  const [showRemovedProductToast, setShowRemovedProductToast] = useState(false);
+  const removedProductToastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   useEffect(() => {
-    // In a real app, you might fetch cart items from localStorage or an API
     setCartItems(mockCartItems);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (removedProductToastTimeoutRef.current) {
+        clearTimeout(removedProductToastTimeoutRef.current);
+      }
+    };
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -83,6 +93,13 @@ export default function CartPage() {
 
   const handleRemoveItem = (productId: string) => {
     setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+    setShowRemovedProductToast(true);
+    if (removedProductToastTimeoutRef.current) {
+      clearTimeout(removedProductToastTimeoutRef.current);
+    }
+    removedProductToastTimeoutRef.current = setTimeout(() => {
+      setShowRemovedProductToast(false);
+    }, 3000);
   };
 
   const calculateSubtotal = () => {
@@ -90,14 +107,12 @@ export default function CartPage() {
   };
 
   const subtotal = calculateSubtotal();
-  const total = subtotal; // Assuming no shipping or taxes for now
+  const total = subtotal; 
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would submit to a backend
     console.log("Pedido/Presupuesto Enviado:", { formData, cartItems, total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
-    // Optionally clear cart or redirect
   };
 
   return (
@@ -109,7 +124,6 @@ export default function CartPage() {
       </div>
 
       <form onSubmit={handleSubmitOrder} className="grid lg:grid-cols-2 gap-12 items-start">
-        {/* Left Column: Billing and Additional Info */}
         <div className="space-y-8">
           <Card>
             <CardHeader>
@@ -159,13 +173,18 @@ export default function CartPage() {
           </Card>
         </div>
 
-        {/* Right Column: Your Order */}
         <div className="sticky top-24 self-start space-y-6">
-          <Card className="shadow-xl">
+          <Card className="shadow-xl relative"> {/* Added position: relative here */}
             <CardHeader>
               <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {showRemovedProductToast && (
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-card border border-destructive text-destructive p-3 rounded-md shadow-lg z-10 flex items-center space-x-2 animate-pulse">
+                  <span>Producto eliminado</span>
+                  <XIcon size={18} className="text-destructive" />
+                </div>
+              )}
               <div className="flex justify-between text-sm font-medium text-muted-foreground">
                 <span>PRODUCTO</span>
                 <span>SUBTOTAL</span>
@@ -214,7 +233,19 @@ export default function CartPage() {
                           <Input 
                             type="number"
                             value={item.quantityInCart}
-                            onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+                            onChange={(e) => {
+                                const val = parseInt(e.target.value, 10);
+                                if (val >=1) {
+                                     handleQuantityChange(item.id, val)
+                                } else if (e.target.value === '' || val < 1) {
+                                    handleQuantityChange(item.id, 1) // or set to 1 if you prefer
+                                }
+                            }}
+                            onBlur={(e) => { // Ensure value is at least 1 on blur if empty or invalid
+                                if (item.quantityInCart < 1 || isNaN(item.quantityInCart)) {
+                                   handleQuantityChange(item.id, 1);
+                                }
+                            }}
                             min="1"
                             className="w-14 h-7 text-center mx-1 hide-arrows [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             aria-label={`Cantidad de ${item.name}`}
@@ -265,16 +296,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-// CSS para ocultar las flechas del input number si no funciona con Tailwind puro
-// (Preferiblemente, añadir a globals.css si es necesario, pero aquí para referencia)
-// <style jsx global>{`
-//   .hide-arrows::-webkit-outer-spin-button,
-//   .hide-arrows::-webkit-inner-spin-button {
-//     -webkit-appearance: none;
-//     margin: 0;
-//   }
-//   .hide-arrows[type=number] {
-//     -moz-appearance: textfield;
-//   }
-// `}</style>
