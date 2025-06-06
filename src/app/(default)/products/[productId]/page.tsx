@@ -38,8 +38,9 @@ interface ProductDetailPageProps {
   params: { productId: string }; 
 }
 
-const LENS_SIZE = 100; // px for the lens
-const ZOOM_FACTOR = 2.5; // How much to zoom
+const LENS_SIZE = 100; 
+const ZOOM_FACTOR = 2.5; 
+const MAX_ZOOM_PANEL_DIM = 400; // Max dimension for the zoom panel
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const router = useRouter();
@@ -54,7 +55,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
-  // Zoom state
   const [showZoom, setShowZoom] = useState(false);
   const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 });
   const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState({ x: 0, y: 0 });
@@ -86,7 +86,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       const rect = imageContainerRef.current.getBoundingClientRect();
       setImageDimensions({ width: rect.width, height: rect.height });
     }
-  }, [currentImageIndex, product, showZoom]);
+  }, [currentImageIndex, product, showZoom, product?.images]); // Added product.images to deps for safety on image change
 
   useEffect(() => {
     if (!showZoom || !imageContainerRef.current || imageDimensions.width === 0 || !product) {
@@ -102,26 +102,44 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       return;
     }
   
-    const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x600.png';
-    const panelWidth = imageDimensions.width;
-    const panelHeight = imageDimensions.height;
+    const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
     const gap = 16; 
-  
+
+    // Determine display dimensions for the zoom panel
+    let displayPanelWidth = imageDimensions.width;
+    let displayPanelHeight = imageDimensions.height;
+
+    if (imageDimensions.width > MAX_ZOOM_PANEL_DIM) {
+        displayPanelWidth = MAX_ZOOM_PANEL_DIM;
+        displayPanelHeight = (MAX_ZOOM_PANEL_DIM / imageDimensions.width) * imageDimensions.height;
+    }
+    if (displayPanelHeight > MAX_ZOOM_PANEL_DIM) { // Check height if width was already < MAX_ZOOM_PANEL_DIM or after width adjustment
+        displayPanelHeight = MAX_ZOOM_PANEL_DIM;
+        // Recalculate width to maintain aspect ratio if height was the limiter
+        displayPanelWidth = (MAX_ZOOM_PANEL_DIM / imageDimensions.height) * imageDimensions.width;
+    }
+    
+    // Ensure displayPanelWidth is not larger than original after adjustments
+    displayPanelWidth = Math.min(displayPanelWidth, imageDimensions.width);
+    displayPanelHeight = Math.min(displayPanelHeight, imageDimensions.height);
+
+
     const imageRect = imageContainer.getBoundingClientRect(); 
     const parentRect = parentOfZoomPanel.getBoundingClientRect(); 
   
     let calculatedLeftStyle: number; 
   
     const spaceToRight = window.innerWidth - imageRect.right - gap;
-    if (spaceToRight >= panelWidth) {
+    if (spaceToRight >= displayPanelWidth) {
       calculatedLeftStyle = imageContainer.offsetLeft + imageDimensions.width + gap;
     } else {
       const spaceToLeft = imageRect.left - gap; 
-      if (spaceToLeft >= panelWidth + gap) { 
-        calculatedLeftStyle = imageContainer.offsetLeft - panelWidth - gap;
+      if (spaceToLeft >= displayPanelWidth) { 
+        calculatedLeftStyle = imageContainer.offsetLeft - displayPanelWidth - gap;
       } else {
-        let defaultRightAlignedLeft = (window.innerWidth - panelWidth - gap) - parentRect.left;
-        calculatedLeftStyle = defaultRightAlignedLeft;
+        // Fallback: Align to the right edge of the viewport, relative to parent
+        let viewportAlignedLeft = (window.innerWidth - displayPanelWidth - gap); // Absolute left in viewport
+        calculatedLeftStyle = viewportAlignedLeft - parentRect.left; // Relative to parent
       }
     }
   
@@ -132,13 +150,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       position: 'absolute',
       left: `${calculatedLeftStyle}px`,
       top: `${calculatedTopStyle}px`,
-      width: `${panelWidth}px`,
-      height: `${panelHeight}px`,
+      width: `${displayPanelWidth}px`,
+      height: `${displayPanelHeight}px`,
       backgroundImage: `url(${mainImageSrc})`,
       backgroundPosition: `${zoomBackgroundPosition.x}px ${zoomBackgroundPosition.y}px`,
-      backgroundSize: `${panelWidth * ZOOM_FACTOR}px ${panelHeight * ZOOM_FACTOR}px`,
+      backgroundSize: `${imageDimensions.width * ZOOM_FACTOR}px ${imageDimensions.height * ZOOM_FACTOR}px`,
       backgroundRepeat: 'no-repeat',
-      zIndex: 50,
+      zIndex: 50, // Ensure it's on top
+      border: '1px solid #ccc', // Add a border for clarity
+      boxShadow: '0 4px 8px rgba(0,0,0,0.2)', // Add some shadow
+      backgroundColor: 'white', // Ensure background is opaque
     });
   
   }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition, ZOOM_FACTOR]);
@@ -185,7 +206,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       });
       return;
     }
-    if (quantity <= 0 || Number.isNaN(quantity)) {
+    const currentQuantity = Number.isNaN(quantity) || quantity < 1 ? 1 : quantity;
+    if (currentQuantity <= 0) {
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",
@@ -193,10 +215,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       });
       return;
     }
-    console.log(`Añadido al carrito: ${product.name}, Color: ${selectedColor || 'N/A'}, Cantidad: ${quantity}`);
+    console.log(`Añadido al carrito: ${product.name}, Color: ${selectedColor || 'N/A'}, Cantidad: ${currentQuantity}`);
     toast({
       title: "¡Artículo Añadido!",
-      description: `${quantity} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
+      description: `${currentQuantity} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
     });
     setIsQuoteModalOpen(false);
   };
@@ -208,6 +230,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
 
+    // Ensure x and y are within image bounds
+    x = Math.max(0, Math.min(x, imageDimensions.width));
+    y = Math.max(0, Math.min(y, imageDimensions.height));
+
     let newLensX = x - LENS_SIZE / 2;
     let newLensY = y - LENS_SIZE / 2;
 
@@ -216,8 +242,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     
     setLensPosition({ x: newLensX, y: newLensY });
 
-    const bgX = -(newLensX * ZOOM_FACTOR);
-    const bgY = -(newLensY * ZOOM_FACTOR);
+    const bgX = -(newLensX * ZOOM_FACTOR) + ( (imageDimensions.width > MAX_ZOOM_PANEL_DIM ? MAX_ZOOM_PANEL_DIM : imageDimensions.width) / 2 ) - (LENS_SIZE /2 * ZOOM_FACTOR) ;
+    const bgY = -(newLensY * ZOOM_FACTOR) + ( (imageDimensions.height > MAX_ZOOM_PANEL_DIM ? MAX_ZOOM_PANEL_DIM : imageDimensions.height) / 2 ) - (LENS_SIZE /2 * ZOOM_FACTOR) ;
     setZoomBackgroundPosition({ x: bgX, y: bgY });
   };
 
@@ -225,7 +251,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     if (imageContainerRef.current) { 
         const rect = imageContainerRef.current.getBoundingClientRect();
         setImageDimensions({ width: rect.width, height: rect.height }); 
-        if (rect.width > 0) {
+        if (rect.width > 0) { // Only show zoom if image has dimensions
             setShowZoom(true);
         }
     }
@@ -261,19 +287,20 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <Image 
                 src={img} 
                 alt={`${product.name} miniatura ${index + 1}`} 
-                layout="fill" 
-                objectFit="cover" 
-                className="hover:opacity-80 transition-opacity" 
+                fill
+                sizes="(max-width: 1023px) 0vw, 100px" // Small size for thumbnails
+                className="object-cover hover:opacity-80 transition-opacity" 
                 data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
               />
             </button>
           ))}
         </div>
 
-        <div className="lg:col-start-2 space-y-6 relative">
+        {/* Main Content: Image + Details */}
+        <div className="lg:col-start-2 space-y-6 relative"> {/* This is the offsetParent for the zoom panel */}
             <div 
               ref={imageContainerRef}
-              className="relative aspect-[6/5] w-full overflow-hidden rounded-lg shadow-xl"
+              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl" // Removed max-w and mx-auto here
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -281,11 +308,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <Image 
                 src={mainImageSrc} 
                 alt={product.name} 
-                layout="fill" 
-                objectFit="contain" 
+                fill
+                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 600px"
+                className="object-contain transition-opacity duration-300 ease-in-out" 
                 priority 
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-                className="transition-opacity duration-300 ease-in-out" 
               />
               {showZoom && imageDimensions.width > 0 && (
                 <div 
@@ -295,26 +322,28 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                     top: `${lensPosition.y}px`,
                     width: `${LENS_SIZE}px`,
                     height: `${LENS_SIZE}px`,
+                    cursor: 'crosshair',
                   }}
                 />
               )}
             </div>
             
-            {/* Zoom Panel */}
+            {/* Zoom Panel - Sibling to imageContainerRef, positioned by JS */}
             {showZoom && imageDimensions.width > 0 && product && (
               <div
-                className="absolute border border-gray-300 shadow-lg hidden lg:block bg-white pointer-events-none"
+                className="absolute hidden lg:block pointer-events-none" // Default hidden, JS controls display and positioning
                 style={zoomPanelDynamicStyle}
               />
             )}
             
+            {/* Mobile Thumbnails */}
             <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
               {product.images.map((img, index) => (
                 <button
                   key={`mobile-thumb-${index}`}
                   onClick={() => setCurrentImageIndex(index)}
                   className={cn(
-                    "aspect-square rounded-md overflow-hidden border-2 transition-all",
+                    "aspect-square rounded-md overflow-hidden border-2 transition-all relative",
                     currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
                   )}
                   aria-label={`Ver imagen ${index + 1} (móvil)`}
@@ -322,15 +351,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   <Image 
                     src={img} 
                     alt={`${product.name} miniatura ${index + 1}`} 
-                    layout="fill" 
-                    objectFit="cover" 
-                    className="hover:opacity-80"
+                    fill
+                    sizes="20vw"
+                    className="object-cover hover:opacity-80"
                     data-ai-hint={product.dataAiHint ? `${product.dataAiHint} mobile thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} mobile thumb ${index+1}`}
                   />
                 </button>
               ))}
             </div>
 
+            {/* Product Information */}
             <div className="mt-6 space-y-4">
               <div className="flex items-center space-x-2 flex-wrap">
                 <Badge variant="outline">Categoría: {product.category}</Badge>
@@ -368,6 +398,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </div>
         </div>
 
+        {/* Purchase Box Column */}
         <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
           <p className="text-lg font-semibold">
             {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
@@ -386,15 +417,14 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   value={quantity} 
                   onChange={(e) => {
                     const val = parseInt(e.target.value, 10);
-                    const currentStock = product.stock || 1; 
+                    const currentStock = product.stock || 1;
                      if (Number.isNaN(val) || val < 1) {
                         setQuantity(1);
                     } else if (val > currentStock && currentStock > 0) { 
                         setQuantity(currentStock);
-                    } else if (currentStock === 0) { 
+                    } else if (currentStock === 0) { // Should not happen if input is disabled by stock
                         setQuantity(1); 
-                    }
-                     else {
+                    } else {
                         setQuantity(val);
                     }
                   }} 
@@ -413,6 +443,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   size="lg" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-base py-3" 
                   disabled={product.stock <= 0}
+                  onClick={(e) => { if (product.stock <= 0) e.preventDefault(); }}
                 >
                   Solicitar Presupuesto
                 </Button>
@@ -424,9 +455,9 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                     ¿Desea solicitar el presupuesto solo de este producto o desea agregar más productos al carrito?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="gap-2 sm:gap-0">
-                  <AlertDialogAction onClick={handleRequestQuoteOnly}>Solicitar presupuesto</AlertDialogAction>
-                  <AlertDialogCancel onClick={handleAddToCartAndContinue}>Agregar al carrito</AlertDialogCancel>
+                <AlertDialogFooter className="gap-2 sm:gap-0 flex-col sm:flex-row">
+                  <AlertDialogAction onClick={handleRequestQuoteOnly} className="w-full sm:w-auto">Solicitar presupuesto</AlertDialogAction>
+                  <AlertDialogCancel onClick={handleAddToCartAndContinue} className="w-full sm:w-auto mt-2 sm:mt-0">Agregar al carrito</AlertDialogCancel>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -438,7 +469,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           
           <div>
             <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3>
-            <div className="flex space-x-2 flex-wrap">
+            <div className="flex space-x-2 flex-wrap gap-y-2">
               <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5" /></Button>
               <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5" /></Button>
               <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5" /></Button>
@@ -456,3 +487,4 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   );
 }
 
+    
