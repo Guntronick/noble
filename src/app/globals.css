@@ -4,35 +4,35 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* White */
-    --foreground: 187 100% 8%; /* Dark Teal for text on light backgrounds */
+    --background: 0 0% 4%; /* Near Black from dendev.ar (#0A0A0A) */
+    --foreground: 0 0% 95%; /* Light gray/white text */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 187 100% 8%; /* Dark Teal */
+    --card: 0 0% 8%; /* Slightly lighter dark gray for cards */
+    --card-foreground: 0 0% 95%; /* Light text on cards */
 
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 187 100% 8%; /* Dark Teal */
+    --popover: 0 0% 8%; /* Popovers similar to cards */
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 187 100% 8%; /* Dark Teal */
-    --primary-foreground: 0 0% 98%; /* Light Gray/White */
+    --primary: 196 100% 50%; /* Bright cyan/blue like dendev.ar accent */
+    --primary-foreground: 0 0% 100%; /* White text on primary elements */
 
-    --secondary: 202 23% 46%; /* Grayish Blue */
-    --secondary-foreground: 0 0% 98%; /* Light Gray/White */
+    --secondary: 0 0% 20%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 95%; /* Light text on secondary */
 
-    --muted: 45 44% 89%; /* Beige */
-    --muted-foreground: 202 23% 30%; /* Darker Beige/Grayish Blue */
+    --muted: 0 0% 12%; /* Muted background */
+    --muted-foreground: 0 0% 60%; /* Grayer text for muted content */
 
-    --accent: 198 52% 78%; /* Light Blue */
-    --accent-foreground: 187 100% 8%; /* Dark Teal */
+    --accent: 196 100% 50%; /* Accent same as primary for consistency */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
     
     /* Accent 2 (Olive Green #ADC178) will be handled by a custom Tailwind class */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 55%; /* A visible red on dark background */
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 202 23% 80%; /* Lighter Grayish Blue */
-    --input: 202 23% 90%; /* Very light Grayish Blue for input backgrounds */
-    --ring: 187 100% 8%; /* Dark Teal for focus rings */
+    --border: 0 0% 15%; /* Border color, subtly visible */
+    --input: 0 0% 10%; /* Input background, distinct from main bg */
+    --ring: 196 100% 50%; /* Ring color matches accent/primary */
 
     --radius: 0.5rem;
 
@@ -44,33 +44,33 @@
   }
 
   .dark {
-    --background: 187 100% 8%; /* Dark Teal */
-    --foreground: 0 0% 98%; /* Light Gray/White */
+    --background: 0 0% 4%; /* Near Black from dendev.ar (#0A0A0A) */
+    --foreground: 0 0% 98%; /* Original dark theme foreground, good */
 
-    --card: 187 100% 12%; /* Slightly Lighter Dark Teal */
-    --card-foreground: 0 0% 98%; /* Light Gray/White */
+    --card: 0 0% 8%; /* Consistent with new :root card color */
+    --card-foreground: 0 0% 98%; /* Original dark theme card foreground */
 
-    --popover: 187 100% 8%; /* Dark Teal */
-    --popover-foreground: 0 0% 98%; /* Light Gray/White */
+    --popover: 0 0% 8%; /* Consistent with new :root popover color */
+    --popover-foreground: 0 0% 98%; /* Original dark theme popover foreground */
 
-    --primary: 0 0% 98%; /* Light Gray/White */
-    --primary-foreground: 187 100% 8%; /* Dark Teal */
+    --primary: 0 0% 98%; /* Original dark theme primary (Light Gray/White) */
+    --primary-foreground: 187 100% 8%; /* Original dark theme primary-foreground (Dark Teal) */
 
-    --secondary: 202 23% 30%; /* Darker Grayish Blue */
-    --secondary-foreground: 0 0% 98%; /* Light Gray/White */
+    --secondary: 202 23% 30%; /* Original dark theme secondary (Darker Grayish Blue) */
+    --secondary-foreground: 0 0% 98%; /* Original dark theme secondary-foreground */
 
-    --muted: 187 100% 15%; /* Darker Teal */
-    --muted-foreground: 202 23% 70%; /* Lighter Grayish Blue */
+    --muted: 0 0% 12%; /* Consistent with new :root muted background */
+    --muted-foreground: 0 0% 60%; /* Consistent with new :root muted foreground */
 
-    --accent: 198 52% 60%; /* Darker Light Blue */
-    --accent-foreground: 0 0% 98%; /* Light Gray/White */
+    --accent: 198 52% 60%; /* Original dark theme accent (Darker Light Blue) */
+    --accent-foreground: 0 0% 98%; /* Original dark theme accent-foreground */
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 30.6%; /* Original dark theme destructive */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 202 23% 35%; /* Darker Grayish Blue for borders */
-    --input: 202 23% 25%; /* Dark Grayish Blue for input backgrounds */
-    --ring: 198 52% 78%; /* Light Blue for focus rings in dark mode */
+    --border: 0 0% 15%; /* Consistent with new :root border */
+    --input: 0 0% 10%; /* Consistent with new :root input background */
+    --ring: 198 52% 78%; /* Original dark theme ring (Light Blue for focus rings) */
   }
 }
 
