@@ -9,21 +9,22 @@ import { useToast } from '@/hooks/use-toast';
 interface AddToCartButtonProps {
   product: Product;
   selectedColor: string;
-  quantity: number; 
+  quantity: number; // This is the raw quantity from ProductDetailPage state (could be 0)
   variant?: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link" | null | undefined;
   className?: string;
 }
 
-export function AddToCartButton({ product, selectedColor, quantity: rawQuantity, variant = "secondary", className }: AddToCartButtonProps) {
+export function AddToCartButton({ product, selectedColor, quantity: rawQuantityFromProp, variant = "secondary", className }: AddToCartButtonProps) {
   const { toast } = useToast();
 
-  const getValidatedQuantity = (currentQty: number): number => {
+  // This validation logic is used when an action (like add to cart) is taken
+  const getValidatedQuantityForAction = (currentQty: number): number => {
     if (!product) return 1; 
     let newQuantity = currentQty;
     if (typeof newQuantity !== 'number' || isNaN(newQuantity) || newQuantity <= 0) {
-      newQuantity = 1;
+      newQuantity = 1; // Default to 1 if input was empty, 0, negative, or NaN
     } else if (product.stock > 0 && newQuantity > product.stock) {
-      newQuantity = product.stock;
+      newQuantity = product.stock; // Cap at stock
     }
     return newQuantity;
   };
@@ -31,8 +32,8 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
   const handleAddToCart = () => {
     if (typeof window === 'undefined' || !product) return;
 
-    const userOriginalQuantity = rawQuantity; // This is the potentially unvalidated quantity from ProductDetailPage state
-    const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
+    const userOriginalQuantity = rawQuantityFromProp; // The quantity as it was in the input field state
+    const validatedQuantityForAction = getValidatedQuantityForAction(userOriginalQuantity);
 
     if (!selectedColor && product.colors.length > 0) {
        toast({
@@ -43,21 +44,30 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
       return;
     }
     
-    if (validatedQuantityForAction <= 0) { 
+    // Notify user if their typed quantity was adjusted for the action
+    if (validatedQuantityForAction !== userOriginalQuantity) {
+      if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
+         toast({
+          title: "Cantidad ajustada",
+          description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
+          variant: "default",
+        });
+      } else { // Covers stock cap or other adjustments from a non-zero input
+        toast({
+          title: "Cantidad ajustada",
+          description: `La cantidad se procesó como ${validatedQuantityForAction} para el carrito debido a disponibilidad o mínimo requerido.`,
+          variant: "default",
+        });
+      }
+    }
+    
+    if (validatedQuantityForAction <= 0) { // Should not happen if getValidatedQuantityForAction ensures >= 1
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",
         variant: "destructive",
       });
       return;
-    }
-
-    if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
-      toast({
-        title: "Cantidad ajustada",
-        description: `La cantidad se procesó como ${validatedQuantityForAction} debido a disponibilidad o mínimo requerido.`,
-        variant: "default",
-      });
     }
 
     const storedCart = localStorage.getItem('aiMerchCart');
@@ -67,6 +77,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
 
     if (existingItemIndex > -1) {
       const newTotalQuantity = cart[existingItemIndex].quantityInCart + validatedQuantityForAction;
+      // Ensure the total in cart doesn't exceed stock
       cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock); 
     } else {
       const newItem: CartItemBase = {
@@ -80,7 +91,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
         productCode: product.productCode,
         slug: product.slug,
         stock: product.stock,
-        quantityInCart: Math.min(validatedQuantityForAction, product.stock),
+        quantityInCart: Math.min(validatedQuantityForAction, product.stock), // Initial add, ensure <= stock
         dataAiHint: product.dataAiHint,
       };
       cart.push(newItem);
@@ -107,3 +118,4 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantity,
     </Button>
   );
 }
+
