@@ -32,7 +32,7 @@ export function Navbar() {
           <Button variant="ghost" asChild>
             <Link href="/cart" aria-label="Ir al Carrito de Compras">
               <ShoppingCart className="h-5 w-5" />
-              <span className="ml-2 hidden sm:inline">Ir al Carrito</span>
+              <span className="ml-2">Ir al Carrito</span>
             </Link>
           </Button>
           <div className="md:hidden">
