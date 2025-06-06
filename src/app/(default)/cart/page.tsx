@@ -77,8 +77,8 @@ export default function CartPage() {
     if (showRemovedProductToast && progressBarRef.current) {
       let startTime: number | null = null;
       const barElement = progressBarRef.current;
-      barElement.style.width = '100%';
-      barElement.style.transition = 'none';
+      barElement.style.width = '100%'; // Reset width
+      // No CSS transition needed here, animation is manual
 
       const animate = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
@@ -95,7 +95,8 @@ export default function CartPage() {
       };
       animationFrameIdRef.current = requestAnimationFrame(animate);
     } else if (progressBarRef.current) {
-      progressBarRef.current.style.width = '100%';
+      // Ensure bar is reset if toast is hidden abruptly
+      progressBarRef.current.style.width = '100%'; 
       if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
     }
     
@@ -142,7 +143,7 @@ export default function CartPage() {
       }
       removedProductToastTimeoutRef.current = setTimeout(() => {
         setShowRemovedProductToast(false);
-      }, TOAST_TIMER_DURATION + TOAST_ANIMATION_DURATION);
+      }, TOAST_TIMER_DURATION + TOAST_ANIMATION_DURATION); // Ensure toast stays visible for its animation + timer
     }, ITEM_REMOVAL_ANIMATION_DURATION);
   };
 
@@ -227,7 +228,7 @@ export default function CartPage() {
 
         <div className="sticky top-24 self-start space-y-6">
            <Card className="shadow-xl relative overflow-hidden">
-            <CardHeader className="pt-20">
+            <CardHeader className="pt-28"> {/* Increased padding-top here */}
               <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
             </CardHeader>
             {showRemovedProductToast && (
@@ -250,6 +251,7 @@ export default function CartPage() {
                   <div
                     ref={progressBarRef}
                     className="h-full bg-destructive"
+                    // style for width is now handled by requestAnimationFrame
                   />
                 </div>
               </div>
@@ -373,3 +375,4 @@ export default function CartPage() {
     </div>
   );
 }
+
