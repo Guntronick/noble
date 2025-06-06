@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import type { Product } from '@/lib/types'; // Assuming Product type might be useful
+import type { Product } from '@/lib/types'; 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,9 +11,9 @@ import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import { X as XIcon } from 'lucide-react'; // For the remove item icon
+import { X as XIcon, Minus, Plus } from 'lucide-react';
 
-interface CartItem extends Product { // Simplified for example
+interface CartItem extends Product {
   quantityInCart: number;
   selectedColorInCart?: string;
 }
@@ -23,16 +23,31 @@ const mockCartItems: CartItem[] = [
     id: 'prod_001',
     name: 'BOLSO / MOCHILA "SPIRIT" GATTI',
     description: 'Un bolso muy espacioso.',
-    images: ['https://placehold.co/100x100.png'], // Placeholder image
+    images: ['https://placehold.co/100x100.png'], 
     dataAiHint: "grey backpack",
-    price: 19174.84, // Example price
+    price: 19174.84, 
     colors: ['Gris'],
     selectedColorInCart: 'Gris',
     category: 'Accesorios',
     productCode: 'BG-001',
     slug: 'bolso-spirit-gatti',
     stock: 10,
-    quantityInCart: 2000,
+    quantityInCart: 1,
+  },
+  {
+    id: 'prod_002',
+    name: 'AI-Designed Tee',
+    description: 'Unique AI Tee.',
+    images: ['https://placehold.co/100x100.png'],
+    dataAiHint: "ai t-shirt",
+    price: 29.99,
+    colors: ['Black', 'White'],
+    selectedColorInCart: 'Black',
+    category: 'Apparel',
+    productCode: 'AIMC-APP-001',
+    slug: 'ai-designed-tee',
+    stock: 50,
+    quantityInCart: 2,
   },
 ];
 
@@ -49,7 +64,7 @@ export default function CartPage() {
   });
 
   useEffect(() => {
-    // In a real app, you'd fetch cart items from context, localStorage, or an API
+    // In a real app, you might fetch cart items from localStorage or an API
     setCartItems(mockCartItems);
   }, []);
 
@@ -58,19 +73,31 @@ export default function CartPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.id === productId ? { ...item, quantityInCart: Math.max(1, newQuantity) } : item
+      ).filter(item => item.quantityInCart > 0) 
+    );
+  };
+
+  const handleRemoveItem = (productId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  };
+
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantityInCart, 0);
   };
 
   const subtotal = calculateSubtotal();
-  const total = subtotal; // Assuming no taxes or shipping for now
+  const total = subtotal; // Assuming no shipping or taxes for now
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic to submit the order/quote request
+    // In a real app, this would submit to a backend
     console.log("Pedido/Presupuesto Enviado:", { formData, cartItems, total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
-    // Potentially clear cart or redirect
+    // Optionally clear cart or redirect
   };
 
   return (
@@ -81,7 +108,7 @@ export default function CartPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmitOrder} className="grid lg:grid-cols-[2fr_1fr] gap-12 items-start">
+      <form onSubmit={handleSubmitOrder} className="grid lg:grid-cols-2 gap-12 items-start">
         {/* Left Column: Billing and Additional Info */}
         <div className="space-y-8">
           <Card>
@@ -150,24 +177,62 @@ export default function CartPage() {
                 cartItems.map(item => (
                   <div key={item.id} className="flex items-center justify-between space-x-2 py-3 border-b border-border last:border-b-0">
                     <div className="flex items-center space-x-3">
-                       <button type="button" aria-label="Eliminar producto" className="text-muted-foreground hover:text-destructive p-1">
+                       <Button 
+                         type="button" 
+                         variant="ghost" 
+                         size="icon" 
+                         className="text-destructive hover:text-destructive/80 p-1 h-7 w-7"
+                         onClick={() => handleRemoveItem(item.id)}
+                         aria-label="Eliminar producto"
+                       >
                         <XIcon size={16} />
-                      </button>
-                      <Image 
-                        src={item.images[0]} 
-                        alt={item.name} 
-                        width={60} 
-                        height={60} 
-                        className="rounded-md object-cover aspect-square"
-                        data-ai-hint={item.dataAiHint || "product image"} 
-                      />
-                      <div>
-                        <p className="font-medium text-foreground">{item.name}</p>
+                      </Button>
+                      <Link href={`/products/${item.slug}`}>
+                        <Image 
+                          src={item.images[0]} 
+                          alt={item.name} 
+                          width={60} 
+                          height={60} 
+                          className="rounded-md object-cover aspect-square"
+                          data-ai-hint={item.dataAiHint || "product image"} 
+                        />
+                      </Link>
+                      <div className="flex-grow">
+                        <Link href={`/products/${item.slug}`} className="font-medium text-foreground hover:text-primary">{item.name}</Link>
                         {item.selectedColorInCart && <p className="text-xs text-muted-foreground">- {item.selectedColorInCart}</p>}
-                        <p className="text-xs text-muted-foreground">&times; {item.quantityInCart}</p>
+                        <div className="flex items-center mt-1">
+                           <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-7 w-7 p-1"
+                            onClick={() => handleQuantityChange(item.id, item.quantityInCart - 1)}
+                            disabled={item.quantityInCart <= 1}
+                          >
+                            <Minus size={14} />
+                          </Button>
+                          <Input 
+                            type="number"
+                            value={item.quantityInCart}
+                            onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value, 10))}
+                            min="1"
+                            className="w-14 h-7 text-center mx-1 hide-arrows [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            aria-label={`Cantidad de ${item.name}`}
+                          />
+                           <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-7 w-7 p-1"
+                            onClick={() => handleQuantityChange(item.id, item.quantityInCart + 1)}
+                            disabled={item.quantityInCart >= item.stock}
+                          >
+                            <Plus size={14} />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    <span className="font-medium text-foreground">
+                    <span className="font-medium text-foreground text-right min-w-[80px]">
                       ${(item.price * item.quantityInCart).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -200,3 +265,16 @@ export default function CartPage() {
     </div>
   );
 }
+
+// CSS para ocultar las flechas del input number si no funciona con Tailwind puro
+// (Preferiblemente, añadir a globals.css si es necesario, pero aquí para referencia)
+// <style jsx global>{`
+//   .hide-arrows::-webkit-outer-spin-button,
+//   .hide-arrows::-webkit-inner-spin-button {
+//     -webkit-appearance: none;
+//     margin: 0;
+//   }
+//   .hide-arrows[type=number] {
+//     -moz-appearance: textfield;
+//   }
+// `}</style>

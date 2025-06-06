@@ -86,3 +86,15 @@
     @apply font-headline;
   }
 }
+
+@layer utilities {
+  /* Ocultar flechas en input[type="number"] */
+  .hide-arrows::-webkit-outer-spin-button,
+  .hide-arrows::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .hide-arrows[type=number] {
+    -moz-appearance: textfield;
+  }
+}
