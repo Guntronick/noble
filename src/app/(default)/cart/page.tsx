@@ -70,7 +70,9 @@ export default function CartPage() {
   const [showRemovedProductToast, setShowRemovedProductToast] = useState(false);
   const removedProductToastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [removedProductToastKey, setRemovedProductToastKey] = useState(0); // Key for toast re-render
-  const [progressWidth, setProgressWidth] = useState('100%');
+  
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const animationFrameIdRef = useRef<number | null>(null);
 
 
   useEffect(() => {
@@ -82,19 +84,59 @@ export default function CartPage() {
       if (removedProductToastTimeoutRef.current) {
         clearTimeout(removedProductToastTimeoutRef.current);
       }
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
     };
   }, []);
 
   useEffect(() => {
-    if (showRemovedProductToast) {
-      setProgressWidth('100%');
-      // Force reflow/repaint before starting transition to 0%
-      const frameId = requestAnimationFrame(() => {
-         setProgressWidth('0%');
-      });
-      return () => cancelAnimationFrame(frameId);
+    if (showRemovedProductToast && progressBarRef.current) {
+      let startTime: number | null = null;
+      const barElement = progressBarRef.current;
+
+      // Reset bar to full width before starting animation
+      barElement.style.width = '100%';
+      // Ensure no CSS transition interferes with manual animation
+      barElement.style.transition = 'none';
+
+
+      const animate = (timestamp: number) => {
+        if (!startTime) {
+          startTime = timestamp;
+        }
+        const elapsedTime = timestamp - startTime;
+        const progress = Math.max(0, (TOAST_TIMER_DURATION - elapsedTime) / TOAST_TIMER_DURATION);
+        
+        if (barElement) { // Check if barElement still exists
+          barElement.style.width = `${progress * 100}%`;
+        }
+
+        if (elapsedTime < TOAST_TIMER_DURATION) {
+          animationFrameIdRef.current = requestAnimationFrame(animate);
+        } else {
+          if (barElement) {
+            barElement.style.width = '0%'; // Ensure it ends at 0
+          }
+        }
+      };
+
+      animationFrameIdRef.current = requestAnimationFrame(animate);
+
+    } else if (progressBarRef.current) {
+      // If toast is not shown, reset bar width (e.g., for next appearance)
+      progressBarRef.current.style.width = '100%';
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
     }
-  }, [showRemovedProductToast, removedProductToastKey]); // Depend on key change
+    
+    return () => {
+      if (animationFrameIdRef.current) {
+        cancelAnimationFrame(animationFrameIdRef.current);
+      }
+    };
+  }, [showRemovedProductToast, removedProductToastKey]); // TOAST_TIMER_DURATION is constant
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -124,14 +166,14 @@ export default function CartPage() {
       setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
 
       setShowRemovedProductToast(true);
-      setRemovedProductToastKey(prevKey => prevKey + 1); // Increment key to force re-render
+      setRemovedProductToastKey(prevKey => prevKey + 1); 
 
       if (removedProductToastTimeoutRef.current) {
         clearTimeout(removedProductToastTimeoutRef.current);
       }
       removedProductToastTimeoutRef.current = setTimeout(() => {
         setShowRemovedProductToast(false);
-      }, TOAST_TIMER_DURATION);
+      }, TOAST_TIMER_DURATION + TOAST_ANIMATION_DURATION); // Give time for fade out too
     }, ITEM_REMOVAL_ANIMATION_DURATION);
   };
 
@@ -145,7 +187,6 @@ export default function CartPage() {
 
   const handleSubmitOrder = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual order submission logic (e.g., API call)
     console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: cartItems.filter(item => !item.isRemoving), total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
   };
@@ -159,7 +200,6 @@ export default function CartPage() {
       </div>
 
       <form onSubmit={handleSubmitOrder} className="grid lg:grid-cols-2 gap-12 items-start">
-        {/* Billing Details Section */}
         <div className="space-y-8">
           <Card>
             <CardHeader>
@@ -209,10 +249,9 @@ export default function CartPage() {
           </Card>
         </div>
 
-        {/* Order Summary Section */}
         <div className="sticky top-24 self-start space-y-6">
            <Card className="shadow-xl relative overflow-hidden">
-            <CardHeader className="pt-20"> {/* Increased padding-top for toast */}
+            <CardHeader className="pt-20">
               <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
             </CardHeader>
             {showRemovedProductToast && (
@@ -221,12 +260,11 @@ export default function CartPage() {
                 id="removed-product-toast"
                 className={cn(
                   "absolute left-1/2 -translate-x-1/2 w-auto min-w-[280px] max-w-[90%] bg-card border border-destructive p-4 rounded-lg shadow-xl z-50 transition-all ease-in-out",
-                  `duration-${TOAST_ANIMATION_DURATION}ms`,
+                  `duration-${TOAST_ANIMATION_DURATION}ms`, // This is for the toast's own fade/scale
                   showRemovedProductToast
                     ? 'top-4 opacity-100 scale-100 pointer-events-auto'
                     : 'top-4 opacity-0 scale-95 pointer-events-none'
                 )}
-                // data-state={showRemovedProductToast ? "open" : "closed"} // For animate-in/out if needed
               >
                 <div className="flex items-center space-x-3">
                   <XCircle className="h-6 w-6 text-destructive shrink-0" />
@@ -234,13 +272,9 @@ export default function CartPage() {
                 </div>
                 <div className="mt-3 h-1.5 w-full bg-destructive/20 rounded-full overflow-hidden">
                   <div
+                    ref={progressBarRef}
                     className="h-full bg-destructive"
-                    style={{
-                      width: progressWidth,
-                      transitionProperty: 'width',
-                      transitionDuration: `${TOAST_TIMER_DURATION}ms`,
-                      transitionTimingFunction: 'linear'
-                    }}
+                    // Style is now managed by JS for width animation
                   />
                 </div>
               </div>
@@ -310,10 +344,10 @@ export default function CartPage() {
                                 if (val >=1) {
                                      handleQuantityChange(item.id, val)
                                 } else if (e.target.value === '' || val < 1) {
-                                    // Allow clearing, will be handled onBlur or if user types valid number next
+                                    // Allow clearing
                                 }
                             }}
-                            onBlur={(e) => { // Ensure quantity is at least 1 on blur if input is cleared or invalid
+                            onBlur={(e) => { 
                                 if (item.quantityInCart < 1 || isNaN(item.quantityInCart)) {
                                    handleQuantityChange(item.id, 1);
                                 }
@@ -368,3 +402,5 @@ export default function CartPage() {
     </div>
   );
 }
+
+    
