@@ -27,24 +27,23 @@ export function AddToCartButton({ product, selectedColor, quantity }: AddToCartB
   const { toast } = useToast();
 
   const handleAddToCart = () => {
-    if (!selectedColor) {
+    if (!selectedColor && product.colors.length > 0) { // Check if product has colors before requiring one
        toast({
-        title: "Select a color",
-        description: "Please choose a color before adding to cart.",
+        title: "Selecciona un color",
+        description: "Por favor, elige un color antes de añadir al carrito.",
         variant: "destructive",
       });
       return;
     }
     if (quantity <= 0) {
       toast({
-        title: "Invalid quantity",
-        description: "Please enter a quantity greater than zero.",
+        title: "Cantidad inválida",
+        description: "Por favor, introduce una cantidad mayor que cero.",
         variant: "destructive",
       });
       return;
     }
-    // Logic to add to cart (e.g., update state, call API)
-    console.log(`Added to cart: ${product.name}, Color: ${selectedColor}, Quantity: ${quantity}`);
+    console.log(`Añadido al carrito: ${product.name}, Color: ${selectedColor || 'N/A'}, Cantidad: ${quantity}`);
     setIsAlertOpen(true);
   };
 
@@ -57,21 +56,21 @@ export function AddToCartButton({ product, selectedColor, quantity }: AddToCartB
         disabled={product.stock <= 0}
       >
         <ShoppingCart className="h-5 w-5" />
-        {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+        {product.stock > 0 ? 'Añadir al Carrito' : 'Agotado'}
       </Button>
 
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Item Added to Cart!</AlertDialogTitle>
+            <AlertDialogTitle>¡Artículo Añadido al Carrito!</AlertDialogTitle>
             <AlertDialogDescription>
-              You've successfully added {quantity} x "{product.name}" (Color: {selectedColor}) to your shopping cart.
+              Has añadido {quantity} x "{product.name}" {product.colors.length > 0 ? `(Color: ${selectedColor})` : ''} a tu carrito de compras.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Continue Shopping</AlertDialogCancel>
-            <AlertDialogAction onClick={() => console.log('Proceed to checkout')}>
-              View Cart & Checkout
+            <AlertDialogCancel>Seguir Comprando</AlertDialogCancel>
+            <AlertDialogAction onClick={() => console.log('Ir al carrito')}>
+              Ver Carrito y Pagar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

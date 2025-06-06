@@ -57,25 +57,25 @@ export default function ProductListingPage() {
   };
   
   const pageTitle = selectedCategory === 'all' 
-    ? 'All Products' 
-    : categories.find(c => c.slug === selectedCategory)?.name || 'Products';
+    ? 'Todos los Productos' 
+    : categories.find(c => c.slug === selectedCategory)?.name || 'Productos';
 
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold text-center mb-4 text-primary font-headline">{pageTitle}</h1>
       <p className="text-lg text-muted-foreground text-center mb-10">
-        Explore our collection of AI-inspired merchandise and cutting-edge tech.
+        Explora nuestra colección de mercancía inspirada en IA y tecnología de vanguardia.
       </p>
 
       <div className="mb-8 p-4 bg-muted/50 rounded-lg shadow">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div>
-            <label htmlFor="search" className="block text-sm font-medium text-foreground mb-1">Search Products</label>
+            <label htmlFor="search" className="block text-sm font-medium text-foreground mb-1">Buscar Productos</label>
             <div className="relative">
               <Input
                 id="search"
                 type="text"
-                placeholder="Search by name or description..."
+                placeholder="Buscar por nombre o descripción..."
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -87,13 +87,13 @@ export default function ProductListingPage() {
             </div>
           </div>
           <div>
-            <label htmlFor="category-filter" className="block text-sm font-medium text-foreground mb-1">Filter by Category</label>
+            <label htmlFor="category-filter" className="block text-sm font-medium text-foreground mb-1">Filtrar por Categoría</label>
             <Select value={selectedCategory} onValueChange={handleCategoryChange}>
               <SelectTrigger id="category-filter">
-                <SelectValue placeholder="Select category" />
+                <SelectValue placeholder="Seleccionar categoría" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">Todas las Categorías</SelectItem>
                 {categories.map(cat => (
                   <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
                 ))}
@@ -101,7 +101,7 @@ export default function ProductListingPage() {
             </Select>
           </div>
            <div>
-            <label htmlFor="items-per-page" className="block text-sm font-medium text-foreground mb-1">Items per Page</label>
+            <label htmlFor="items-per-page" className="block text-sm font-medium text-foreground mb-1">Artículos por Página</label>
             <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
               <SelectTrigger id="items-per-page">
                 <SelectValue />
@@ -124,8 +124,8 @@ export default function ProductListingPage() {
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-2xl text-muted-foreground">No products found.</p>
-          {searchTerm && <p className="mt-2">Try adjusting your search or filters.</p>}
+          <p className="text-2xl text-muted-foreground">No se encontraron productos.</p>
+          {searchTerm && <p className="mt-2">Intenta ajustar tu búsqueda o filtros.</p>}
         </div>
       )}
 
@@ -136,17 +136,17 @@ export default function ProductListingPage() {
             disabled={currentPage === 1}
             variant="outline"
           >
-            Previous
+            Anterior
           </Button>
           <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
+            Página {currentPage} de {totalPages}
           </span>
           <Button
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
             variant="outline"
           >
-            Next
+            Siguiente
           </Button>
         </div>
       )}

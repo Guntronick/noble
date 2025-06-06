@@ -11,12 +11,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Send } from 'lucide-react';
 
 const contactFormSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
+  email: z.string().email({ message: "Por favor, introduce una dirección de correo electrónico válida." }),
   phone: z.string().optional().refine(value => !value || /^\+?[1-9]\d{1,14}$/.test(value), {
-    message: "Please enter a valid phone number (e.g., +1234567890)."
+    message: "Por favor, introduce un número de teléfono válido (ej. +1234567890)."
   }),
-  message: z.string().min(10, { message: "Message must be at least 10 characters." }).max(500, { message: "Message cannot exceed 500 characters." }),
+  message: z.string().min(10, { message: "El mensaje debe tener al menos 10 caracteres." }).max(500, { message: "El mensaje no puede exceder los 500 caracteres." }),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
@@ -44,22 +44,22 @@ export function ContactForm() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message. Server returned ' + response.status);
+        throw new Error('Error al enviar el mensaje. El servidor devolvió ' + response.status);
       }
 
       const result = await response.json();
 
       if (result.success) {
         toast({
-          title: "Message Sent!",
-          description: "Thank you for contacting us. We'll get back to you soon.",
+          title: "¡Mensaje Enviado!",
+          description: "Gracias por contactarnos. Te responderemos pronto.",
         });
         form.reset();
       } else {
-        throw new Error(result.message || "An unknown error occurred.");
+        throw new Error(result.message || "Ocurrió un error desconocido.");
       }
     } catch (error) {
-      let errorMessage = "Failed to send message. Please try again later.";
+      let errorMessage = "Error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.";
       if (error instanceof Error) {
         errorMessage = error.message;
       }
@@ -79,9 +79,9 @@ export function ContactForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Name</FormLabel>
+              <FormLabel>Nombre Completo</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="Juan Pérez" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -92,9 +92,9 @@ export function ContactForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email Address</FormLabel>
+              <FormLabel>Correo Electrónico</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="you@example.com" {...field} />
+                <Input type="email" placeholder="tu@ejemplo.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,7 +105,7 @@ export function ContactForm() {
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone Number (Optional)</FormLabel>
+              <FormLabel>Número de Teléfono (Opcional)</FormLabel>
               <FormControl>
                 <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
               </FormControl>
@@ -118,9 +118,9 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Your Message</FormLabel>
+              <FormLabel>Tu Mensaje</FormLabel>
               <FormControl>
-                <Textarea placeholder="How can we help you today?" rows={5} {...field} />
+                <Textarea placeholder="¿Cómo podemos ayudarte hoy?" rows={5} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -128,7 +128,7 @@ export function ContactForm() {
         />
         <Button type="submit" className="w-full bg-olive-green text-primary-foreground hover:bg-olive-green/90 text-lg py-6" disabled={form.formState.isSubmitting}>
           <Send className="mr-2 h-5 w-5" />
-          {form.formState.isSubmitting ? "Sending..." : "Send Message"}
+          {form.formState.isSubmitting ? "Enviando..." : "Enviar Mensaje"}
         </Button>
       </form>
     </Form>

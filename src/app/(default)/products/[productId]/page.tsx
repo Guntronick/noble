@@ -1,4 +1,4 @@
-"use client"; // Marking as client component because of useState for color/quantity & AddToCartButton
+"use client"; 
 
 import { useState, useEffect } from 'react';
 import { getProductBySlug, products as allProductsStatic } from '@/lib/data';
@@ -15,8 +15,6 @@ import { Twitter, Facebook, Instagram, Mail, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-// This function would typically be a server-side fetch in a real app
-// For this example, it simulates finding a product by slug.
 async function fetchProduct(slug: string): Promise<Product | null> {
   const product = getProductBySlug(slug);
   return product ? Promise.resolve(product) : Promise.resolve(null);
@@ -24,7 +22,7 @@ async function fetchProduct(slug: string): Promise<Product | null> {
 
 
 interface ProductDetailPageProps {
-  params: { productId: string }; // productId here is actually the slug
+  params: { productId: string }; 
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
@@ -48,16 +46,16 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }, [productSlug]);
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-muted-foreground">Loading product details...</p></div>;
+    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-muted-foreground">Cargando detalles del producto...</p></div>;
   }
 
   if (!product) {
-    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Product not found.</p></div>;
+    return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Producto no encontrado.</p></div>;
   }
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
-    const text = `Check out this amazing product: ${product.name}`;
+    const text = `Mira este increíble producto: ${product.name}`;
     let shareUrl = '';
 
     switch (platform) {
@@ -68,8 +66,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
         break;
       case 'instagram':
-        // Instagram sharing is complex and typically requires API or app redirect. This is a placeholder.
-        alert("Share on Instagram by copying the link or using the app.");
+        alert("Comparte en Instagram copiando el enlace o usando la aplicación.");
         return;
       case 'whatsapp':
         shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`;
@@ -91,10 +88,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="space-y-6">
           <h1 className="text-4xl font-bold text-primary font-headline">{product.name}</h1>
           <div className="flex items-center space-x-2">
-            <Badge variant="outline">Category: {product.category}</Badge>
-            <Badge variant="secondary">Code: {product.productCode}</Badge>
-            {product.stock <= 0 && <Badge variant="destructive">Out of Stock</Badge>}
-            {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="bg-yellow-500 text-black">Low Stock</Badge>}
+            <Badge variant="outline">Categoría: {product.category}</Badge>
+            <Badge variant="secondary">Código: {product.productCode}</Badge>
+            {product.stock <= 0 && <Badge variant="destructive">Agotado</Badge>}
+            {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="bg-yellow-500 text-black">Pocas Unidades</Badge>}
           </div>
           <p className="text-3xl font-semibold text-olive-green">${product.price.toFixed(2)}</p>
           <p className="text-muted-foreground leading-relaxed">{product.description}</p>
@@ -107,7 +104,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 <Label htmlFor="color-select" className="text-base font-medium">Color:</Label>
                 <Select value={selectedColor} onValueChange={setSelectedColor}>
                   <SelectTrigger id="color-select" className="w-full md:w-1/2 mt-1">
-                    <SelectValue placeholder="Select a color" />
+                    <SelectValue placeholder="Selecciona un color" />
                   </SelectTrigger>
                   <SelectContent>
                     {product.colors.map((color) => (
@@ -121,7 +118,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             )}
 
             <div>
-              <Label htmlFor="quantity-input" className="text-base font-medium">Quantity:</Label>
+              <Label htmlFor="quantity-input" className="text-base font-medium">Cantidad:</Label>
               <Input
                 id="quantity-input"
                 type="number"
@@ -140,13 +137,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           <Separator />
 
           <div>
-            <h3 className="text-lg font-semibold mb-2 text-primary font-headline">Share this product:</h3>
+            <h3 className="text-lg font-semibold mb-2 text-primary font-headline">Comparte este producto:</h3>
             <div className="flex space-x-2">
-              <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Share on Twitter"><Twitter className="h-5 w-5" /></Button>
-              <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Share on Facebook"><Facebook className="h-5 w-5" /></Button>
-              <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Share on Instagram"><Instagram className="h-5 w-5" /></Button>
-              <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Share on WhatsApp"><MessageSquare className="h-5 w-5" /></Button>
-              <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Share via Email"><Mail className="h-5 w-5" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Compartir en WhatsApp"><MessageSquare className="h-5 w-5" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email"><Mail className="h-5 w-5" /></Button>
             </div>
           </div>
         </div>
@@ -155,10 +152,3 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
-
-// Generate static paths for products if desired (optional for this example)
-// export async function generateStaticParams() {
-//   return allProductsStatic.map((product) => ({
-//     productId: product.slug,
-//   }));
-// }

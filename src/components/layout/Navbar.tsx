@@ -5,10 +5,10 @@ import { ShoppingCart, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/products', label: 'Catalog' },
-  { href: '/categories', label: 'Categories' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/', label: 'Inicio' },
+  { href: '/products', label: 'Catálogo' },
+  { href: '/categories', label: 'Categorías' },
+  { href: '/contact', label: 'Contacto' },
 ];
 
 export function Navbar() {
@@ -28,7 +28,7 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" aria-label="Shopping Cart">
+          <Button variant="ghost" size="icon" aria-label="Carrito de Compras">
             <ShoppingCart className="h-5 w-5" />
           </Button>
           <div className="md:hidden">
@@ -36,7 +36,7 @@ export function Navbar() {
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Menu className="h-6 w-6" />
-                  <span className="sr-only">Toggle menu</span>
+                  <span className="sr-only">Alternar menú</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">

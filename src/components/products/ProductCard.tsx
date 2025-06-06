@@ -38,7 +38,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardContent>
       <CardFooter className="p-4 pt-0">
         <Button asChild className="w-full bg-olive-green text-primary-foreground hover:bg-olive-green/90">
-          <Link href={`/products/${product.slug}`}>View Details</Link>
+          <Link href={`/products/${product.slug}`}>Ver Detalles</Link>
         </Button>
       </CardFooter>
     </Card>

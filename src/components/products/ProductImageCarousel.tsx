@@ -20,7 +20,7 @@ export function ProductImageCarousel({ images, productName, imageClassName, data
   if (!images || images.length === 0) {
     return (
       <div className={cn("aspect-square bg-muted rounded-lg flex items-center justify-center", imageClassName)}>
-        <span className="text-muted-foreground">No Image Available</span>
+        <span className="text-muted-foreground">No Hay Imagen Disponible</span>
       </div>
     );
   }
@@ -42,9 +42,9 @@ export function ProductImageCarousel({ images, productName, imageClassName, data
       <div className={cn("relative aspect-square w-full overflow-hidden rounded-lg shadow-md", imageClassName)}>
         <Image
           src={images[currentIndex]}
-          alt={`${productName} - Image ${currentIndex + 1}`}
+          alt={`${productName} - Imagen ${currentIndex + 1}`}
           layout="fill"
-          objectFit="contain" // 'contain' is often better for product images than 'cover'
+          objectFit="contain"
           className="transition-opacity duration-300"
           data-ai-hint={dataAiHint || productName.toLowerCase().split(' ').slice(0,2).join(' ')}
         />
@@ -55,7 +55,7 @@ export function ProductImageCarousel({ images, productName, imageClassName, data
               size="icon"
               className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 text-foreground rounded-full"
               onClick={handlePrev}
-              aria-label="Previous image"
+              aria-label="Imagen anterior"
             >
               <ChevronLeft className="h-6 w-6" />
             </Button>
@@ -64,7 +64,7 @@ export function ProductImageCarousel({ images, productName, imageClassName, data
               size="icon"
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 text-foreground rounded-full"
               onClick={handleNext}
-              aria-label="Next image"
+              aria-label="Imagen siguiente"
             >
               <ChevronRight className="h-6 w-6" />
             </Button>
@@ -77,7 +77,7 @@ export function ProductImageCarousel({ images, productName, imageClassName, data
                     "h-2 w-2 rounded-full transition-colors",
                     currentIndex === index ? "bg-primary" : "bg-muted-foreground/50 hover:bg-muted-foreground"
                   )}
-                  aria-label={`Go to image ${index + 1}`}
+                  aria-label={`Ir a la imagen ${index + 1}`}
                 />
               ))}
             </div>
@@ -97,7 +97,7 @@ export function ProductImageCarousel({ images, productName, imageClassName, data
             >
               <Image
                 src={image}
-                alt={`${productName} - Thumbnail ${index + 1}`}
+                alt={`${productName} - Miniatura ${index + 1}`}
                 layout="fill"
                 objectFit="cover"
                 className="hover:opacity-80"

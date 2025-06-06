@@ -22,7 +22,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
       <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
         <h3 className="text-2xl font-bold text-white mb-4 font-headline">{category.name}</h3>
         <Button asChild variant="secondary" className="bg-accent text-accent-foreground hover:bg-accent/90">
-          <Link href={`/products?category=${category.slug}`}>View Products</Link>
+          <Link href={`/products?category=${category.slug}`}>Ver Productos</Link>
         </Button>
       </div>
     </div>
