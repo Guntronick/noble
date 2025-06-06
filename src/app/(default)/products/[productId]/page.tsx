@@ -25,6 +25,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger, // Added AlertDialogTrigger here
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
@@ -442,6 +443,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+    
+
     
 
     
