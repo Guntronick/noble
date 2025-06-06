@@ -25,7 +25,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
@@ -40,7 +39,6 @@ interface ProductDetailPageProps {
 
 const LENS_SIZE = 100; 
 const ZOOM_FACTOR = 2.5; 
-const MAX_ZOOM_PANEL_DIM = 400; // Max dimension for the zoom panel
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const router = useRouter();
@@ -58,9 +56,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [showZoom, setShowZoom] = useState(false);
   const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 });
   const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState({ x: 0, y: 0 });
+  
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const purchaseBoxRef = useRef<HTMLDivElement>(null);
+  const mainGridRef = useRef<HTMLDivElement>(null);
+
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
-  const [zoomPanelDynamicStyle, setZoomPanelDynamicStyle] = useState<React.CSSProperties>({});
+  const [zoomPanelStyle, setZoomPanelStyle] = useState<React.CSSProperties>({});
 
 
   useEffect(() => {
@@ -86,80 +88,37 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       const rect = imageContainerRef.current.getBoundingClientRect();
       setImageDimensions({ width: rect.width, height: rect.height });
     }
-  }, [currentImageIndex, product, showZoom, product?.images]); // Added product.images to deps for safety on image change
+  }, [currentImageIndex, product, showZoom]);
 
   useEffect(() => {
-    if (!showZoom || !imageContainerRef.current || imageDimensions.width === 0 || !product) {
-      setZoomPanelDynamicStyle(prev => ({ ...prev, display: 'none' }));
-      return;
-    }
-  
-    const imageContainer = imageContainerRef.current;
-    const parentOfZoomPanel = imageContainer.offsetParent as HTMLElement;
-  
-    if (!parentOfZoomPanel) {
-      setZoomPanelDynamicStyle(prev => ({ ...prev, display: 'none' }));
+    if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || !product) {
+      setZoomPanelStyle(prev => ({ ...prev, display: 'none' }));
       return;
     }
   
     const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
-    const gap = 16; 
-
-    // Determine display dimensions for the zoom panel
-    let displayPanelWidth = imageDimensions.width;
-    let displayPanelHeight = imageDimensions.height;
-
-    if (imageDimensions.width > MAX_ZOOM_PANEL_DIM) {
-        displayPanelWidth = MAX_ZOOM_PANEL_DIM;
-        displayPanelHeight = (MAX_ZOOM_PANEL_DIM / imageDimensions.width) * imageDimensions.height;
-    }
-    if (displayPanelHeight > MAX_ZOOM_PANEL_DIM) { // Check height if width was already < MAX_ZOOM_PANEL_DIM or after width adjustment
-        displayPanelHeight = MAX_ZOOM_PANEL_DIM;
-        // Recalculate width to maintain aspect ratio if height was the limiter
-        displayPanelWidth = (MAX_ZOOM_PANEL_DIM / imageDimensions.height) * imageDimensions.width;
-    }
     
-    // Ensure displayPanelWidth is not larger than original after adjustments
-    displayPanelWidth = Math.min(displayPanelWidth, imageDimensions.width);
-    displayPanelHeight = Math.min(displayPanelHeight, imageDimensions.height);
-
-
-    const imageRect = imageContainer.getBoundingClientRect(); 
-    const parentRect = parentOfZoomPanel.getBoundingClientRect(); 
-  
-    let calculatedLeftStyle: number; 
-  
-    const spaceToRight = window.innerWidth - imageRect.right - gap;
-    if (spaceToRight >= displayPanelWidth) {
-      calculatedLeftStyle = imageContainer.offsetLeft + imageDimensions.width + gap;
-    } else {
-      const spaceToLeft = imageRect.left - gap; 
-      if (spaceToLeft >= displayPanelWidth) { 
-        calculatedLeftStyle = imageContainer.offsetLeft - displayPanelWidth - gap;
-      } else {
-        // Fallback: Align to the right edge of the viewport, relative to parent
-        let viewportAlignedLeft = (window.innerWidth - displayPanelWidth - gap); // Absolute left in viewport
-        calculatedLeftStyle = viewportAlignedLeft - parentRect.left; // Relative to parent
-      }
-    }
-  
-    const calculatedTopStyle = imageContainer.offsetTop;
-  
-    setZoomPanelDynamicStyle({
+    const panelWidth = purchaseBoxRef.current.offsetWidth;
+    const panelHeight = purchaseBoxRef.current.offsetHeight;
+    const panelLeft = purchaseBoxRef.current.offsetLeft;
+    const panelTop = purchaseBoxRef.current.offsetTop;
+    
+    setZoomPanelStyle({
       display: 'block', 
       position: 'absolute',
-      left: `${calculatedLeftStyle}px`,
-      top: `${calculatedTopStyle}px`,
-      width: `${displayPanelWidth}px`,
-      height: `${displayPanelHeight}px`,
+      left: `${panelLeft}px`,
+      top: `${panelTop}px`,
+      width: `${panelWidth}px`,
+      height: `${panelHeight}px`,
       backgroundImage: `url(${mainImageSrc})`,
       backgroundPosition: `${zoomBackgroundPosition.x}px ${zoomBackgroundPosition.y}px`,
       backgroundSize: `${imageDimensions.width * ZOOM_FACTOR}px ${imageDimensions.height * ZOOM_FACTOR}px`,
       backgroundRepeat: 'no-repeat',
-      zIndex: 50, // Ensure it's on top
-      border: '1px solid #ccc', // Add a border for clarity
-      boxShadow: '0 4px 8px rgba(0,0,0,0.2)', // Add some shadow
-      backgroundColor: 'white', // Ensure background is opaque
+      zIndex: 50, 
+      border: '1px solid hsl(var(--border))', 
+      boxShadow: '0 4px 12px rgba(0,0,0,0.3)', 
+      backgroundColor: 'hsl(var(--background))', 
+      overflow: 'hidden',
     });
   
   }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition, ZOOM_FACTOR]);
@@ -224,13 +183,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!imageContainerRef.current || imageDimensions.width === 0 || imageDimensions.height === 0) return;
+    if (!imageContainerRef.current || !purchaseBoxRef.current || imageDimensions.width === 0 || imageDimensions.height === 0) return;
 
     const rect = imageContainerRef.current.getBoundingClientRect();
     let x = e.clientX - rect.left;
     let y = e.clientY - rect.top;
 
-    // Ensure x and y are within image bounds
     x = Math.max(0, Math.min(x, imageDimensions.width));
     y = Math.max(0, Math.min(y, imageDimensions.height));
 
@@ -241,17 +199,20 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     newLensY = Math.max(0, Math.min(newLensY, imageDimensions.height - LENS_SIZE));
     
     setLensPosition({ x: newLensX, y: newLensY });
+    
+    const panelWidth = purchaseBoxRef.current.offsetWidth;
+    const panelHeight = purchaseBoxRef.current.offsetHeight;
 
-    const bgX = -(newLensX * ZOOM_FACTOR) + ( (imageDimensions.width > MAX_ZOOM_PANEL_DIM ? MAX_ZOOM_PANEL_DIM : imageDimensions.width) / 2 ) - (LENS_SIZE /2 * ZOOM_FACTOR) ;
-    const bgY = -(newLensY * ZOOM_FACTOR) + ( (imageDimensions.height > MAX_ZOOM_PANEL_DIM ? MAX_ZOOM_PANEL_DIM : imageDimensions.height) / 2 ) - (LENS_SIZE /2 * ZOOM_FACTOR) ;
+    const bgX = -(newLensX * ZOOM_FACTOR) + (panelWidth / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
+    const bgY = -(newLensY * ZOOM_FACTOR) + (panelHeight / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
     setZoomBackgroundPosition({ x: bgX, y: bgY });
   };
 
   const handleMouseEnter = () => {
-    if (imageContainerRef.current) { 
+    if (imageContainerRef.current && purchaseBoxRef.current) { 
         const rect = imageContainerRef.current.getBoundingClientRect();
         setImageDimensions({ width: rect.width, height: rect.height }); 
-        if (rect.width > 0) { // Only show zoom if image has dimensions
+        if (rect.width > 0) { 
             setShowZoom(true);
         }
     }
@@ -271,7 +232,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(100px,0.7fr)_3fr_2fr] xl:grid-cols-[minmax(120px,0.5fr)_3fr_2fr] gap-6 lg:gap-8 items-start">
+      <div ref={mainGridRef} className="grid grid-cols-1 lg:grid-cols-[minmax(100px,0.7fr)_3fr_2fr] xl:grid-cols-[minmax(120px,0.5fr)_3fr_2fr] gap-6 lg:gap-8 items-start relative">
         
         <div className="self-start hidden lg:flex lg:flex-col space-y-3 pr-2">
           {product.images.map((img, index) => (
@@ -288,7 +249,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 src={img} 
                 alt={`${product.name} miniatura ${index + 1}`} 
                 fill
-                sizes="(max-width: 1023px) 0vw, 100px" // Small size for thumbnails
+                sizes="(max-width: 1023px) 0vw, 100px" 
                 className="object-cover hover:opacity-80 transition-opacity" 
                 data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
               />
@@ -296,11 +257,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           ))}
         </div>
 
-        {/* Main Content: Image + Details */}
-        <div className="lg:col-start-2 space-y-6 relative"> {/* This is the offsetParent for the zoom panel */}
+        <div className="lg:col-start-2 space-y-6">
             <div 
               ref={imageContainerRef}
-              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl" // Removed max-w and mx-auto here
+              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -316,7 +276,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               />
               {showZoom && imageDimensions.width > 0 && (
                 <div 
-                  className="absolute border-2 border-gray-400 bg-white/30 pointer-events-none"
+                  className="absolute border-2 border-primary/50 bg-white/20 pointer-events-none"
                   style={{
                     left: `${lensPosition.x}px`,
                     top: `${lensPosition.y}px`,
@@ -328,15 +288,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               )}
             </div>
             
-            {/* Zoom Panel - Sibling to imageContainerRef, positioned by JS */}
-            {showZoom && imageDimensions.width > 0 && product && (
-              <div
-                className="absolute hidden lg:block pointer-events-none" // Default hidden, JS controls display and positioning
-                style={zoomPanelDynamicStyle}
-              />
-            )}
-            
-            {/* Mobile Thumbnails */}
             <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
               {product.images.map((img, index) => (
                 <button
@@ -360,7 +311,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               ))}
             </div>
 
-            {/* Product Information */}
             <div className="mt-6 space-y-4">
               <div className="flex items-center space-x-2 flex-wrap">
                 <Badge variant="outline">Categoría: {product.category}</Badge>
@@ -398,8 +348,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </div>
         </div>
 
-        {/* Purchase Box Column */}
-        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
+        <div ref={purchaseBoxRef} className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
           <p className="text-lg font-semibold">
             {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
           </p>
@@ -422,7 +371,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                         setQuantity(1);
                     } else if (val > currentStock && currentStock > 0) { 
                         setQuantity(currentStock);
-                    } else if (currentStock === 0) { // Should not happen if input is disabled by stock
+                    } else if (currentStock === 0) { 
                         setQuantity(1); 
                     } else {
                         setQuantity(val);
@@ -478,6 +427,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             </div>
           </div>
         </div>
+
+        {showZoom && imageDimensions.width > 0 && product && purchaseBoxRef.current && (
+          <div
+            className="absolute hidden lg:block pointer-events-none" 
+            style={zoomPanelStyle}
+          />
+        )}
       </div>
       
       <Separator className="my-12 lg:my-16" />
@@ -486,5 +442,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+    
 
     
