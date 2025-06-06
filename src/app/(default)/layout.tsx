@@ -1,5 +1,7 @@
+
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { FloatingWhatsAppButton } from '@/components/layout/FloatingWhatsAppButton';
 
 export default function DefaultLayout({
   children,
@@ -11,6 +13,7 @@ export default function DefaultLayout({
       <Navbar />
       <main className="flex-grow">{children}</main>
       <Footer />
+      <FloatingWhatsAppButton />
     </div>
   );
 }
