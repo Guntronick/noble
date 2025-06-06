@@ -25,6 +25,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger, // Added missing import
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
@@ -121,7 +122,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       overflow: 'hidden',
     });
   
-  }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition]); // Removed ZOOM_FACTOR as it's constant
+  }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition]);
 
   const handleShare = (platform: string) => {
     if (typeof window === "undefined" || !product) return;
@@ -151,8 +152,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const handleRequestQuoteOnly = () => {
     if (!product) return;
-    console.log("Solicitando presupuesto solo para:", product.name, quantity, selectedColor);
-    router.push('/cart'); 
+    const addedToCart = addItemToCartStorage(); // Add item to cart first
+    if (addedToCart) {
+      console.log("Solicitando presupuesto solo para:", product.name, quantity, selectedColor);
+      router.push('/cart'); 
+    }
     setIsQuoteModalOpen(false);
   };
   
@@ -487,3 +491,5 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
+
+    
