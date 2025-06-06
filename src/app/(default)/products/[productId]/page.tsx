@@ -25,7 +25,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger, // Added AlertDialogTrigger here
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
@@ -92,7 +92,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }, [currentImageIndex, product, showZoom]);
 
   useEffect(() => {
-    if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || !product) {
+    if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product) {
       setZoomPanelStyle(prev => ({ ...prev, display: 'none' }));
       return;
     }
@@ -100,7 +100,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
     
     const panelWidth = purchaseBoxRef.current.offsetWidth;
-    const panelHeight = purchaseBoxRef.current.offsetHeight;
+    const panelHeight = imageDimensions.height; // Use main image's height
+    
     const panelLeft = purchaseBoxRef.current.offsetLeft;
     const panelTop = purchaseBoxRef.current.offsetTop;
     
@@ -151,7 +152,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   };
 
   const handleRequestQuoteOnly = () => {
-    console.log("Solicitando presupuesto solo para:", product?.name, quantity, selectedColor);
+    if (!product) return;
+     // Simulate adding the current product to a "quote cart" or similar logic
+    console.log("Solicitando presupuesto solo para:", product.name, quantity, selectedColor);
+    // For now, just navigate to cart page. In a real app, you'd add to cart/quote state here.
     router.push('/cart'); 
     setIsQuoteModalOpen(false);
   };
@@ -164,6 +168,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         description: "Por favor, elige un color antes de añadir al carrito.",
         variant: "destructive",
       });
+      setIsQuoteModalOpen(false); // Close modal even if there's an error
       return;
     }
     const currentQuantity = Number.isNaN(quantity) || quantity < 1 ? 1 : quantity;
@@ -173,6 +178,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         description: "Por favor, introduce una cantidad mayor que cero.",
         variant: "destructive",
       });
+      setIsQuoteModalOpen(false); // Close modal
       return;
     }
     console.log(`Añadido al carrito: ${product.name}, Color: ${selectedColor || 'N/A'}, Cantidad: ${currentQuantity}`);
@@ -202,7 +208,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     setLensPosition({ x: newLensX, y: newLensY });
     
     const panelWidth = purchaseBoxRef.current.offsetWidth;
-    const panelHeight = purchaseBoxRef.current.offsetHeight;
+    const panelHeight = imageDimensions.height; // Use main image's height
 
     const bgX = -(newLensX * ZOOM_FACTOR) + (panelWidth / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
     const bgY = -(newLensY * ZOOM_FACTOR) + (panelHeight / 2) - (LENS_SIZE / 2 * ZOOM_FACTOR) ;
@@ -213,7 +219,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     if (imageContainerRef.current && purchaseBoxRef.current) { 
         const rect = imageContainerRef.current.getBoundingClientRect();
         setImageDimensions({ width: rect.width, height: rect.height }); 
-        if (rect.width > 0) { 
+        if (rect.width > 0 && rect.height > 0) { // Ensure dimensions are valid
             setShowZoom(true);
         }
     }
@@ -261,7 +267,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         <div className="lg:col-start-2 space-y-6">
             <div 
               ref={imageContainerRef}
-              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl"
+              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl" // aspect-[6/5] for 600x500 like
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
@@ -275,7 +281,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                 priority 
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
               />
-              {showZoom && imageDimensions.width > 0 && (
+              {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && (
                 <div 
                   className="absolute border-2 border-primary/50 bg-white/20 pointer-events-none"
                   style={{
@@ -393,7 +399,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   size="lg" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-base py-3" 
                   disabled={product.stock <= 0}
-                  onClick={(e) => { if (product.stock <= 0) e.preventDefault(); }}
+                  onClick={(e) => { 
+                    if (product.stock <= 0) {
+                      e.preventDefault(); 
+                    } else {
+                      // setIsQuoteModalOpen(true); // This is implicitly handled by AlertDialogTrigger
+                    }
+                  }}
                 >
                   Solicitar Presupuesto
                 </Button>
@@ -429,7 +441,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           </div>
         </div>
 
-        {showZoom && imageDimensions.width > 0 && product && purchaseBoxRef.current && (
+        {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && product && purchaseBoxRef.current && (
           <div
             className="absolute hidden lg:block pointer-events-none" 
             style={zoomPanelStyle}
@@ -443,8 +455,4 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     </div>
   );
 }
-    
-
-    
-
     
