@@ -13,11 +13,10 @@ interface AddToCartButtonProps {
   product: Product;
   selectedColor: string;
   quantity: number; 
-  variant?: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link" | null | undefined;
   className?: string;
 }
 
-export function AddToCartButton({ product, selectedColor, quantity: rawQuantityFromProp, variant, className }: AddToCartButtonProps) {
+export function AddToCartButton({ product, selectedColor, quantity: rawQuantityFromProp, className }: AddToCartButtonProps) {
   const { toast } = useToast();
 
   const getValidatedQuantity = (currentQty: number): number => {
@@ -51,7 +50,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
         toast({
           title: "Cantidad ajustada",
           description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
-          variant: "default", // Can be 'default' or a custom variant for info
+          variant: "default",
         });
       } else {
         toast({
@@ -105,19 +104,17 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     });
   };
   
-  // Botones CTA: Dorado suave bg, texto blanco. Hover: Azul petróleo bg, texto blanco.
-  // Usamos --accent para Dorado, --primary para Azul Petróleo.
-  const ctaClassName = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
+  // Estilo para "Agregar al carrito": Verde Oliva Oscuro -> Verde Oliva más oscuro
+  const addToCartButtonClass = "bg-success text-success-foreground hover:bg-[#586A30]";
 
   return (
     <Button 
       onClick={handleAddToCart} 
       size="lg" 
-      variant={variant || "default"} // Si no se pasa variante, usa una que podamos sobreescribir o la default.
       className={cn(
         "w-full flex items-center gap-2 text-base py-3",
-        variant ? className : ctaClassName, // Aplica CTA si no hay variante específica
-        className // Permite clases adicionales
+        addToCartButtonClass,
+        className 
       )}
       disabled={product.stock <= 0}
     >

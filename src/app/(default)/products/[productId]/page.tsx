@@ -323,7 +323,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
   
   const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
-  const ctaButtonClass = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
+  const requestQuoteButtonClass = "bg-accent text-accent-foreground hover:bg-[#8E5527]"; // Cobre oscuro -> Cobre más oscuro
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -405,18 +405,18 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               ))}
             </div>
 
-            <div className="mt-6 space-y-4 p-6 bg-[#F1F3F5] rounded-lg"> {/* Bloque intercalado */}
+            <div className="mt-6 space-y-4 p-6 bg-[#F1F3F5] rounded-lg">
               <div className="flex items-center space-x-2 flex-wrap">
-                <Badge variant="secondary">Categoría: {product.category}</Badge> {/* Usar Verde Salvia */}
+                <Badge variant="secondary">Categoría: {product.category}</Badge> {/* Verde Salvia */}
                 <Badge variant="outline">Código: {product.productCode}</Badge>
               </div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1> {/* Negro Carbón */}
-              <p className="text-4xl lg:text-5xl font-semibold text-accent">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p> {/* Dorado Suave */}
+              <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
+              <p className="text-4xl lg:text-5xl font-semibold text-price">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p> {/* Verde Brillante */}
               
               <Separator/>
               
-              <h2 className="text-xl font-semibold mt-4 mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2> {/* Negro Carbón */}
-              <div className="text-muted-foreground leading-relaxed space-y-2"> {/* Gris Grafito */}
+              <h2 className="text-xl font-semibold mt-4 mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
+              <div className="text-muted-foreground leading-relaxed space-y-2">
                   <p>{product.description}</p>
               </div>
               
@@ -424,7 +424,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
               {product.colors.length > 0 && (
                 <div>
-                  <Label htmlFor="color-select" className="text-base font-medium text-foreground">Color:</Label> {/* Negro Carbón */}
+                  <Label htmlFor="color-select" className="text-base font-medium text-foreground">Color:</Label>
                   <Select value={selectedColor} onValueChange={setSelectedColor} disabled={product.stock <= 0}>
                     <SelectTrigger id="color-select" className="w-full md:w-2/3 mt-1">
                       <SelectValue placeholder="Selecciona un color" />
@@ -443,15 +443,15 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         </div>
 
         <div ref={purchaseBoxRef} className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
-          <p className="text-lg font-semibold text-foreground"> {/* Negro Carbón */}
+          <p className="text-lg font-semibold text-foreground">
             {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
-            {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>} {/* Gris Grafito */}
+            {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
           </p>
           {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="mt-1">¡Pocas unidades!</Badge>}
          
           {product.stock > 0 && (
             <div>
-              <Label htmlFor="quantity-input-purchasebox" className="text-base font-medium text-foreground">Cantidad:</Label> {/* Negro Carbón */}
+              <Label htmlFor="quantity-input-purchasebox" className="text-base font-medium text-foreground">Cantidad:</Label>
               <div className="flex items-center space-x-2 mt-1">
                 <Input 
                   id="quantity-input-purchasebox" 
@@ -475,7 +475,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <AlertDialogTrigger asChild>
                 <Button 
                   size="lg" 
-                  className={cn("w-full text-base py-3", ctaButtonClass)}
+                  className={cn("w-full text-base py-3", requestQuoteButtonClass)} // Cobre
                   disabled={product.stock <= 0}
                 >
                   Solicitar Presupuesto
@@ -492,31 +492,32 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   <X className="h-4 w-4" />
                 </Button>
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-foreground">Confirmar Acción</AlertDialogTitle> {/* Negro Carbón */}
-                  <AlertDialogDescription className="text-muted-foreground"> {/* Gris Grafito */}
+                  <AlertDialogTitle className="text-foreground">Confirmar Acción</AlertDialogTitle>
+                  <AlertDialogDescription className="text-muted-foreground">
                     ¿Desea solicitar el presupuesto solo de este producto o desea agregar más productos al carrito?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-2 sm:gap-0 flex-col sm:flex-row">
-                  <AlertDialogAction onClick={handleRequestQuoteOnly} className={cn("w-full sm:w-auto", ctaButtonClass)}>Solicitar presupuesto</AlertDialogAction>
-                  <AlertDialogCancel onClick={handleAddToCartAndContinue} className="w-full sm:w-auto mt-2 sm:mt-0 bg-secondary text-secondary-foreground hover:bg-secondary/80">Agregar al carrito</AlertDialogCancel> {/* Verde Salvia */}
+                  <AlertDialogAction onClick={handleRequestQuoteOnly} className={cn("w-full sm:w-auto", requestQuoteButtonClass)}>Solicitar presupuesto</AlertDialogAction> {/* Cobre */}
+                  <AlertDialogCancel onClick={handleAddToCartAndContinue} className={cn("w-full sm:w-auto mt-2 sm:mt-0", "bg-success text-success-foreground hover:bg-[#586A30]")}>Agregar al carrito</AlertDialogCancel> {/* Verde Oliva */}
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
             
-            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} className={ctaButtonClass}/>
+            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} /> {/* Verde Oliva por defecto */}
           </div>
           
           <Separator className="my-4"/>
           
           <div>
-            <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3> {/* Negro Carbón */}
+            <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3>
             <div className="flex space-x-2 flex-wrap gap-y-2">
-              <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5 text-accent" /></Button> {/* Icono Dorado */}
-              <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5 text-accent" /></Button> {/* Icono Dorado */}
-              <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5 text-accent" /></Button> {/* Icono Dorado */}
-              <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Compartir en WhatsApp"><MessageSquare className="h-5 w-5 text-accent" /></Button> {/* Icono Dorado */}
-              <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email"><Mail className="h-5 w-5 text-accent" /></Button> {/* Icono Dorado */}
+              {/* Iconos de compartir ahora usan color de acento (Cobre) */}
+              <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5 text-accent" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5 text-accent" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5 text-accent" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Compartir en WhatsApp"><MessageSquare className="h-5 w-5 text-accent" /></Button>
+              <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email"><Mail className="h-5 w-5 text-accent" /></Button>
             </div>
           </div>
         </div>

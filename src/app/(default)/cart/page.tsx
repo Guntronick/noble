@@ -14,9 +14,9 @@ import Link from 'next/link';
 import { X as XIcon, Minus, Plus, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const ITEM_REMOVAL_ANIMATION_DURATION = 300; // ms for item sliding out
-const TOAST_TIMER_DURATION = 1200; // ms for how long the toast is visible
-const TOAST_ANIMATION_DURATION = 500; // ms for toast fade/scale animation
+const ITEM_REMOVAL_ANIMATION_DURATION = 300; 
+const TOAST_TIMER_DURATION = 1200; 
+const TOAST_ANIMATION_DURATION = 500; 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 
 export default function CartPage() {
@@ -37,7 +37,6 @@ export default function CartPage() {
   const progressBarRef = useRef<HTMLDivElement>(null);
   const animationFrameIdRef = useRef<number | null>(null);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedCartItems = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
@@ -47,14 +46,13 @@ export default function CartPage() {
           setCartItems(parsedItems.map(item => ({ ...item, isRemoving: false })));
         } catch (error) {
           console.error("Error parsing cart items from localStorage:", error);
-          localStorage.removeItem(LOCAL_STORAGE_CART_KEY); // Clear corrupted data
+          localStorage.removeItem(LOCAL_STORAGE_CART_KEY); 
         }
       }
-      setIsCartLoaded(true); // Mark cart as loaded
+      setIsCartLoaded(true); 
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes, but only after initial load
   useEffect(() => {
     if (typeof window !== 'undefined' && isCartLoaded) {
       const itemsToStore = cartItems.map(({ isRemoving, ...rest }) => rest);
@@ -78,7 +76,7 @@ export default function CartPage() {
     if (showRemovedProductToast && progressBarRef.current) {
       let startTime: number | null = null;
       const barElement = progressBarRef.current;
-      barElement.style.width = '100%'; // Reset width
+      barElement.style.width = '100%'; 
       
       const animate = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
@@ -160,7 +158,8 @@ export default function CartPage() {
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
   };
   
-  const ctaButtonClass = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
+  // Botón "Solicitar Presupuesto" (Realizar Pedido): Cobre Oscuro -> Cobre más oscuro
+  const requestQuoteButtonClass = "bg-accent text-accent-foreground hover:bg-[#8E5527]";
 
   if (!isCartLoaded) {
     return <div className="container mx-auto px-4 py-12 text-center">Cargando carrito...</div>;
@@ -344,7 +343,7 @@ export default function CartPage() {
                         </div>
                       </div>
                     </div>
-                    <span className="font-medium text-foreground text-right min-w-[80px]">
+                    <span className="font-medium text-price text-right min-w-[80px]"> {/* Precio usa text-price */}
                       ${(item.price * item.quantityInCart).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -353,9 +352,9 @@ export default function CartPage() {
               <Separator />
               <div className="flex justify-between font-semibold text-foreground">
                 <span>Subtotal</span>
-                <span>${subtotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span className="text-price">${subtotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span> {/* Subtotal usa text-price */}
               </div>
-              <div className="flex justify-between text-xl font-bold text-accent">
+              <div className="flex justify-between text-xl font-bold text-price"> {/* Total usa text-price */}
                 <span>Total</span>
                 <span>${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
@@ -364,7 +363,7 @@ export default function CartPage() {
                 <p className="font-semibold text-foreground">Solicitar Presupuesto</p>
                 <p>No efectuaremos cargos de ningún tipo. En breve te enviaremos el presupuesto por los productos solicitados.</p>
               </div>
-              <Button type="submit" size="lg" className={cn("w-full mt-6 text-base py-3", ctaButtonClass)} disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
+              <Button type="submit" size="lg" className={cn("w-full mt-6 text-base py-3", requestQuoteButtonClass)} disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
                 REALIZAR EL PEDIDO
               </Button>
             </CardContent>

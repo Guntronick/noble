@@ -73,7 +73,8 @@ export function ContactForm() {
     }
   };
 
-  const ctaButtonClass = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
+  // General CTA: Azul Petróleo base, hover Azul Petróleo más oscuro/claro
+  const primaryCtaButtonClass = "bg-primary text-primary-foreground hover:bg-primary/90";
 
   return (
     <Form {...form}>
@@ -83,7 +84,7 @@ export function ContactForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-foreground">Nombre Completo</FormLabel> {/* Negro Carbón */}
+              <FormLabel className="text-foreground">Nombre Completo</FormLabel>
               <FormControl>
                 <Input placeholder="Juan Pérez" {...field} />
               </FormControl>
@@ -96,7 +97,7 @@ export function ContactForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-foreground">Correo Electrónico</FormLabel> {/* Negro Carbón */}
+              <FormLabel className="text-foreground">Correo Electrónico</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="tu@ejemplo.com" {...field} />
               </FormControl>
@@ -109,7 +110,7 @@ export function ContactForm() {
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-foreground">Número de Teléfono (Opcional)</FormLabel> {/* Negro Carbón */}
+              <FormLabel className="text-foreground">Número de Teléfono (Opcional)</FormLabel>
               <FormControl>
                 <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
               </FormControl>
@@ -122,7 +123,7 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-foreground">Tu Mensaje</FormLabel> {/* Negro Carbón */}
+              <FormLabel className="text-foreground">Tu Mensaje</FormLabel>
               <FormControl>
                 <Textarea placeholder="¿Cómo podemos ayudarte hoy?" rows={5} {...field} />
               </FormControl>
@@ -130,7 +131,7 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className={cn("w-full text-lg py-6", ctaButtonClass)} disabled={form.formState.isSubmitting}>
+        <Button type="submit" className={cn("w-full text-lg py-6", primaryCtaButtonClass)} disabled={form.formState.isSubmitting}>
           <Send className="mr-2 h-5 w-5" />
           {form.formState.isSubmitting ? "Enviando..." : "Enviar Mensaje"}
         </Button>

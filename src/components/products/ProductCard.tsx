@@ -12,7 +12,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const ctaButtonClass = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
+  // General CTA: Azul Petróleo base, hover Azul Petróleo más oscuro/claro
+  const primaryCtaButtonClass = "bg-primary text-primary-foreground hover:bg-primary/90";
   return (
     <Card className="overflow-hidden bg-card text-card-foreground shadow-lg hover:shadow-[0_4px_15px_rgba(31,59,77,0.2)] transition-shadow duration-300 flex flex-col h-full">
       <CardHeader className="p-0">
@@ -35,12 +36,12 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardTitle>
         <p className="text-sm text-muted-foreground mb-2 h-10 overflow-hidden line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between">
-          <p className="text-xl font-semibold text-accent">${product.price.toFixed(2)}</p> {/* Dorado Suave */}
+          <p className="text-xl font-semibold text-price">${product.price.toFixed(2)}</p> {/* Usa text-price (Verde Brillante) */}
           <Badge variant="secondary">{product.category}</Badge> {/* Verde Salvia */}
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button asChild className={cn("w-full", ctaButtonClass)}>
+        <Button asChild className={cn("w-full", primaryCtaButtonClass)}>
           <Link href={`/products/${product.slug}`}>Ver Detalles</Link>
         </Button>
       </CardFooter>

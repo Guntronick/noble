@@ -5,95 +5,104 @@
 
 @layer base {
   :root {
-    /* Paleta Noble - Tema Claro Actualizada */
-    --background: 210 17% 98%; /* Blanco humo #F8F9FA */
-    --foreground: 210 10% 15%; /* Negro carbón #212529 */
+    /* Paleta Noble - Basada en la última especificación */
+    --background: 210 20% 98%; /* Blanco Humo #F8F9FA */
+    --foreground: 208 12% 15%; /* Negro Carbón #212529 */
 
     --card: 0 0% 100%; /* Blanco #FFFFFF */
-    --card-foreground: 210 10% 15%; /* Negro carbón #212529 */
+    --card-foreground: 208 12% 15%; /* Negro Carbón #212529 */
 
     --popover: 0 0% 100%; /* Blanco #FFFFFF */
-    --popover-foreground: 210 10% 15%; /* Negro carbón #212529 */
+    --popover-foreground: 208 12% 15%; /* Negro Carbón #212529 */
 
-    --primary: 199 44% 21%; /* Azul petróleo #1F3B4D */
+    --primary: 205 44% 21%; /* Azul Petróleo #1F3B4D */
     --primary-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
-    --secondary: 124 16% 67%; /* Verde salvia #9DBA9D */
-    --secondary-foreground: 210 10% 15%; /* Negro carbón #212529 */
+    --secondary: 145 25% 60%; /* Verde Salvia #9DBA9D */
+    --secondary-foreground: 208 12% 15%; /* Negro Carbón #212529 */
 
-    --muted: 210 16% 93%; /* Gris claro #E9ECEF (cercano a #F1F3F5) */
-    --muted-foreground: 208 7% 46%; /* Gris grafito #6C757D */
+    --muted: 210 16% 93%; /* Gris claro #E9ECEF (similar a #F1F3F5 para bloques) */
+    --muted-foreground: 210 9% 40%; /* Gris Grafito #6C757D */
 
-    --accent: 29 57% 44%; /* Cobre oscuro #B26E30 */
+    --accent: 29 57% 44%; /* Cobre Oscuro #B26E30 (para "Solicitar Presupuesto") */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF */
+
+    --success-bg: 80 33% 36%; /* Verde Oliva Oscuro #6E7C3D (para "Agregar al carrito") */
+    --success-foreground: 0 0% 100%; /* Blanco #FFFFFF */
+    
+    --price-text-color: 87 45% 44%; /* Verde Brillante #7AA33F (para precios) */
 
     --destructive: 0 72% 51%; /* Rojo estándar */
     --destructive-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
     --border: 210 14% 89%; /* Gris claro #DEE2E6 */
-    --input: 210 14% 96%; /* Ligeramente diferente al blanco para inputs #F0F3F5 */
-    --ring: 199 44% 21%; /* Azul petróleo #1F3B4D para focus rings */
+    --input: 210 14% 96%; 
+    --ring: 205 44% 21%; /* Azul Petróleo para focus rings por defecto */
 
     --radius: 0.5rem;
 
-    /* Chart Colors */
-    --chart-1: 199 44% 21%; /* Azul Petróleo (Primary) */
-    --chart-2: 29 57% 44%; /* Cobre oscuro (Accent) */
-    --chart-3: 124 16% 67%; /* Verde Salvia (Secondary) */
-    --chart-4: 208 7% 46%;  /* Gris Grafito (Muted Foreground) */
-    --chart-5: 210 10% 35%; /* Un gris más oscuro para variedad */
+    /* Chart Colors - pueden ajustarse para que coincidan mejor si se usan */
+    --chart-1: 205 44% 21%; /* Azul Petróleo */
+    --chart-2: 29 57% 44%;  /* Cobre Oscuro */
+    --chart-3: 145 25% 60%; /* Verde Salvia */
+    --chart-4: 80 33% 36%;  /* Verde Oliva Oscuro */
+    --chart-5: 87 45% 44%;  /* Verde Brillante (Precio) */
 
     /* Sidebar specific vars for light theme */
-    --sidebar-background: 210 17% 96%; 
-    --sidebar-foreground: 210 10% 15%; 
-    --sidebar-primary: 199 44% 21%; 
+    --sidebar-background: 210 20% 96%; 
+    --sidebar-foreground: 208 12% 15%; 
+    --sidebar-primary: 205 44% 21%; 
     --sidebar-primary-foreground: 0 0% 100%; 
-    --sidebar-accent: 29 57% 44%; /* Cobre oscuro */
+    --sidebar-accent: 29 57% 44%; 
     --sidebar-accent-foreground: 0 0% 100%; 
     --sidebar-border: 210 14% 85%; 
-    --sidebar-ring: 199 44% 21%; 
+    --sidebar-ring: 205 44% 21%; 
   }
 
   .dark {
-    /* Paleta Noble - Tema Oscuro (Acentos pueden necesitar revisión si el cobre oscuro no funciona aquí) */
+    /* Paleta Noble - Tema Oscuro (Ajustar según necesidad) */
     --background: 208 24% 10%; /* Azul petróleo muy oscuro/grisáceo #13171A */
-    --foreground: 210 17% 95%; /* Blanco humo claro #F0F3F5 */
+    --foreground: 210 20% 95%; /* Blanco humo claro #F0F3F5 */
 
     --card: 208 20% 14%; /* Gris oscuro #1A1D21 */
-    --card-foreground: 210 17% 95%; /* Blanco humo claro */
+    --card-foreground: 210 20% 95%;
 
-    --popover: 208 20% 14%; /* Gris oscuro */
-    --popover-foreground: 210 17% 95%; /* Blanco humo claro */
+    --popover: 208 20% 14%;
+    --popover-foreground: 210 20% 95%;
 
-    --primary: 199 40% 55%; /* Azul petróleo claro #6184A1 */
-    --primary-foreground: 0 0% 100%; /* Blanco #FFFFFF */
+    --primary: 205 40% 55%; /* Azul petróleo claro #6184A1 */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 124 25% 75%; /* Verde salvia claro #B2D1B2 */
-    --secondary-foreground: 210 10% 15%; /* Negro carbón (para contraste en verde claro) */
+    --secondary: 145 30% 65%; /* Verde salvia claro #A8C6A8 */
+    --secondary-foreground: 208 12% 15%;
 
     --muted: 208 18% 20%; /* Gris medio oscuro #2A2F33 */
     --muted-foreground: 210 15% 65%; /* Gris grafito claro #949CA4 */
 
-    /* El acento dorado original para tema oscuro se mantiene por ahora, ya que el cobre oscuro es muy similar al fondo oscuro */
-    --accent: 45 66% 58%; /* Dorado suave, ligeramente más brillante #DBB957 */
-    --accent-foreground: 210 10% 15%; /* Negro carbón (para contraste en dorado) */
-    
-    --destructive: 0 60% 55%; /* Rojo para tema oscuro */
-    --destructive-foreground: 0 0% 100%; /* Blanco */
+    --accent: 29 50% 50%; /* Cobre Oscuro (ligeramente ajustado para tema oscuro) #C57B40 */
+    --accent-foreground: 0 0% 100%;
 
-    --border: 208 16% 28%; /* Gris oscuro para bordes #3C434A */
-    --input: 208 18% 18%; /* Fondo de input oscuro #24282B */
-    --ring: 199 40% 55%; /* Azul petróleo claro para focus rings */
+    --success-bg: 80 30% 40%; /* Verde Oliva Oscuro (ligeramente ajustado) #788A4A */
+    --success-foreground: 0 0% 100%;
+    
+    --price-text-color: 87 40% 50%; /* Verde Brillante (ligeramente ajustado) #88B353 */
+
+    --destructive: 0 60% 55%; 
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 208 16% 28%; 
+    --input: 208 18% 18%; 
+    --ring: 205 40% 55%;
 
     /* Sidebar specific vars for dark theme */
     --sidebar-background: 208 22% 12%; 
     --sidebar-foreground: 210 17% 95%; 
-    --sidebar-primary: 199 40% 55%; 
+    --sidebar-primary: 205 40% 55%; 
     --sidebar-primary-foreground: 0 0% 100%; 
-    --sidebar-accent: 45 66% 58%; /* Dorado brillante para tema oscuro */
-    --sidebar-accent-foreground: 210 10% 15%; 
+    --sidebar-accent: 29 50% 50%; 
+    --sidebar-accent-foreground: 0 0% 100%; 
     --sidebar-border: 208 18% 20%; 
-    --sidebar-ring: 199 40% 55%; 
+    --sidebar-ring: 205 40% 55%; 
   }
 }
 
@@ -111,7 +120,6 @@
 }
 
 @layer utilities {
-  /* Ocultar flechas en input[type="number"] */
   .hide-arrows::-webkit-outer-spin-button,
   .hide-arrows::-webkit-inner-spin-button {
     -webkit-appearance: none;

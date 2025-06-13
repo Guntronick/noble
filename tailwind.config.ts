@@ -45,16 +45,25 @@ export default {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
         },
-        accent: {
+        accent: { // Cobre Oscuro for "Solicitar Presupuesto"
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        'cta-color': '#B26E30', // Cobre oscuro para CTAs (reemplaza cta-gold)
+        success: { // Verde Oliva Oscuro for "Agregar al Carrito"
+          DEFAULT: 'hsl(var(--success-bg))',
+          foreground: 'hsl(var(--success-foreground))',
+        },
+        price: { // Verde Brillante for prices
+          DEFAULT: 'hsl(var(--price-text-color))',
+        },
         'azul-petroleo': '#1F3B4D', 
         'verde-salvia': '#9DBA9D', 
         'negro-carbon': '#212529',
         'gris-grafito': '#6C757D',
         'blanco-humo': '#F8F9FA',
+        'cobre-oscuro': '#B26E30', // Explicit name for Cobre Oscuro
+        'verde-oliva-oscuro': '#6E7C3D', // Explicit name for Verde Oliva Oscuro
+        'verde-brillante': '#7AA33F', // Explicit name for Verde Brillante (precio)
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
