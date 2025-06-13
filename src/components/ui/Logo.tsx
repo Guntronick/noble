@@ -1,17 +1,28 @@
 import Link from 'next/link';
-import { BrainCircuit } from 'lucide-react';
+import Image from 'next/image';
 
 interface LogoProps {
   className?: string;
-  iconSize?: number;
-  textSize?: string;
+  width?: number;
+  height?: number;
 }
 
-export function Logo({ className, iconSize = 32, textSize = 'text-2xl' }: LogoProps) {
+export function Logo({ className, width, height }: LogoProps) {
+  const defaultNavHeight = 32;
+  const defaultNavWidth = Math.round((600 / 162) * defaultNavHeight); // Maintain aspect ratio of 600x162
+
+  const displayWidth = width || defaultNavWidth;
+  const displayHeight = height || defaultNavHeight;
+
   return (
-    <Link href="/" className={`flex items-center gap-2 text-primary hover:text-primary/80 transition-colors ${className}`}>
-      <BrainCircuit size={iconSize} />
-      <span className={`font-headline font-semibold ${textSize}`}>AI Merch</span>
+    <Link href="/" className={`flex items-center gap-2 ${className || ''}`}>
+      <Image
+        src="/images/logo-noble.png"
+        alt="Noble Logo"
+        width={displayWidth}
+        height={displayHeight}
+        priority // Good for LCP element like a logo in navbar
+      />
     </Link>
   );
 }

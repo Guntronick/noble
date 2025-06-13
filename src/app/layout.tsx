@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Catálogo de Merch IA',
-  description: 'Descubre mercancía única impulsada por IA.',
+  title: 'Noble',
+  description: 'Catálogo de Productos Noble.',
 };
 
 export default function RootLayout({

@@ -3,8 +3,8 @@ import { categories } from '@/lib/data';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Categorías de Productos - Catálogo de Merch IA',
-  description: 'Explora todas las categorías de productos.',
+  title: 'Categorías de Productos - Noble',
+  description: 'Explora todas las categorías de productos en Noble.',
 };
 
 export default function CategoriesPage() {

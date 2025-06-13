@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
+const LOCAL_STORAGE_CART_KEY = 'nobleCart';
+
 async function fetchProduct(slug: string): Promise<Product | null> {
   const product = getProductBySlug(slug);
   return product ? Promise.resolve(product) : Promise.resolve(null);
@@ -49,7 +51,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<string>('');
-  const [quantity, setQuantity] = useState<number>(1); // Stores the number, 0 for "empty"
+  const [quantity, setQuantity] = useState<number>(1); 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
@@ -153,13 +155,12 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const getValidatedQuantity = (currentQty: number): number => {
     if (!product) return 1; 
     let newQuantity = currentQty;
-    // Handles NaN from parseInt (e.g. if state was somehow not a number), or 0, or negative
     if (typeof newQuantity !== 'number' || isNaN(newQuantity) || newQuantity <= 0) {
       newQuantity = 1;
     } else if (product.stock > 0 && newQuantity > product.stock) {
       newQuantity = product.stock;
     }
-    return newQuantity; // Should be an integer due to parseInt in onChange
+    return newQuantity;
   };
   
   const addItemToCartStorage = (quantityToAdd: number) => {
@@ -174,7 +175,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       return false;
     }
 
-    // This check should ideally be handled by getValidatedQuantity for actions
     if (quantityToAdd <= 0) { 
       toast({
         title: "Cantidad inválida",
@@ -184,7 +184,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       return false;
     }
 
-    const storedCart = localStorage.getItem('aiMerchCart');
+    const storedCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
     let cart: CartItemBase[] = storedCart ? JSON.parse(storedCart) : [];
     const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedColor === (product.colors.length > 0 ? selectedColor : undefined));
 
@@ -203,34 +203,32 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         productCode: product.productCode,
         slug: product.slug,
         stock: product.stock,
-        quantityInCart: Math.min(quantityToAdd, product.stock), // Ensure it doesn't exceed stock here too
+        quantityInCart: Math.min(quantityToAdd, product.stock),
         dataAiHint: product.dataAiHint,
       };
       cart.push(newItem);
     }
-    localStorage.setItem('aiMerchCart', JSON.stringify(cart));
+    localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cart));
     return true;
   };
 
   const handleRequestQuoteOnly = () => {
     if (!product) return;
-    const userOriginalQuantity = quantity; // This is the state from the input field
+    const userOriginalQuantity = quantity;
     const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
 
-    if (validatedQuantityForAction !== userOriginalQuantity) {
-      if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
-        toast({
-          title: "Cantidad ajustada",
-          description: `Se procesó como ${validatedQuantityForAction} unidad. El mínimo es 1.`,
-          variant: "default",
-        });
-      } else { // Covers stock cap or other adjustments from a non-zero input
+    if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
         toast({
           title: "Cantidad ajustada",
           description: `La cantidad se procesó como ${validatedQuantityForAction} debido a disponibilidad o mínimo requerido.`,
           variant: "default",
         });
-      }
+    } else if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
+         toast({
+          title: "Cantidad ajustada",
+          description: `Se procesó como ${validatedQuantityForAction} unidad. El mínimo es 1.`,
+          variant: "default",
+        });
     }
     
     if (validatedQuantityForAction > 0) {
@@ -239,35 +237,27 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         console.log("Solicitando presupuesto solo para:", product.name, validatedQuantityForAction, selectedColor);
         router.push('/cart'); 
       }
-    } else { // Should not happen if getValidatedQuantity always returns >=1
-        toast({
-            title: "Cantidad inválida",
-            description: "Introduce una cantidad válida.",
-            variant: "destructive",
-        });
     }
     setIsQuoteModalOpen(false);
   };
 
   const handleAddToCartAndContinue = () => {
     if (!product) return;
-    const userOriginalQuantity = quantity; // This is the state from the input field
+    const userOriginalQuantity = quantity;
     const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
 
-    if (validatedQuantityForAction !== userOriginalQuantity) {
-       if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
-        toast({
-          title: "Cantidad ajustada",
-          description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
-          variant: "default",
-        });
-      } else { // Covers stock cap or other adjustments from a non-zero input
+    if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
         toast({
           title: "Cantidad ajustada",
           description: `La cantidad se procesó como ${validatedQuantityForAction} para el carrito debido a disponibilidad o mínimo requerido.`,
           variant: "default",
         });
-      }
+    } else if (userOriginalQuantity === 0 && validatedQuantityForAction === 1){
+         toast({
+          title: "Cantidad ajustada",
+          description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
+          variant: "default",
+        });
     }
 
     if (validatedQuantityForAction > 0) {
@@ -278,12 +268,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             description: `${validatedQuantityForAction} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
             });
         }
-    } else { // Should not happen
-        toast({
-            title: "Cantidad inválida",
-            description: "Introduce una cantidad válida.",
-            variant: "destructive",
-        });
     }
     setIsQuoteModalOpen(false);
   };

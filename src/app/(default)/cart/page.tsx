@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 const ITEM_REMOVAL_ANIMATION_DURATION = 300; // ms for item sliding out
 const TOAST_TIMER_DURATION = 1200; // ms for how long the toast is visible
 const TOAST_ANIMATION_DURATION = 500; // ms for toast fade/scale animation
+const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
@@ -39,14 +40,14 @@ export default function CartPage() {
   // Load cart from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedCartItems = localStorage.getItem('aiMerchCart');
+      const storedCartItems = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
       if (storedCartItems) {
         try {
           const parsedItems: Omit<CartItemType, 'isRemoving'>[] = JSON.parse(storedCartItems);
           setCartItems(parsedItems.map(item => ({ ...item, isRemoving: false })));
         } catch (error) {
           console.error("Error parsing cart items from localStorage:", error);
-          localStorage.removeItem('aiMerchCart'); // Clear corrupted data
+          localStorage.removeItem(LOCAL_STORAGE_CART_KEY); // Clear corrupted data
         }
       }
       setIsCartLoaded(true); // Mark cart as loaded
@@ -57,7 +58,7 @@ export default function CartPage() {
   useEffect(() => {
     if (typeof window !== 'undefined' && isCartLoaded) {
       const itemsToStore = cartItems.map(({ isRemoving, ...rest }) => rest);
-      localStorage.setItem('aiMerchCart', JSON.stringify(itemsToStore));
+      localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(itemsToStore));
     }
   }, [cartItems, isCartLoaded]);
 
@@ -235,7 +236,6 @@ export default function CartPage() {
                 )}
                 style={{ 
                   transitionDuration: `${TOAST_ANIMATION_DURATION}ms`,
-                  // transform: 'translateX(-50%)' // Handled by translate-x-1/2
                 }}
               >
                 <div className="flex items-center space-x-3">

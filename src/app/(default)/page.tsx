@@ -4,6 +4,13 @@ import { Logo } from '@/components/ui/Logo';
 import Image from 'next/image';
 
 export default function HomePage() {
+  // For the larger logo on the homepage, let's set a height of 64px
+  // Original aspect ratio: 600/162
+  // New width = (600/162) * 64 = 237.03, let's use 237
+  const heroLogoHeight = 64;
+  const heroLogoWidth = Math.round((600 / 162) * heroLogoHeight);
+
+
   return (
     <div className="container mx-auto px-4">
       <section className="relative py-20 md:py-32 text-center rounded-lg overflow-hidden my-8 shadow-xl bg-gradient-to-br from-primary to-secondary">
@@ -18,12 +25,14 @@ export default function HomePage() {
           />
         </div>
         <div className="relative z-10">
-          <Logo className="justify-center mb-8 text-primary-foreground" iconSize={64} textSize="text-5xl" />
+          <div className="flex justify-center mb-8">
+            <Logo width={heroLogoWidth} height={heroLogoHeight} />
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-foreground font-headline">
-            Bienvenido a Catálogo de Merch IA
+            Bienvenido a Noble
           </h1>
           <p className="text-xl md:text-2xl mb-10 text-primary-foreground/80 max-w-2xl mx-auto">
-            Descubre diseños únicos generados por IA y productos tecnológicos de vanguardia.
+            Descubre diseños únicos y productos tecnológicos de vanguardia.
           </p>
           <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 px-10 py-6 text-lg">
             <Link href="/products">Ver Catálogo</Link>

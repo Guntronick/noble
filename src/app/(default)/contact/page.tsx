@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Contáctanos - Catálogo de Merch IA',
-  description: 'Ponte en contacto con Catálogo de Merch IA.',
+  title: 'Contáctanos - Noble',
+  description: 'Ponte en contacto con Noble.',
 };
 
 export default function ContactPage() {
@@ -24,21 +24,21 @@ export default function ContactPage() {
             <MapPin className="h-8 w-8 text-olive-green mt-1 shrink-0" />
             <div>
               <h3 className="text-xl font-semibold text-foreground">Nuestra Oficina</h3>
-              <p className="text-muted-foreground">123 AI Avenue, Tech City, TX 75001</p>
+              <p className="text-muted-foreground">123 Noble Way, Tech City, TX 75001</p>
             </div>
           </div>
           <div className="flex items-start space-x-4">
             <Mail className="h-8 w-8 text-olive-green mt-1 shrink-0" />
             <div>
               <h3 className="text-xl font-semibold text-foreground">Escríbenos</h3>
-              <p className="text-muted-foreground">support@aimerch.com</p>
+              <p className="text-muted-foreground">support@noble.com</p>
             </div>
           </div>
           <div className="flex items-start space-x-4">
             <Phone className="h-8 w-8 text-olive-green mt-1 shrink-0" />
             <div>
               <h3 className="text-xl font-semibold text-foreground">Llámanos</h3>
-              <p className="text-muted-foreground">+1 (800) 555-AI4U</p>
+              <p className="text-muted-foreground">+1 (800) 555-NOBL</p>
             </div>
           </div>
            <div className="mt-8 pt-8 border-t">
