@@ -8,33 +8,33 @@
     /* Overall page background - Ash Gray */
     --background: 0 0% 91%; /* #E8E8E8 */
     /* Main text color - Marrón cuero (Cuero Criollo) */
-    --foreground: 18 36% 27%; /* #5E3C2C */
+    --foreground: 21 19% 20%; /* #5E3C2C */
 
     /* Card/Popover background - Beige claro (Suelo Pampeano) */
-    --card: 41 43% 84%; /* #E9DCC5 */
+    --card: 34 56% 91%; /* #E9DCC5 */
     /* Text on cards/popovers - Marrón cuero (Cuero Criollo) */
-    --card-foreground: 18 36% 27%; /* #5E3C2C */
+    --card-foreground: 21 19% 20%; /* #5E3C2C */
 
-    --popover: 41 43% 84%; /* #E9DCC5 */
-    --popover-foreground: 18 36% 27%; /* #5E3C2C */
+    --popover: 34 56% 91%; /* #E9DCC5 */
+    --popover-foreground: 21 19% 20%; /* #5E3C2C */
 
-    /* Primary actions, highlights - Dorado suave (Sol Serrano) */
-    --primary: 39 47% 60%; /* #C9A66B */
-    /* Text on primary elements - White for contrast on gold */
+    /* Primary actions, highlights - Dorado suave (Sol Serrano) - OSCURECIDO */
+    --primary: 39 47% 50%; /* #A48452 (Era #C9A66B hsl(39 47% 60%)) */
+    /* Text on primary elements - White for contrast */
     --primary-foreground: 0 0% 100%; /* White */
 
     /* Secondary actions, accents - Verde oliva profundo (Tierra Noble) */
-    --secondary: 90 22% 30%; /* #4B5A39 */
+    --secondary: 93 8% 49%; /* #7D8772 */
     /* Text on secondary elements - White for contrast on dark olive */
     --secondary-foreground: 0 0% 100%; /* White */
 
     /* Muted backgrounds (e.g., inputs) - Lighter Ash Gray */
     --muted: 0 0% 94%; /* #F0F0F0 */
     /* Muted text - Gris piedra (Cielo de Tandil) */
-    --muted-foreground: 50 6% 51%; /* #8A8779 */
+    --muted-foreground: 50 7% 53%; /* #8A8779 */
 
     /* Accent color - Can be same as secondary or a variation - Verde oliva profundo (Tierra Noble) */
-    --accent: 90 22% 30%; /* #4B5A39 */
+    --accent: 93 8% 49%; /* #7D8772 */
     --accent-foreground: 0 0% 100%; /* White */
 
     /* Destructive actions - Standard Red */
@@ -45,75 +45,75 @@
     --border: 0 0% 85%; /* #D9D9D9 */
     /* Input backgrounds - Very Light Gray for input backgrounds */
     --input: 0 0% 96%; /* #F5F5F5 */
-    /* Focus rings - Dorado suave (Sol Serrano) */
-    --ring: 39 47% 60%; /* #C9A66B */
+    /* Focus rings - Dorado suave (Sol Serrano) - OSCURECIDO */
+    --ring: 39 47% 50%; /* #A48452 (Era #C9A66B hsl(39 47% 60%)) */
 
     --radius: 0.5rem;
 
     /* Chart Colors */
-    --chart-1: 39 47% 60%; /* Dorado suave */
-    --chart-2: 90 22% 30%; /* Verde oliva profundo */
-    --chart-3: 18 36% 27%; /* Marrón cuero */
-    --chart-4: 41 43% 75%; /* Darker Beige claro for chart distinction */
-    --chart-5: 50 6% 51%; /* Gris piedra */
+    --chart-1: 39 47% 50%; /* Dorado suave OSCURECIDO */
+    --chart-2: 93 8% 49%; /* Verde oliva profundo */
+    --chart-3: 21 19% 20%; /* Marrón cuero */
+    --chart-4: 34 56% 81%; /* Darker Beige claro for chart distinction */
+    --chart-5: 50 7% 53%; /* Gris piedra */
 
     /* Sidebar specific vars for light theme */
-    --sidebar-background: 41 43% 84%; /* Beige claro (Suelo Pampeano) */
-    --sidebar-foreground: 18 36% 27%; /* Marrón cuero (Cuero Criollo) */
-    --sidebar-primary: 39 47% 60%; /* Dorado suave (Sol Serrano) */
+    --sidebar-background: 34 56% 91%; /* Beige claro (Suelo Pampeano) */
+    --sidebar-foreground: 21 19% 20%; /* Marrón cuero (Cuero Criollo) */
+    --sidebar-primary: 39 47% 50%; /* Dorado suave (Sol Serrano) OSCURECIDO */
     --sidebar-primary-foreground: 0 0% 100%; /* White */
-    --sidebar-accent: 90 22% 30%; /* Verde oliva profundo (Tierra Noble) */
+    --sidebar-accent: 93 8% 49%; /* Verde oliva profundo (Tierra Noble) */
     --sidebar-accent-foreground: 0 0% 100%; /* White */
     --sidebar-border: 0 0% 85%; /* Darker Gray */
-    --sidebar-ring: 39 47% 60%; /* Dorado suave (Sol Serrano) */
+    --sidebar-ring: 39 47% 50%; /* Dorado suave (Sol Serrano) OSCURECIDO */
   }
 
   .dark {
-    /* Dark theme background - Marrón cuero (Cuero Criollo) */
-    --background: 18 36% 27%; /* #5E3C2C */
+    /* Dark theme background - Negro ahumado */
+    --background: 15 5% 17%; /* #2E2C2B */
     /* Dark theme text - Beige claro (Suelo Pampeano) */
-    --foreground: 41 43% 84%; /* #E9DCC5 */
+    --foreground: 34 56% 91%; /* #E9DCC5 */
 
-    /* Dark theme cards - Slightly Lighter Marrón cuero */
-    --card: 18 36% 32%; /* Adjusted from #5E3C2C */
-    --card-foreground: 41 43% 84%; /* #E9DCC5 */
+    /* Dark theme cards - Slightly Lighter Negro ahumado */
+    --card: 15 5% 22%; /* Adjusted from #2E2C2B */
+    --card-foreground: 34 56% 91%; /* #E9DCC5 */
 
-    --popover: 18 36% 32%;
-    --popover-foreground: 41 43% 84%;
+    --popover: 15 5% 22%;
+    --popover-foreground: 34 56% 91%;
 
-    /* Dark theme primary - Lighter Dorado suave */
-    --primary: 39 47% 70%; /* Adjusted from #C9A66B */
+    /* Dark theme primary - Lighter Dorado suave (original base) */
+    --primary: 39 47% 70%; /* Based on original #C9A66B (hsl(39 47% 60%)) */
     /* Dark text on lighter gold for dark theme primary */
-    --primary-foreground: 18 36% 15%; /* Darker Marrón cuero */
+    --primary-foreground: 21 19% 10%; /* Darker Marrón cuero */
 
     /* Dark theme secondary - Lighter Verde oliva profundo */
-    --secondary: 90 22% 40%; /* Adjusted from #4B5A39 */
+    --secondary: 93 8% 59%; /* Adjusted from #7D8772 */
     --secondary-foreground: 0 0% 100%; /* White */
 
-    /* Dark theme muted background - Darker Marrón cuero */
-    --muted: 18 36% 22%;
+    /* Dark theme muted background - Darker Negro ahumado */
+    --muted: 15 5% 12%;
     /* Dark theme muted text - Lighter Gris piedra */
-    --muted-foreground: 50 6% 61%; /* Adjusted from #8A8779 */
+    --muted-foreground: 50 7% 63%; /* Adjusted from #8A8779 */
 
-    --accent: 90 22% 40%; /* Lighter Verde oliva profundo */
+    --accent: 93 8% 59%; /* Lighter Verde oliva profundo */
     --accent-foreground: 0 0% 100%; /* White */
 
     --destructive: 0 60% 50%; /* Red for dark bg */
     --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 18 36% 20%; /* Darker Marrón cuero for borders */
-    --input: 18 36% 22%;  /* Darker Marrón cuero for input backgrounds */
-    --ring: 39 47% 70%;   /* Lighter Dorado suave for focus rings */
+    --border: 15 5% 10%; /* Darker Negro ahumado for borders */
+    --input: 15 5% 12%;  /* Darker Negro ahumado for input backgrounds */
+    --ring: 39 47% 70%;   /* Lighter Dorado suave for focus rings (original base) */
 
     /* Sidebar specific vars for dark theme */
-    --sidebar-background: 18 36% 32%; /* Dark Card BG */
-    --sidebar-foreground: 41 43% 84%; /* Light Beige Text */
-    --sidebar-primary: 39 47% 70%; /* Lighter Dorado */
-    --sidebar-primary-foreground: 18 36% 15%; /* Darker Marrón cuero Text */
-    --sidebar-accent: 90 22% 40%; /* Lighter Verde oliva */
+    --sidebar-background: 15 5% 22%; /* Dark Card BG */
+    --sidebar-foreground: 34 56% 91%; /* Light Beige Text */
+    --sidebar-primary: 39 47% 70%; /* Lighter Dorado (original base) */
+    --sidebar-primary-foreground: 21 19% 10%; /* Darker Marrón cuero Text */
+    --sidebar-accent: 93 8% 59%; /* Lighter Verde oliva */
     --sidebar-accent-foreground: 0 0% 100%; /* White */
-    --sidebar-border: 18 36% 20%; /* Dark Border */
-    --sidebar-ring: 39 47% 70%; /* Lighter Dorado Ring */
+    --sidebar-border: 15 5% 10%; /* Dark Border */
+    --sidebar-ring: 39 47% 70%; /* Lighter Dorado Ring (original base) */
   }
 }
 
