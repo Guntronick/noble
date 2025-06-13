@@ -48,7 +48,7 @@ export default {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        'olive-green': '#ADC178', // Accent color 2
+        'olive-green': '#7D8772', // Updated to Verde grisáceo oliva
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
