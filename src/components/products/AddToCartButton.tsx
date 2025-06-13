@@ -33,7 +33,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
   const handleAddToCart = () => {
     if (typeof window === 'undefined' || !product) return;
 
-    const userOriginalQuantity = rawQuantityFromProp;
+    const userOriginalQuantity = rawQuantityFromProp; // This is the raw value from the input field state
     const validatedQuantityForAction = getValidatedQuantityForAction(userOriginalQuantity);
 
     if (!selectedColor && product.colors.length > 0) {
@@ -60,6 +60,8 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     }
     
     if (validatedQuantityForAction <= 0) { 
+      // This case should ideally be covered by getValidatedQuantityForAction setting it to 1,
+      // but as a safeguard:
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",

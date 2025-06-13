@@ -5,8 +5,8 @@ import Image from 'next/image';
 
 export default function HomePage() {
   // For the larger logo on the homepage, let's set a height of 64px
-  // Original aspect ratio: 600/162
-  // New width = (600/162) * 64 = 237.03, let's use 237
+  // Original aspect ratio: 600/162 (from the provided logo image)
+  // New width = (600/162) * 64
   const heroLogoHeight = 64;
   const heroLogoWidth = Math.round((600 / 162) * heroLogoHeight);
 

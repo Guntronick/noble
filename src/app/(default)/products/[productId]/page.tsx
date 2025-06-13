@@ -214,7 +214,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const handleRequestQuoteOnly = () => {
     if (!product) return;
-    const userOriginalQuantity = quantity;
+    const userOriginalQuantity = quantity; // This is the raw value from the input field state
     const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
 
     if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
@@ -243,7 +243,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   const handleAddToCartAndContinue = () => {
     if (!product) return;
-    const userOriginalQuantity = quantity;
+    const userOriginalQuantity = quantity; // This is the raw value from the input field state
     const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
 
     if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
