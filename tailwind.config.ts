@@ -49,10 +49,12 @@ export default {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        // Cambiamos 'olive-green' por un nombre más genérico o el nuevo color principal de CTA
-        'cta-gold': '#D4AF37', // Dorado suave para CTAs
-        'azul-petroleo': '#1F3B4D', // Azul Petróleo
-        'verde-salvia': '#9DBA9D', // Verde Salvia
+        'cta-color': '#B26E30', // Cobre oscuro para CTAs (reemplaza cta-gold)
+        'azul-petroleo': '#1F3B4D', 
+        'verde-salvia': '#9DBA9D', 
+        'negro-carbon': '#212529',
+        'gris-grafito': '#6C757D',
+        'blanco-humo': '#F8F9FA',
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
