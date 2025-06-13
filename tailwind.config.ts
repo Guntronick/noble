@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -48,7 +49,7 @@ export default {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        'olive-green': '#7D8772', // Updated to Verde grisáceo oliva
+        'olive-green': '#4B5A39', // Updated to Verde oliva profundo (Tierra Noble)
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
