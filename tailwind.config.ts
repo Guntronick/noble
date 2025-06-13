@@ -33,11 +33,11 @@ export default {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
-        primary: {
+        primary: { // Azul Petróleo
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
-        secondary: {
+        secondary: { // Verde Salvia
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
         },
@@ -45,25 +45,25 @@ export default {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
         },
-        accent: { // Cobre Oscuro for "Solicitar Presupuesto"
+        accent: { // Cobre (para "Solicitar Presupuesto")
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        success: { // Verde Oliva Oscuro for "Agregar al Carrito"
+        success: { // Verde Oliva Oscuro (para "Agregar al Carrito")
           DEFAULT: 'hsl(var(--success-bg))',
           foreground: 'hsl(var(--success-foreground))',
         },
-        price: { // Verde Brillante for prices
+        price: { // Verde Precio
           DEFAULT: 'hsl(var(--price-text-color))',
         },
-        'azul-petroleo': '#1F3B4D', 
-        'verde-salvia': '#9DBA9D', 
-        'negro-carbon': '#212529',
-        'gris-grafito': '#6C757D',
-        'blanco-humo': '#F8F9FA',
-        'cobre-oscuro': '#B26E30', // Explicit name for Cobre Oscuro
-        'verde-oliva-oscuro': '#6E7C3D', // Explicit name for Verde Oliva Oscuro
-        'verde-brillante': '#7AA33F', // Explicit name for Verde Brillante (precio)
+        'cta-orange': { // Naranja Vibrante
+          DEFAULT: 'hsl(var(--cta-orange))',
+          foreground: 'hsl(var(--cta-orange-foreground))',
+        },
+        disabled: { // Para botones deshabilitados
+          DEFAULT: 'hsl(var(--disabled-background))',
+          foreground: 'hsl(var(--disabled-foreground))',
+        },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',

@@ -24,13 +24,16 @@
     --muted: 210 16% 93%; /* Gris claro #E9ECEF (similar a #F1F3F5 para bloques) */
     --muted-foreground: 210 9% 40%; /* Gris Grafito #6C757D */
 
-    --accent: 29 57% 44%; /* Cobre Oscuro #B26E30 (para "Solicitar Presupuesto") */
+    --accent: 29 57% 44%; /* Cobre #B26E30 (para "Solicitar Presupuesto") */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
     --success-bg: 80 33% 36%; /* Verde Oliva Oscuro #6E7C3D (para "Agregar al carrito") */
     --success-foreground: 0 0% 100%; /* Blanco #FFFFFF */
     
-    --price-text-color: 87 45% 44%; /* Verde Brillante #7AA33F (para precios) */
+    --price-text-color: 87 45% 44%; /* Verde Precio #7AA33F */
+
+    --cta-orange: 18 100% 60%; /* Naranja Vibrante #FF7A30 */
+    --cta-orange-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
     --destructive: 0 72% 51%; /* Rojo estándar */
     --destructive-foreground: 0 0% 100%; /* Blanco #FFFFFF */
@@ -39,14 +42,17 @@
     --input: 210 14% 96%; 
     --ring: 205 44% 21%; /* Azul Petróleo para focus rings por defecto */
 
+    --disabled-background: 0 0% 88%; /* Gris Claro #E0E0E0 */
+    --disabled-foreground: 210 9% 40%; /* Gris Oscuro #6C757D */
+
     --radius: 0.5rem;
 
     /* Chart Colors - pueden ajustarse para que coincidan mejor si se usan */
     --chart-1: 205 44% 21%; /* Azul Petróleo */
-    --chart-2: 29 57% 44%;  /* Cobre Oscuro */
+    --chart-2: 29 57% 44%;  /* Cobre */
     --chart-3: 145 25% 60%; /* Verde Salvia */
     --chart-4: 80 33% 36%;  /* Verde Oliva Oscuro */
-    --chart-5: 87 45% 44%;  /* Verde Brillante (Precio) */
+    --chart-5: 87 45% 44%;  /* Verde Precio */
 
     /* Sidebar specific vars for light theme */
     --sidebar-background: 210 20% 96%; 
@@ -60,7 +66,7 @@
   }
 
   .dark {
-    /* Paleta Noble - Tema Oscuro (Ajustar según necesidad) */
+    /* Paleta Noble - Tema Oscuro (Ajustar según necesidad, manteniendo la lógica de los nuevos colores) */
     --background: 208 24% 10%; /* Azul petróleo muy oscuro/grisáceo #13171A */
     --foreground: 210 20% 95%; /* Blanco humo claro #F0F3F5 */
 
@@ -79,13 +85,16 @@
     --muted: 208 18% 20%; /* Gris medio oscuro #2A2F33 */
     --muted-foreground: 210 15% 65%; /* Gris grafito claro #949CA4 */
 
-    --accent: 29 50% 50%; /* Cobre Oscuro (ligeramente ajustado para tema oscuro) #C57B40 */
+    --accent: 29 50% 50%; /* Cobre (ligeramente ajustado para tema oscuro) #C57B40 */
     --accent-foreground: 0 0% 100%;
 
     --success-bg: 80 30% 40%; /* Verde Oliva Oscuro (ligeramente ajustado) #788A4A */
     --success-foreground: 0 0% 100%;
     
-    --price-text-color: 87 40% 50%; /* Verde Brillante (ligeramente ajustado) #88B353 */
+    --price-text-color: 87 40% 50%; /* Verde Precio (ligeramente ajustado) #88B353 */
+
+    --cta-orange: 18 90% 55%; /* Naranja Vibrante (ajustado para tema oscuro) #FF6B21 */
+    --cta-orange-foreground: 0 0% 100%;
 
     --destructive: 0 60% 55%; 
     --destructive-foreground: 0 0% 100%;
@@ -93,6 +102,10 @@
     --border: 208 16% 28%; 
     --input: 208 18% 18%; 
     --ring: 205 40% 55%;
+
+    --disabled-background: 208 10% 25%; /* Gris Oscuro para tema oscuro #383B3E */
+    --disabled-foreground: 210 10% 50%; /* Gris Medio para tema oscuro #717880 */
+
 
     /* Sidebar specific vars for dark theme */
     --sidebar-background: 208 22% 12%; 

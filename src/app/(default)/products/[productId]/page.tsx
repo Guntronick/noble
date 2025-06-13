@@ -323,7 +323,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   }
   
   const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
-  const requestQuoteButtonClass = "bg-accent text-accent-foreground hover:bg-[#8E5527]"; // Cobre oscuro -> Cobre más oscuro
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -405,13 +404,15 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               ))}
             </div>
 
-            <div className="mt-6 space-y-4 p-6 bg-[#F1F3F5] rounded-lg">
+            <div className="mt-6 space-y-4 p-6 bg-[#F1F3F5] rounded-lg"> {/* Bloque con fondo gris claro */}
               <div className="flex items-center space-x-2 flex-wrap">
                 <Badge variant="secondary">Categoría: {product.category}</Badge> {/* Verde Salvia */}
                 <Badge variant="outline">Código: {product.productCode}</Badge>
+                 {/* Ejemplo de cómo usar el nuevo badge: */}
+                 {/* {product.isNew && <Badge variant="highlight">NUEVO</Badge>} */}
               </div>
               <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
-              <p className="text-4xl lg:text-5xl font-semibold text-price">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p> {/* Verde Brillante */}
+              <p className="text-4xl lg:text-5xl font-bold text-price">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p> {/* Verde Precio, negrita */}
               
               <Separator/>
               
@@ -448,6 +449,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
           </p>
           {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="mt-1">¡Pocas unidades!</Badge>}
+          {/* Ejemplo de cómo usar el nuevo badge: */}
+          {/* {product.onSale && <Badge variant="highlight" className="mt-1">OFERTA</Badge>} */}
          
           {product.stock > 0 && (
             <div>
@@ -475,7 +478,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               <AlertDialogTrigger asChild>
                 <Button 
                   size="lg" 
-                  className={cn("w-full text-base py-3", requestQuoteButtonClass)} // Cobre
+                  variant="accent" // Cobre
+                  className="w-full text-base py-3"
                   disabled={product.stock <= 0}
                 >
                   Solicitar Presupuesto
@@ -498,13 +502,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-2 sm:gap-0 flex-col sm:flex-row">
-                  <AlertDialogAction onClick={handleRequestQuoteOnly} className={cn("w-full sm:w-auto", requestQuoteButtonClass)}>Solicitar presupuesto</AlertDialogAction> {/* Cobre */}
-                  <AlertDialogCancel onClick={handleAddToCartAndContinue} className={cn("w-full sm:w-auto mt-2 sm:mt-0", "bg-success text-success-foreground hover:bg-[#586A30]")}>Agregar al carrito</AlertDialogCancel> {/* Verde Oliva */}
+                  <AlertDialogAction onClick={handleRequestQuoteOnly} variant="accent" className="w-full sm:w-auto">Solicitar presupuesto</AlertDialogAction> {/* Cobre */}
+                  <AlertDialogCancel onClick={handleAddToCartAndContinue} variant="success" className="w-full sm:w-auto mt-2 sm:mt-0">Agregar al carrito</AlertDialogCancel> {/* Verde Oliva */}
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
             
-            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} /> {/* Verde Oliva por defecto */}
+            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} /> {/* Verde Oliva */}
           </div>
           
           <Separator className="my-4"/>

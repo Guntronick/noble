@@ -9,14 +9,13 @@ import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
+  // TODO: Add properties for highlight badges if needed, e.g., isNew?: boolean, isBestSeller?: boolean, onSale?: boolean
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  // General CTA: Azul Petróleo base, hover Azul Petróleo más oscuro/claro
-  const primaryCtaButtonClass = "bg-primary text-primary-foreground hover:bg-primary/90";
   return (
-    <Card className="overflow-hidden bg-card text-card-foreground shadow-lg hover:shadow-[0_4px_15px_rgba(31,59,77,0.2)] transition-shadow duration-300 flex flex-col h-full">
-      <CardHeader className="p-0">
+    <Card className="overflow-hidden bg-card text-card-foreground shadow-lg hover:shadow-[0_4px_15px_rgba(31,59,77,0.2)] transition-shadow duration-300 flex flex-col h-full group">
+      <CardHeader className="p-0 relative">
         <Link href={`/products/${product.slug}`} className="block aspect-[3/4] relative">
           <Image
             src={product.images[0]}
@@ -27,6 +26,8 @@ export function ProductCard({ product }: ProductCardProps) {
             data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
           />
         </Link>
+        {/* Example of how to add a highlight badge if product data supports it */}
+        {/* {product.isNew && <Badge variant="highlight" className="absolute top-3 right-3">NUEVO</Badge>} */}
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <CardTitle className="text-lg mb-1 font-headline">
@@ -36,12 +37,12 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardTitle>
         <p className="text-sm text-muted-foreground mb-2 h-10 overflow-hidden line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between">
-          <p className="text-xl font-semibold text-price">${product.price.toFixed(2)}</p> {/* Usa text-price (Verde Brillante) */}
-          <Badge variant="secondary">{product.category}</Badge> {/* Verde Salvia */}
+          <p className="text-2xl font-bold text-price">${product.price.toFixed(2)}</p>
+          <Badge variant="secondary">{product.category}</Badge>
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button asChild className={cn("w-full", primaryCtaButtonClass)}>
+        <Button asChild variant="default" className="w-full hover:bg-cta-orange hover:text-cta-orange-foreground">
           <Link href={`/products/${product.slug}`}>Ver Detalles</Link>
         </Button>
       </CardFooter>

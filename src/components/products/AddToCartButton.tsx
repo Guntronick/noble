@@ -104,16 +104,13 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     });
   };
   
-  // Estilo para "Agregar al carrito": Verde Oliva Oscuro -> Verde Oliva más oscuro
-  const addToCartButtonClass = "bg-success text-success-foreground hover:bg-[#586A30]";
-
   return (
     <Button 
       onClick={handleAddToCart} 
       size="lg" 
+      variant="success" // Verde Oliva Oscuro
       className={cn(
         "w-full flex items-center gap-2 text-base py-3",
-        addToCartButtonClass,
         className 
       )}
       disabled={product.stock <= 0}

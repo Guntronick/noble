@@ -73,9 +73,7 @@ export function ContactForm() {
     }
   };
 
-  // General CTA: Azul Petróleo base, hover Azul Petróleo más oscuro/claro
-  const primaryCtaButtonClass = "bg-primary text-primary-foreground hover:bg-primary/90";
-
+  // "Enviar Mensaje" button will use primary style (Azul Petróleo)
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-8 rounded-lg shadow-xl">
@@ -131,7 +129,7 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className={cn("w-full text-lg py-6", primaryCtaButtonClass)} disabled={form.formState.isSubmitting}>
+        <Button type="submit" variant="default" className="w-full text-lg py-6" disabled={form.formState.isSubmitting}>
           <Send className="mr-2 h-5 w-5" />
           {form.formState.isSubmitting ? "Enviando..." : "Enviar Mensaje"}
         </Button>

@@ -158,8 +158,6 @@ export default function CartPage() {
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
   };
   
-  // Botón "Solicitar Presupuesto" (Realizar Pedido): Cobre Oscuro -> Cobre más oscuro
-  const requestQuoteButtonClass = "bg-accent text-accent-foreground hover:bg-[#8E5527]";
 
   if (!isCartLoaded) {
     return <div className="container mx-auto px-4 py-12 text-center">Cargando carrito...</div>;
@@ -343,7 +341,7 @@ export default function CartPage() {
                         </div>
                       </div>
                     </div>
-                    <span className="font-medium text-price text-right min-w-[80px]"> {/* Precio usa text-price */}
+                    <span className="font-bold text-price text-right min-w-[80px]">
                       ${(item.price * item.quantityInCart).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -352,9 +350,9 @@ export default function CartPage() {
               <Separator />
               <div className="flex justify-between font-semibold text-foreground">
                 <span>Subtotal</span>
-                <span className="text-price">${subtotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span> {/* Subtotal usa text-price */}
+                <span className="font-bold text-price">${subtotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
-              <div className="flex justify-between text-xl font-bold text-price"> {/* Total usa text-price */}
+              <div className="flex justify-between text-xl font-bold text-price">
                 <span>Total</span>
                 <span>${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
@@ -363,7 +361,7 @@ export default function CartPage() {
                 <p className="font-semibold text-foreground">Solicitar Presupuesto</p>
                 <p>No efectuaremos cargos de ningún tipo. En breve te enviaremos el presupuesto por los productos solicitados.</p>
               </div>
-              <Button type="submit" size="lg" className={cn("w-full mt-6 text-base py-3", requestQuoteButtonClass)} disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
+              <Button type="submit" size="lg" variant="accent" className="w-full mt-6 text-base py-3" disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
                 REALIZAR EL PEDIDO
               </Button>
             </CardContent>
