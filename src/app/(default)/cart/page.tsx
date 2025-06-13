@@ -159,6 +159,8 @@ export default function CartPage() {
     console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: orderItems, total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
   };
+  
+  const ctaButtonClass = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
 
   if (!isCartLoaded) {
     return <div className="container mx-auto px-4 py-12 text-center">Cargando carrito...</div>;
@@ -168,7 +170,7 @@ export default function CartPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="mb-6">
         <p className="text-muted-foreground">
-          ¿Tienes un cupón? <Link href="#" className="text-primary hover:underline">Haz clic aquí para introducir tu código</Link>
+          ¿Tienes un cupón? <Link href="#" className="text-accent hover:underline">Haz clic aquí para introducir tu código</Link> {/* Dorado Suave */}
         </p>
       </div>
 
@@ -176,29 +178,29 @@ export default function CartPage() {
         <div className="space-y-8">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-headline">DETALLES DE FACTURACIÓN</CardTitle>
+              <CardTitle className="text-2xl font-headline text-foreground">DETALLES DE FACTURACIÓN</CardTitle> {/* Negro Carbón */}
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">Nombre <span className="text-destructive">*</span></Label>
+                  <Label htmlFor="firstName" className="text-foreground">Nombre <span className="text-destructive">*</span></Label> {/* Negro Carbón */}
                   <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Apellidos <span className="text-destructive">*</span></Label>
+                  <Label htmlFor="lastName" className="text-foreground">Apellidos <span className="text-destructive">*</span></Label> {/* Negro Carbón */}
                   <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
                 </div>
               </div>
               <div>
-                <Label htmlFor="companyName">Nombre de la empresa (opcional)</Label>
+                <Label htmlFor="companyName" className="text-foreground">Nombre de la empresa (opcional)</Label> {/* Negro Carbón */}
                 <Input id="companyName" name="companyName" value={formData.companyName} onChange={handleInputChange} />
               </div>
               <div>
-                <Label htmlFor="phone">Teléfono <span className="text-destructive">*</span></Label>
+                <Label htmlFor="phone" className="text-foreground">Teléfono <span className="text-destructive">*</span></Label> {/* Negro Carbón */}
                 <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} required />
               </div>
               <div>
-                <Label htmlFor="email">Dirección de correo electrónico <span className="text-destructive">*</span></Label>
+                <Label htmlFor="email" className="text-foreground">Dirección de correo electrónico <span className="text-destructive">*</span></Label> {/* Negro Carbón */}
                 <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
               </div>
             </CardContent>
@@ -206,10 +208,10 @@ export default function CartPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-headline">INFORMACIÓN ADICIONAL</CardTitle>
+              <CardTitle className="text-2xl font-headline text-foreground">INFORMACIÓN ADICIONAL</CardTitle> {/* Negro Carbón */}
             </CardHeader>
             <CardContent>
-              <Label htmlFor="orderNotes">Notas del pedido (opcional)</Label>
+              <Label htmlFor="orderNotes" className="text-foreground">Notas del pedido (opcional)</Label> {/* Negro Carbón */}
               <Textarea
                 id="orderNotes"
                 name="orderNotes"
@@ -251,16 +253,16 @@ export default function CartPage() {
               </div>
             )}
             <CardHeader className="px-6 pb-6 pt-16">
-              <CardTitle className="text-2xl font-headline text-center">TU PEDIDO</CardTitle>
+              <CardTitle className="text-2xl font-headline text-center text-foreground">TU PEDIDO</CardTitle> {/* Negro Carbón */}
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between text-sm font-medium text-muted-foreground">
+              <div className="flex justify-between text-sm font-medium text-muted-foreground"> {/* Gris Grafito */}
                 <span>PRODUCTO</span>
                 <span>SUBTOTAL</span>
               </div>
               <Separator />
               {cartItems.filter(item => !item.isRemoving).length === 0 && !cartItems.some(item => item.isRemoving) ? (
-                <p className="text-muted-foreground text-center py-4">Tu carrito está vacío.</p>
+                <p className="text-muted-foreground text-center py-4">Tu carrito está vacío.</p> {/* Gris Grafito */}
               ) : (
                 cartItems.map(item => (
                   <div
@@ -297,8 +299,8 @@ export default function CartPage() {
                         />
                       </Link>
                       <div className="flex-grow">
-                        <Link href={`/products/${item.slug}`} className="font-medium text-foreground hover:text-primary">{item.name}</Link>
-                        {item.selectedColor && <p className="text-xs text-muted-foreground">- {item.selectedColor}</p>}
+                        <Link href={`/products/${item.slug}`} className="font-medium text-foreground hover:text-primary">{item.name}</Link> {/* Negro Carbón, hover Azul Petróleo */}
+                        {item.selectedColor && <p className="text-xs text-muted-foreground">- {item.selectedColor}</p>} {/* Gris Grafito */}
                         <div className="flex items-center mt-1">
                            <Button
                             type="button"
@@ -342,27 +344,27 @@ export default function CartPage() {
                         </div>
                       </div>
                     </div>
-                    <span className="font-medium text-foreground text-right min-w-[80px]">
+                    <span className="font-medium text-foreground text-right min-w-[80px]"> {/* Negro Carbón */}
                       ${(item.price * item.quantityInCart).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 ))
               )}
               <Separator />
-              <div className="flex justify-between font-semibold">
+              <div className="flex justify-between font-semibold text-foreground"> {/* Negro Carbón */}
                 <span>Subtotal</span>
                 <span>${subtotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
-              <div className="flex justify-between text-xl font-bold text-primary">
+              <div className="flex justify-between text-xl font-bold text-accent"> {/* Dorado Suave */}
                 <span>Total</span>
                 <span>${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <Separator />
-              <div className="text-sm text-muted-foreground space-y-2 mt-4 p-3 bg-muted/50 rounded-md">
-                <p className="font-semibold text-foreground">Solicitar Presupuesto</p>
+              <div className="text-sm text-muted-foreground space-y-2 mt-4 p-3 bg-muted/50 rounded-md"> {/* Fondo Gris Claro, texto Gris Grafito */}
+                <p className="font-semibold text-foreground">Solicitar Presupuesto</p> {/* Negro Carbón */}
                 <p>No efectuaremos cargos de ningún tipo. En breve te enviaremos el presupuesto por los productos solicitados.</p>
               </div>
-              <Button type="submit" size="lg" className="w-full bg-olive-green text-primary-foreground hover:bg-olive-green/90 mt-6 text-base py-3" disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
+              <Button type="submit" size="lg" className={cn("w-full mt-6 text-base py-3", ctaButtonClass)} disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
                 REALIZAR EL PEDIDO
               </Button>
             </CardContent>
@@ -372,6 +374,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-
-    

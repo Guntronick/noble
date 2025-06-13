@@ -1,3 +1,4 @@
+
 import { ContactForm } from '@/components/contact/ContactForm';
 import type { Metadata } from 'next';
 import { Mail, Phone, MapPin } from 'lucide-react';
@@ -11,40 +12,40 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto px-4 py-16">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-primary font-headline">Ponte en Contacto</h1>
-        <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">
+        <h1 className="text-4xl md:text-5xl font-bold text-primary font-headline">Ponte en Contacto</h1> {/* Azul Petróleo */}
+        <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto"> {/* Gris Grafito */}
           ¡Nos encantaría saber de ti! Si tienes alguna pregunta sobre nuestros productos, colaboraciones o cualquier otra cosa, nuestro equipo está listo para responder a todas tus preguntas.
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-12 items-start">
         <div className="space-y-8">
-          <h2 className="text-3xl font-semibold text-primary font-headline">Información de Contacto</h2>
+          <h2 className="text-3xl font-semibold text-primary font-headline">Información de Contacto</h2> {/* Azul Petróleo */}
           <div className="flex items-start space-x-4">
-            <MapPin className="h-8 w-8 text-olive-green mt-1 shrink-0" />
+            <MapPin className="h-8 w-8 text-accent mt-1 shrink-0" /> {/* Dorado Suave */}
             <div>
-              <h3 className="text-xl font-semibold text-foreground">Nuestra Oficina</h3>
-              <p className="text-muted-foreground">123 Noble Way, Tech City, TX 75001</p>
+              <h3 className="text-xl font-semibold text-foreground">Nuestra Oficina</h3> {/* Negro Carbón */}
+              <p className="text-muted-foreground">123 Noble Way, Tech City, TX 75001</p> {/* Gris Grafito */}
             </div>
           </div>
           <div className="flex items-start space-x-4">
-            <Mail className="h-8 w-8 text-olive-green mt-1 shrink-0" />
+            <Mail className="h-8 w-8 text-accent mt-1 shrink-0" /> {/* Dorado Suave */}
             <div>
-              <h3 className="text-xl font-semibold text-foreground">Escríbenos</h3>
-              <p className="text-muted-foreground">support@noble.com</p>
+              <h3 className="text-xl font-semibold text-foreground">Escríbenos</h3> {/* Negro Carbón */}
+              <p className="text-muted-foreground">support@noble.com</p> {/* Gris Grafito */}
             </div>
           </div>
           <div className="flex items-start space-x-4">
-            <Phone className="h-8 w-8 text-olive-green mt-1 shrink-0" />
+            <Phone className="h-8 w-8 text-accent mt-1 shrink-0" /> {/* Dorado Suave */}
             <div>
-              <h3 className="text-xl font-semibold text-foreground">Llámanos</h3>
-              <p className="text-muted-foreground">+1 (800) 555-NOBL</p>
+              <h3 className="text-xl font-semibold text-foreground">Llámanos</h3> {/* Negro Carbón */}
+              <p className="text-muted-foreground">+1 (800) 555-NOBL</p> {/* Gris Grafito */}
             </div>
           </div>
            <div className="mt-8 pt-8 border-t">
-            <h3 className="text-2xl font-semibold text-primary mb-4 font-headline">Horario de Atención</h3>
-            <p className="text-muted-foreground">Lunes - Viernes: 9:00 AM - 6:00 PM (CST)</p>
-            <p className="text-muted-foreground">Sábado - Domingo: Cerrado</p>
+            <h3 className="text-2xl font-semibold text-primary mb-4 font-headline">Horario de Atención</h3> {/* Azul Petróleo */}
+            <p className="text-muted-foreground">Lunes - Viernes: 9:00 AM - 6:00 PM (CST)</p> {/* Gris Grafito */}
+            <p className="text-muted-foreground">Sábado - Domingo: Cerrado</p> {/* Gris Grafito */}
           </div>
         </div>
         <div>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import type { Product, CartItemBase } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 
@@ -16,10 +17,10 @@ interface AddToCartButtonProps {
   className?: string;
 }
 
-export function AddToCartButton({ product, selectedColor, quantity: rawQuantityFromProp, variant = "secondary", className }: AddToCartButtonProps) {
+export function AddToCartButton({ product, selectedColor, quantity: rawQuantityFromProp, variant, className }: AddToCartButtonProps) {
   const { toast } = useToast();
 
-  const getValidatedQuantityForAction = (currentQty: number): number => {
+  const getValidatedQuantity = (currentQty: number): number => {
     if (!product) return 1; 
     let newQuantity = currentQty;
     if (typeof newQuantity !== 'number' || isNaN(newQuantity) || newQuantity <= 0) {
@@ -33,8 +34,8 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
   const handleAddToCart = () => {
     if (typeof window === 'undefined' || !product) return;
 
-    const userOriginalQuantity = rawQuantityFromProp; // This is the raw value from the input field state
-    const validatedQuantityForAction = getValidatedQuantityForAction(userOriginalQuantity);
+    const userOriginalQuantity = rawQuantityFromProp;
+    const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
 
     if (!selectedColor && product.colors.length > 0) {
        toast({
@@ -45,23 +46,23 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       return;
     }
     
-    if (userOriginalQuantity !== 0 && validatedQuantityForAction !== userOriginalQuantity) {
+    if (userOriginalQuantity !== validatedQuantityForAction) {
+      if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
+        toast({
+          title: "Cantidad ajustada",
+          description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
+          variant: "default", // Can be 'default' or a custom variant for info
+        });
+      } else {
         toast({
           title: "Cantidad ajustada",
           description: `La cantidad se procesó como ${validatedQuantityForAction} para el carrito debido a disponibilidad o mínimo requerido.`,
           variant: "default",
         });
-    } else if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
-         toast({
-          title: "Cantidad ajustada",
-          description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
-          variant: "default",
-        });
+      }
     }
     
     if (validatedQuantityForAction <= 0) { 
-      // This case should ideally be covered by getValidatedQuantityForAction setting it to 1,
-      // but as a safeguard:
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",
@@ -103,13 +104,21 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       description: `${validatedQuantityForAction} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
     });
   };
+  
+  // Botones CTA: Dorado suave bg, texto blanco. Hover: Azul petróleo bg, texto blanco.
+  // Usamos --accent para Dorado, --primary para Azul Petróleo.
+  const ctaClassName = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
 
   return (
     <Button 
       onClick={handleAddToCart} 
       size="lg" 
-      variant={variant}
-      className={`w-full flex items-center gap-2 text-base py-3 ${className || ''}`}
+      variant={variant || "default"} // Si no se pasa variante, usa una que podamos sobreescribir o la default.
+      className={cn(
+        "w-full flex items-center gap-2 text-base py-3",
+        variant ? className : ctaClassName, // Aplica CTA si no hay variante específica
+        className // Permite clases adicionales
+      )}
       disabled={product.stock <= 0}
     >
       <ShoppingCart className="h-5 w-5" />
@@ -117,4 +126,3 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     </Button>
   );
 }
-

@@ -49,7 +49,10 @@ export default {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        'olive-green': '#4B5A39', // Updated to Verde oliva profundo (Tierra Noble)
+        // Cambiamos 'olive-green' por un nombre más genérico o el nuevo color principal de CTA
+        'cta-gold': '#D4AF37', // Dorado suave para CTAs
+        'azul-petroleo': '#1F3B4D', // Azul Petróleo
+        'verde-salvia': '#9DBA9D', // Verde Salvia
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',

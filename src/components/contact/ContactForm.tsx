@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -9,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Send } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
@@ -71,6 +73,8 @@ export function ContactForm() {
     }
   };
 
+  const ctaButtonClass = "bg-accent text-accent-foreground hover:bg-primary hover:text-primary-foreground";
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-8 rounded-lg shadow-xl">
@@ -79,7 +83,7 @@ export function ContactForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre Completo</FormLabel>
+              <FormLabel className="text-foreground">Nombre Completo</FormLabel> {/* Negro Carbón */}
               <FormControl>
                 <Input placeholder="Juan Pérez" {...field} />
               </FormControl>
@@ -92,7 +96,7 @@ export function ContactForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Correo Electrónico</FormLabel>
+              <FormLabel className="text-foreground">Correo Electrónico</FormLabel> {/* Negro Carbón */}
               <FormControl>
                 <Input type="email" placeholder="tu@ejemplo.com" {...field} />
               </FormControl>
@@ -105,7 +109,7 @@ export function ContactForm() {
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Número de Teléfono (Opcional)</FormLabel>
+              <FormLabel className="text-foreground">Número de Teléfono (Opcional)</FormLabel> {/* Negro Carbón */}
               <FormControl>
                 <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
               </FormControl>
@@ -118,7 +122,7 @@ export function ContactForm() {
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tu Mensaje</FormLabel>
+              <FormLabel className="text-foreground">Tu Mensaje</FormLabel> {/* Negro Carbón */}
               <FormControl>
                 <Textarea placeholder="¿Cómo podemos ayudarte hoy?" rows={5} {...field} />
               </FormControl>
@@ -126,7 +130,7 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-olive-green text-primary-foreground hover:bg-olive-green/90 text-lg py-6" disabled={form.formState.isSubmitting}>
+        <Button type="submit" className={cn("w-full text-lg py-6", ctaButtonClass)} disabled={form.formState.isSubmitting}>
           <Send className="mr-2 h-5 w-5" />
           {form.formState.isSubmitting ? "Enviando..." : "Enviar Mensaje"}
         </Button>
