@@ -31,7 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <CardTitle className="text-lg mb-1 font-headline">
-          <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
+          <Link href={`/products/${product.slug}`} className="hover:text-cta-orange transition-colors">
             {product.name}
           </Link>
         </CardTitle>
@@ -49,3 +49,4 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
+

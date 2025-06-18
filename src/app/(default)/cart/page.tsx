@@ -296,7 +296,7 @@ export default function CartPage() {
                         />
                       </Link>
                       <div className="flex-grow">
-                        <Link href={`/products/${item.slug}`} className="font-medium text-foreground hover:text-primary">{item.name}</Link>
+                        <Link href={`/products/${item.slug}`} className="font-medium text-foreground hover:text-cta-orange">{item.name}</Link>
                         {item.selectedColor && <p className="text-xs text-muted-foreground">- {item.selectedColor}</p>}
                         <div className="flex items-center mt-1">
                            <Button
@@ -371,3 +371,4 @@ export default function CartPage() {
     </div>
   );
 }
+
