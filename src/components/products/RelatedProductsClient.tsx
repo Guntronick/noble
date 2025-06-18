@@ -1,30 +1,17 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './ProductCard';
 import { getRelatedProducts, RelatedProductsInput, RelatedProductsOutput } from '@/ai/flows/related-products';
+import { getProductsByIds } from '@/lib/data'; // Import the new data fetching function
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface RelatedProductsClientProps {
-  productId: string;
-  categoryName: string;
+  productId: string; // ID of the current product being viewed
+  categoryName: string; // Name of the category of the current product
 }
-
-const mapAiProductToProductCard = (aiProduct: RelatedProductsOutput[0]): Product => ({
-  id: aiProduct.productId,
-  name: aiProduct.name,
-  description: aiProduct.description,
-  images: [aiProduct.imageUrl || 'https://placehold.co/600x800.png'],
-  price: 0, 
-  colors: [], 
-  category: '', 
-  productCode: '', 
-  slug: aiProduct.productId, 
-  stock: 1, 
-  dataAiHint: aiProduct.name.toLowerCase().split(' ').slice(0,2).join(' '),
-});
-
 
 export function RelatedProductsClient({ productId, categoryName }: RelatedProductsClientProps) {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -36,15 +23,26 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
       setLoading(true);
       setError(null);
       try {
-        const input: RelatedProductsInput = {
+        const aiInput: RelatedProductsInput = {
           category: categoryName,
           productId: productId,
-          numberOfProducts: 4,
+          numberOfProducts: 4, // Request 4 product IDs from AI
         };
-        const aiOutput = await getRelatedProducts(input);
+        const aiOutput: RelatedProductsOutput = await getRelatedProducts(aiInput);
         
-        const filteredOutput = aiOutput.filter(p => p.productId !== productId);
-        setRelatedProducts(filteredOutput.map(mapAiProductToProductCard));
+        // Extract product IDs, ensuring they are not the current product
+        const relatedProductIds = aiOutput
+          .map(p => p.productId)
+          .filter(id => id !== productId)
+          .slice(0, 4); // Ensure we only try to fetch up to 4
+
+        if (relatedProductIds.length > 0) {
+          // Fetch full product details from Supabase for these IDs
+          const fetchedProducts = await getProductsByIds(relatedProductIds);
+          setRelatedProducts(fetchedProducts);
+        } else {
+          setRelatedProducts([]);
+        }
 
       } catch (err) {
         console.error('Error al cargar productos relacionados:', err);
@@ -88,6 +86,8 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
   }
 
   if (relatedProducts.length === 0) {
+    // Optionally, display a message or return null if no related products found
+    // console.log("No related products to display.");
     return null; 
   }
 

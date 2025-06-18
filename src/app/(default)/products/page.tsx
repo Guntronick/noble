@@ -1,155 +1,36 @@
-"use client";
 
-import { useState, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { ProductCard } from '@/components/products/ProductCard';
-import { products as allProducts, categories } from '@/lib/data';
-import type { Product } from '@/lib/types';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { getProducts, getCategories } from '@/lib/data';
+import ProductListingClientComponent from '@/components/products/ProductListingClientComponent';
+import type { Metadata } from 'next';
 
-const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48];
-
-export default function ProductListingPage() {
-  const searchParams = useSearchParams();
-  const initialCategorySlug = searchParams.get('category');
-  
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(initialCategorySlug || 'all');
-
-  const filteredProducts = useMemo(() => {
-    let productsToFilter: Product[] = allProducts;
-
-    if (selectedCategory !== 'all') {
-      const categoryObj = categories.find(c => c.slug === selectedCategory);
-      if (categoryObj) {
-        productsToFilter = productsToFilter.filter(p => p.category === categoryObj.name);
-      }
-    }
-
-    if (searchTerm) {
-      productsToFilter = productsToFilter.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    return productsToFilter;
-  }, [selectedCategory, searchTerm]);
-
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handleCategoryChange = (slug: string) => {
-    setSelectedCategory(slug);
-    setCurrentPage(1);
+// Optional: Generate metadata dynamically based on fetched data if needed
+export async function generateMetadata(): Promise<Metadata> {
+  // You could fetch categories here if you want to make the title dynamic
+  // For now, using a generic title
+  return {
+    title: 'Catálogo de Productos - Noble',
+    description: 'Explora nuestra colección de mercancía inspirada en IA y tecnología de vanguardia.',
   };
+}
 
-  const handleItemsPerPageChange = (value: string) => {
-    setItemsPerPage(parseInt(value, 10));
-    setCurrentPage(1);
-  };
+// This is the Server Component
+export default async function ProductListingServerPage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
+  const initialCategorySlug = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
   
-  const pageTitle = selectedCategory === 'all' 
-    ? 'Todos los Productos' 
-    : categories.find(c => c.slug === selectedCategory)?.name || 'Productos';
+  // Fetch initial data on the server
+  // Pass categorySlug to getProducts if present, otherwise it fetches all products
+  const initialProducts = await getProducts(initialCategorySlug ? { categorySlug: initialCategorySlug } : {});
+  const allCategories = await getCategories();
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold text-center mb-4 text-primary font-headline">{pageTitle}</h1>
-      <p className="text-lg text-muted-foreground text-center mb-10">
-        Explora nuestra colección de mercancía inspirada en IA y tecnología de vanguardia.
-      </p>
-
-      <div className="mb-8 p-4 bg-muted/50 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          <div>
-            <label htmlFor="search" className="block text-sm font-medium text-foreground mb-1">Buscar Productos</label>
-            <div className="relative">
-              <Input
-                id="search"
-                type="text"
-                placeholder="Buscar por nombre o descripción..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="pr-10"
-              />
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="category-filter" className="block text-sm font-medium text-foreground mb-1">Filtrar por Categoría</label>
-            <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-              <SelectTrigger id="category-filter">
-                <SelectValue placeholder="Seleccionar categoría" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las Categorías</SelectItem>
-                {categories.map(cat => (
-                  <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-           <div>
-            <label htmlFor="items-per-page" className="block text-sm font-medium text-foreground mb-1">Artículos por Página</label>
-            <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
-              <SelectTrigger id="items-per-page">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ITEMS_PER_PAGE_OPTIONS.map(option => (
-                  <SelectItem key={option} value={option.toString()}>{option}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      {paginatedProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {paginatedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-16">
-          <p className="text-2xl text-muted-foreground">No se encontraron productos.</p>
-          {searchTerm && <p className="mt-2">Intenta ajustar tu búsqueda o filtros.</p>}
-        </div>
-      )}
-
-      {totalPages > 1 && (
-        <div className="mt-12 flex justify-center items-center space-x-2">
-          <Button
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            variant="outline"
-          >
-            Anterior
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Página {currentPage} de {totalPages}
-          </span>
-          <Button
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            variant="outline"
-          >
-            Siguiente
-          </Button>
-        </div>
-      )}
-    </div>
+    <ProductListingClientComponent
+      initialProducts={initialProducts}
+      initialCategories={allCategories}
+      initialCategorySlugFromSearch={initialCategorySlug} // Pass the slug from URL search params
+    />
   );
 }

@@ -2,7 +2,7 @@
 "use client"; 
 
 import type { Product, CartItemBase } from '@/lib/types';
-import { getProductBySlug } from '@/lib/data';
+import { getProductBySlug } from '@/lib/data'; // This will now be the async version
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { Twitter, Facebook, Instagram, Mail, MessageSquare, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { useState, useEffect, use, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react'; // Removed 'use'
 import { useRouter } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -25,16 +25,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/ui/alert-dialog"; // Removed AlertDialogTrigger as it's part of AlertDialog
 import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
-
-async function fetchProduct(slug: string): Promise<Product | null> {
-  const product = getProductBySlug(slug);
-  return product ? Promise.resolve(product) : Promise.resolve(null);
-}
 
 interface ProductDetailPageProps {
   params: { productId: string }; 
@@ -45,8 +39,8 @@ const ZOOM_FACTOR = 2.5;
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const resolvedParams = use(params as Promise<{ productId: string }>);
-  const { productId: productSlug } = resolvedParams;
+  // const resolvedParams = use(params as Promise<{ productId: string }>); // 'use' is for Server Components or specific hooks
+  const productSlug = params.productId; // Access slug directly in client component after page load
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -71,16 +65,22 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     async function loadProduct() {
       if (!productSlug) return;
       setLoading(true);
-      const fetchedProduct = await fetchProduct(productSlug);
-      setProduct(fetchedProduct);
-      if (fetchedProduct && fetchedProduct.colors.length > 0) {
-        setSelectedColor(fetchedProduct.colors[0]);
-      } else if (fetchedProduct) {
-        setSelectedColor(''); 
+      try {
+        const fetchedProduct = await getProductBySlug(productSlug); // Calls the new async version
+        setProduct(fetchedProduct);
+        if (fetchedProduct && fetchedProduct.colors.length > 0) {
+          setSelectedColor(fetchedProduct.colors[0]);
+        } else if (fetchedProduct) {
+          setSelectedColor(''); 
+        }
+        setCurrentImageIndex(0); 
+        setQuantity(1); 
+      } catch (error) {
+        console.error("Failed to load product:", error);
+        setProduct(null); // Handle error state
+      } finally {
+        setLoading(false);
       }
-      setCurrentImageIndex(0); 
-      setQuantity(1); 
-      setLoading(false);
     }
     loadProduct();
   }, [productSlug]);
@@ -199,7 +199,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         images: product.images,
         price: product.price,
         selectedColor: product.colors.length > 0 ? selectedColor : undefined,
-        category: product.category,
+        category: product.category, // Product category name
         productCode: product.productCode,
         slug: product.slug,
         stock: product.stock,
@@ -322,7 +322,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Producto no encontrado.</p></div>;
   }
   
-  const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
+  const mainImageSrc = product.images[0] || 'https://placehold.co/600x500.png'; // Use first image or placeholder
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -404,15 +404,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
               ))}
             </div>
 
-            <div className="mt-6 space-y-4 p-6 bg-[#F1F3F5] rounded-lg"> {/* Bloque con fondo gris claro */}
+            <div className="mt-6 space-y-4 p-6 bg-[#F1F3F5] rounded-lg">
               <div className="flex items-center space-x-2 flex-wrap">
-                <Badge variant="secondary">Categoría: {product.category}</Badge> {/* Verde Salvia */}
+                <Badge variant="secondary">Categoría: {product.category}</Badge>
                 <Badge variant="outline">Código: {product.productCode}</Badge>
-                 {/* Ejemplo de cómo usar el nuevo badge: */}
-                 {/* {product.isNew && <Badge variant="highlight">NUEVO</Badge>} */}
               </div>
               <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
-              <p className="text-4xl lg:text-5xl font-bold text-price">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p> {/* Verde Precio, negrita */}
+              <p className="text-4xl lg:text-5xl font-bold text-price">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               
               <Separator/>
               
@@ -449,8 +447,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
           </p>
           {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="mt-1">¡Pocas unidades!</Badge>}
-          {/* Ejemplo de cómo usar el nuevo badge: */}
-          {/* {product.onSale && <Badge variant="highlight" className="mt-1">OFERTA</Badge>} */}
          
           {product.stock > 0 && (
             <div>
@@ -468,6 +464,8 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   className="w-24 h-10"
                   aria-label="Cantidad"
                   disabled={product.stock <=0}
+                  min="1"
+                  max={product.stock.toString()}
                 />
               </div>
             </div>
@@ -475,16 +473,17 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           
           <div className="space-y-3 pt-2">
             <AlertDialog open={isQuoteModalOpen} onOpenChange={setIsQuoteModalOpen}>
-              <AlertDialogTrigger asChild>
+               <AlertDialog.Trigger asChild>
                 <Button 
                   size="lg" 
-                  variant="accent" // Cobre
+                  variant="accent"
                   className="w-full text-base py-3"
                   disabled={product.stock <= 0}
+                  onClick={() => setIsQuoteModalOpen(true)}
                 >
                   Solicitar Presupuesto
                 </Button>
-              </AlertDialogTrigger>
+              </AlertDialog.Trigger>
               <AlertDialogContent>
                 <Button
                   variant="ghost"
@@ -502,13 +501,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-2 sm:gap-0 flex-col sm:flex-row">
-                  <AlertDialogAction onClick={handleRequestQuoteOnly} variant="accent" className="w-full sm:w-auto">Solicitar presupuesto</AlertDialogAction> {/* Cobre */}
-                  <AlertDialogCancel onClick={handleAddToCartAndContinue} variant="success" className="w-full sm:w-auto mt-2 sm:mt-0">Agregar al carrito</AlertDialogCancel> {/* Verde Oliva */}
+                  <AlertDialogAction onClick={handleRequestQuoteOnly} variant="accent" className="w-full sm:w-auto">Solicitar presupuesto</AlertDialogAction>
+                  <AlertDialogCancel onClick={handleAddToCartAndContinue} variant="success" className="w-full sm:w-auto mt-2 sm:mt-0">Agregar al carrito</AlertDialogCancel>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
             
-            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} /> {/* Verde Oliva */}
+            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
           </div>
           
           <Separator className="my-4"/>
@@ -516,7 +515,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           <div>
             <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3>
             <div className="flex space-x-2 flex-wrap gap-y-2">
-              {/* Iconos de compartir ahora usan color de acento (Cobre) */}
               <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5 text-accent" /></Button>
               <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5 text-accent" /></Button>
               <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5 text-accent" /></Button>
