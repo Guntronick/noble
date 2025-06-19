@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/Logo';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
 
 export default function HomePage() {
   const heroLogoHeight = 64;
@@ -17,8 +16,8 @@ export default function HomePage() {
           <Image 
             src="https://placehold.co/1200x600.png" 
             alt="Abstract background" 
-            layout="fill" 
-            objectFit="cover"
+            fill // Changed from layout="fill" objectFit="cover" to just fill for Next 13+
+            style={{ objectFit: 'cover' }} // Added for explicit object-fit control
             data-ai-hint="abstract technology lines" 
             priority
           />
