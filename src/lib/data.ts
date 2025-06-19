@@ -19,9 +19,28 @@ function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
     // Treat them as default images. This helps with transition.
     imagesData.default = supabaseProduct.images;
   }
-  // If imagesData.default is still empty after processing, add a placeholder
-  if (imagesData.default.length === 0) {
-    imagesData.default = ['https://placehold.co/600x500.png'];
+  
+  // If imagesData.default is still empty after processing, add a placeholder for safety
+  if (!imagesData.default || imagesData.default.length === 0) {
+    // Also ensure all color arrays have at least one image or are not present if empty
+     Object.keys(imagesData).forEach(key => {
+        if (Array.isArray(imagesData[key as keyof ProductImageStructure]) && (imagesData[key as keyof ProductImageStructure] as string[]).length === 0) {
+            if (key === 'default') {
+                imagesData.default = ['https://placehold.co/600x500.png'];
+            } else {
+                delete imagesData[key as keyof ProductImageStructure];
+            }
+        } else if (!Array.isArray(imagesData[key as keyof ProductImageStructure])) {
+             if (key === 'default') {
+                imagesData.default = ['https://placehold.co/600x500.png'];
+            } else {
+                 delete imagesData[key as keyof ProductImageStructure];
+            }
+        }
+    });
+     if (!imagesData.default || imagesData.default.length === 0) {
+        imagesData.default = ['https://placehold.co/600x500.png'];
+    }
   }
 
 
@@ -91,7 +110,13 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
   const { data, error } = await query;
 
   if (error) {
-    console.error('Error fetching products:', error);
+    console.error('Error fetching products. Supabase error:', error);
+    if (typeof error === 'object' && error !== null) {
+      console.error('Error message:', (error as any).message);
+      console.error('Error details:', (error as any).details);
+      console.error('Error code:', (error as any).code);
+      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
+    }
     return [];
   }
   return data ? data.map(mapSupabaseProductToAppProduct) : [];
@@ -105,7 +130,13 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .single();
 
   if (error) {
-    console.error(`Error fetching product by slug ${slug}:`, error);
+    console.error(`Error fetching product by slug ${slug}. Supabase error:`, error);
+     if (typeof error === 'object' && error !== null) {
+      console.error('Error message:', (error as any).message);
+      console.error('Error details:', (error as any).details);
+      console.error('Error code:', (error as any).code);
+      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
+    }
     return null;
   }
   return data ? mapSupabaseProductToAppProduct(data) : null;
@@ -119,7 +150,13 @@ export async function getProductById(id: string): Promise<Product | null> {
     .single();
     
   if (error) {
-    console.error(`Error fetching product by id ${id}:`, error);
+    console.error(`Error fetching product by id ${id}. Supabase error:`, error);
+    if (typeof error === 'object' && error !== null) {
+      console.error('Error message:', (error as any).message);
+      console.error('Error details:', (error as any).details);
+      console.error('Error code:', (error as any).code);
+      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
+    }
     return null;
   }
   return data ? mapSupabaseProductToAppProduct(data) : null;
@@ -135,8 +172,17 @@ export async function getProductsByIds(productIds: string[]): Promise<Product[]>
     .in('id', productIds);
 
   if (error) {
-    console.error('Error fetching products by IDs:', error);
+    console.error('Error fetching products by IDs. Supabase error:', error);
+    if (typeof error === 'object' && error !== null) {
+      console.error('Error message:', (error as any).message);
+      console.error('Error details:', (error as any).details);
+      console.error('Error code:', (error as any).code);
+      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
+    } else {
+      console.error('Full error (primitive):', error);
+    }
     return [];
   }
   return data ? data.map(mapSupabaseProductToAppProduct) : [];
 }
+

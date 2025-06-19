@@ -30,10 +30,11 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
         };
         const aiOutput: RelatedProductsOutput = await getRelatedProducts(aiInput);
         
-        // Extract product IDs, ensuring they are not the current product
+        // Extract product IDs, ensuring they are valid strings, not the current product, and not empty
         const relatedProductIds = aiOutput
           .map(p => p.productId)
-          .filter(id => id !== productId)
+          .filter(id => typeof id === 'string' && id.trim() !== '') // Ensure it's a non-empty string
+          .filter(id => id !== productId) // Filter out the current product
           .slice(0, 4); // Ensure we only try to fetch up to 4
 
         if (relatedProductIds.length > 0) {
@@ -45,8 +46,12 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
         }
 
       } catch (err) {
+        let errorMessage = 'Error al cargar productos relacionados.';
+        if (err instanceof Error) {
+          errorMessage = `${errorMessage} ${err.message}`;
+        }
         console.error('Error al cargar productos relacionados:', err);
-        setError('Error al cargar productos relacionados.');
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -102,3 +107,4 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
     </div>
   );
 }
+
