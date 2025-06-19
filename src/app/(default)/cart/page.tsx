@@ -108,10 +108,10 @@ export default function CartPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
+  const handleQuantityChange = (productId: string, selectedColor: string | undefined, newQuantity: number) => {
     setCartItems(prevItems =>
       prevItems.map(item => {
-        if (item.id === productId) {
+        if (item.id === productId && item.selectedColor === selectedColor) {
           const quantity = Math.max(1, Math.min(newQuantity, item.stock));
           return { ...item, quantityInCart: quantity };
         }
@@ -120,18 +120,18 @@ export default function CartPage() {
     );
   };
 
-  const handleRemoveItem = (productId: string) => {
-    const itemToRemove = cartItems.find(item => item.id === productId);
+  const handleRemoveItem = (productId: string, selectedColor?: string) => {
+    const itemToRemove = cartItems.find(item => item.id === productId && item.selectedColor === selectedColor);
     if (!itemToRemove) return;
 
     setCartItems(prevItems =>
       prevItems.map(it =>
-        it.id === productId ? { ...it, isRemoving: true } : it
+        (it.id === productId && it.selectedColor === selectedColor) ? { ...it, isRemoving: true } : it
       )
     );
 
     setTimeout(() => {
-      setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+      setCartItems(prevItems => prevItems.filter(item => !(item.id === productId && item.selectedColor === selectedColor)));
       setShowRemovedProductToast(true);
       setRemovedProductToastKey(prevKey => prevKey + 1); 
 
@@ -280,7 +280,7 @@ export default function CartPage() {
                          variant="ghost"
                          size="icon"
                          className="text-destructive hover:text-destructive/80 p-1 h-7 w-7"
-                         onClick={() => handleRemoveItem(item.id)}
+                         onClick={() => handleRemoveItem(item.id, item.selectedColor)}
                          aria-label="Eliminar producto"
                        >
                         <XIcon size={16} />
@@ -304,7 +304,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             className="h-7 w-7 p-1"
-                            onClick={() => handleQuantityChange(item.id, item.quantityInCart - 1)}
+                            onClick={() => handleQuantityChange(item.id, item.selectedColor, item.quantityInCart - 1)}
                             disabled={item.quantityInCart <= 1}
                           >
                             <Minus size={14} />
@@ -315,12 +315,12 @@ export default function CartPage() {
                             onChange={(e) => {
                                 const val = parseInt(e.target.value, 10);
                                 if (!isNaN(val) && val >=1) {
-                                     handleQuantityChange(item.id, val)
+                                     handleQuantityChange(item.id, item.selectedColor, val)
                                 }
                             }}
                             onBlur={(e) => { 
                                 if (item.quantityInCart < 1 || isNaN(item.quantityInCart)) {
-                                   handleQuantityChange(item.id, 1);
+                                   handleQuantityChange(item.id, item.selectedColor, 1);
                                 }
                             }}
                             min="1"
@@ -333,7 +333,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             className="h-7 w-7 p-1"
-                            onClick={() => handleQuantityChange(item.id, item.quantityInCart + 1)}
+                            onClick={() => handleQuantityChange(item.id, item.selectedColor, item.quantityInCart + 1)}
                             disabled={item.quantityInCart >= item.stock}
                           >
                             <Plus size={14} />
