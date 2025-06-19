@@ -13,8 +13,8 @@ import { Separator } from '@/components/ui/separator';
 import { Twitter, Facebook, Instagram, Mail, MessageSquare, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react'; // Removed 'use'
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
+import { useRouter, useParams } from 'next/navigation'; // Import useParams
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -25,7 +25,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"; // Removed AlertDialogTrigger as it's part of AlertDialog
+} from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
@@ -36,11 +36,11 @@ interface ProductDetailPageProps {
 
 const ZOOM_FACTOR = 2.5; 
 
-export default function ProductDetailPage({ params }: ProductDetailPageProps) {
+export default function ProductDetailPage({ params: propParams }: ProductDetailPageProps) { // Renamed params to propParams to avoid conflict if needed, though not strictly necessary here
   const router = useRouter();
   const { toast } = useToast();
-  // const resolvedParams = use(params as Promise<{ productId: string }>); // 'use' is for Server Components or specific hooks
-  const productSlug = params.productId; // Access slug directly in client component after page load
+  const params = useParams<{ productId: string }>(); // Use the useParams hook
+  const productSlug = params.productId; // Access slug from the hook
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,7 +66,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       if (!productSlug) return;
       setLoading(true);
       try {
-        const fetchedProduct = await getProductBySlug(productSlug); // Calls the new async version
+        const fetchedProduct = await getProductBySlug(productSlug);
         setProduct(fetchedProduct);
         if (fetchedProduct && fetchedProduct.colors.length > 0) {
           setSelectedColor(fetchedProduct.colors[0]);
@@ -77,7 +77,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
         setQuantity(1); 
       } catch (error) {
         console.error("Failed to load product:", error);
-        setProduct(null); // Handle error state
+        setProduct(null);
       } finally {
         setLoading(false);
       }
@@ -322,7 +322,7 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
     return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Producto no encontrado.</p></div>;
   }
   
-  const mainImageSrc = product.images[0] || 'https://placehold.co/600x500.png'; // Use first image or placeholder
+  const mainImageSrc = product.images[0] || 'https://placehold.co/600x500.png';
 
   return (
     <div className="container mx-auto px-4 py-12">
