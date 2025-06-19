@@ -24,9 +24,9 @@ export type RelatedProductsInput = z.infer<typeof RelatedProductsInputSchema>;
 
 const RelatedProductsOutputSchema = z.array(
   z.object({
-    productId: z.string().describe('The ID (must be a valid UUID string) of the related product.'),
+    productId: z.string().describe('The ID of the related product. IMPORTANT: This ID MUST be a valid UUID string.'),
     name: z.string().describe('The name of the related product.'),
-    imageUrl: z.string().describe("URL of the product image. Must be a placeholder from https://placehold.co (e.g., https://placehold.co/600x800.png)."),
+    imageUrl: z.string().describe("URL of the product image. IMPORTANT: This URL MUST be a placeholder image from 'https://placehold.co'. For example, 'https://placehold.co/600x800.png'. Do not use any other domain."),
     description: z.string().describe('A short description of the product.'),
   })
 );
