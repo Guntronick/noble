@@ -24,9 +24,9 @@ export type RelatedProductsInput = z.infer<typeof RelatedProductsInputSchema>;
 
 const RelatedProductsOutputSchema = z.array(
   z.object({
-    productId: z.string().uuid().describe('The ID (must be a valid UUID string) of the related product.'),
+    productId: z.string().describe('The ID (must be a valid UUID string) of the related product.'),
     name: z.string().describe('The name of the related product.'),
-    imageUrl: z.string().url().describe("URL of the product image. Must be a placeholder from https://placehold.co (e.g., https://placehold.co/600x800.png)."),
+    imageUrl: z.string().describe("URL of the product image. Must be a placeholder from https://placehold.co (e.g., https://placehold.co/600x800.png)."),
     description: z.string().describe('A short description of the product.'),
   })
 );
@@ -42,7 +42,7 @@ const relatedProductsPrompt = ai.definePrompt({
     schema: RelatedProductsInputSchema,
   },
   output: {
-    schema: RelatedProductsOutputSchema,
+    schema: RelatedProductsOutputSchema, // This schema is sent to Google AI for response structuring
   },
   prompt: `You are an expert in product recommendations.
 
@@ -64,12 +64,16 @@ const relatedProductsFlow = ai.defineFlow(
   {
     name: 'relatedProductsFlow',
     inputSchema: RelatedProductsInputSchema,
-    outputSchema: RelatedProductsOutputSchema,
+    outputSchema: RelatedProductsOutputSchema, // Genkit validates the final output against this
   },
   async input => {
     const {output} = await relatedProductsPrompt(input);
-    // The output will be automatically validated against RelatedProductsOutputSchema by Genkit.
-    // If validation fails (e.g., productId is not a UUID), an error will be thrown.
+    // The output from the LLM will be validated against the flow's outputSchema by Genkit.
+    // If the LLM returns a productId that isn't a UUID (despite prompt instructions),
+    // or an imageUrl that isn't a valid URL, Zod validation might still catch it here if
+    // the flow's outputSchema was stricter (e.g. kept .uuid() and .url()).
+    // However, the immediate error is from Google's API schema validation, so we simplify
+    // RelatedProductsOutputSchema for that.
     return output!;
   }
 );
