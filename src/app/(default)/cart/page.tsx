@@ -14,9 +14,9 @@ import Link from 'next/link';
 import { X as XIcon, Minus, Plus, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const ITEM_REMOVAL_ANIMATION_DURATION = 300; 
-const TOAST_TIMER_DURATION = 1200; 
-const TOAST_ANIMATION_DURATION = 500; 
+const ITEM_REMOVAL_ANIMATION_DURATION = 300;
+const TOAST_TIMER_DURATION = 1200;
+const TOAST_ANIMATION_DURATION = 500;
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 
 export default function CartPage() {
@@ -32,8 +32,8 @@ export default function CartPage() {
   });
   const [showRemovedProductToast, setShowRemovedProductToast] = useState(false);
   const removedProductToastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [removedProductToastKey, setRemovedProductToastKey] = useState(0); 
-  
+  const [removedProductToastKey, setRemovedProductToastKey] = useState(0);
+
   const progressBarRef = useRef<HTMLDivElement>(null);
   const animationFrameIdRef = useRef<number | null>(null);
 
@@ -46,10 +46,10 @@ export default function CartPage() {
           setCartItems(parsedItems.map(item => ({ ...item, isRemoving: false })));
         } catch (error) {
           console.error("Error parsing cart items from localStorage:", error);
-          localStorage.removeItem(LOCAL_STORAGE_CART_KEY); 
+          localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
         }
       }
-      setIsCartLoaded(true); 
+      setIsCartLoaded(true);
     }
   }, []);
 
@@ -76,13 +76,13 @@ export default function CartPage() {
     if (showRemovedProductToast && progressBarRef.current) {
       let startTime: number | null = null;
       const barElement = progressBarRef.current;
-      barElement.style.width = '100%'; 
-      
+      barElement.style.width = '100%';
+
       const animate = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
         const elapsedTime = timestamp - startTime;
         const progress = Math.max(0, (TOAST_TIMER_DURATION - elapsedTime) / TOAST_TIMER_DURATION);
-        
+
         if (barElement) barElement.style.width = `${progress * 100}%`;
 
         if (elapsedTime < TOAST_TIMER_DURATION) {
@@ -93,10 +93,10 @@ export default function CartPage() {
       };
       animationFrameIdRef.current = requestAnimationFrame(animate);
     } else if (progressBarRef.current) {
-      progressBarRef.current.style.width = '100%'; 
+      progressBarRef.current.style.width = '100%';
       if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
     }
-    
+
     return () => {
       if (animationFrameIdRef.current) cancelAnimationFrame(animationFrameIdRef.current);
     };
@@ -111,6 +111,7 @@ export default function CartPage() {
   const handleQuantityChange = (productId: string, selectedColor: string | undefined, newQuantity: number) => {
     setCartItems(prevItems =>
       prevItems.map(item => {
+        // Check both productId and selectedColor for uniqueness
         if (item.id === productId && item.selectedColor === selectedColor) {
           const quantity = Math.max(1, Math.min(newQuantity, item.stock));
           return { ...item, quantityInCart: quantity };
@@ -121,19 +122,25 @@ export default function CartPage() {
   };
 
   const handleRemoveItem = (productId: string, selectedColor?: string) => {
+    // Find the specific item to ensure it exists before proceeding (optional, but good practice)
     const itemToRemove = cartItems.find(item => item.id === productId && item.selectedColor === selectedColor);
-    if (!itemToRemove) return;
+    if (!itemToRemove) {
+      // console.warn("Attempted to remove an item not found in cart:", productId, selectedColor);
+      return;
+    }
 
+    // First, mark the specific item for removal animation
     setCartItems(prevItems =>
       prevItems.map(it =>
         (it.id === productId && it.selectedColor === selectedColor) ? { ...it, isRemoving: true } : it
       )
     );
 
+    // Then, after a delay, filter out the item
     setTimeout(() => {
       setCartItems(prevItems => prevItems.filter(item => !(item.id === productId && item.selectedColor === selectedColor)));
       setShowRemovedProductToast(true);
-      setRemovedProductToastKey(prevKey => prevKey + 1); 
+      setRemovedProductToastKey(prevKey => prevKey + 1);
 
       if (removedProductToastTimeoutRef.current) {
         clearTimeout(removedProductToastTimeoutRef.current);
@@ -157,7 +164,7 @@ export default function CartPage() {
     console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: orderItems, total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
   };
-  
+
 
   if (!isCartLoaded) {
     return <div className="container mx-auto px-4 py-12 text-center">Cargando carrito...</div>;
@@ -233,7 +240,7 @@ export default function CartPage() {
                     ? 'top-4 opacity-100 scale-100 pointer-events-auto'
                     : 'top-4 opacity-0 scale-95 pointer-events-none'
                 )}
-                style={{ 
+                style={{
                   transitionDuration: `${TOAST_ANIMATION_DURATION}ms`,
                 }}
               >
@@ -318,7 +325,7 @@ export default function CartPage() {
                                      handleQuantityChange(item.id, item.selectedColor, val)
                                 }
                             }}
-                            onBlur={(e) => { 
+                            onBlur={(e) => {
                                 if (item.quantityInCart < 1 || isNaN(item.quantityInCart)) {
                                    handleQuantityChange(item.id, item.selectedColor, 1);
                                 }
@@ -371,4 +378,3 @@ export default function CartPage() {
     </div>
   );
 }
-
