@@ -5,42 +5,29 @@ import { supabase } from './supabaseClient';
 // Helper function to map Supabase product (snake_case, with joined category) to our Product type (camelCase)
 function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
   let imagesData: ProductImageStructure = { default: [] };
-  if (supabaseProduct.images && typeof supabaseProduct.images === 'object') {
-    // Ensure 'default' key exists and is an array
-    imagesData.default = Array.isArray(supabaseProduct.images.default) ? supabaseProduct.images.default : [];
-    // Copy other color-specific image arrays
+
+  if (supabaseProduct.images && typeof supabaseProduct.images === 'object' && supabaseProduct.images !== null) {
+    // Populate default images
+    if (Array.isArray(supabaseProduct.images.default) && supabaseProduct.images.default.every((img: any) => typeof img === 'string')) {
+      imagesData.default = supabaseProduct.images.default.length > 0 ? supabaseProduct.images.default : ['https://placehold.co/600x500.png'];
+    } else {
+      imagesData.default = ['https://placehold.co/600x500.png'];
+    }
+
+    // Populate color-specific images
     for (const color in supabaseProduct.images) {
-      if (color !== 'default' && Array.isArray(supabaseProduct.images[color])) {
+      if (color !== 'default' && Array.isArray(supabaseProduct.images[color]) && supabaseProduct.images[color].every((img: any) => typeof img === 'string') && supabaseProduct.images[color].length > 0) {
         imagesData[color] = supabaseProduct.images[color];
       }
     }
-  } else if (Array.isArray(supabaseProduct.images)) {
-    // Handle legacy case where images might still be a simple array
-    // Treat them as default images. This helps with transition.
-    imagesData.default = supabaseProduct.images;
+  } else if (Array.isArray(supabaseProduct.images) && supabaseProduct.images.every((img: any) => typeof img === 'string')) {
+    imagesData.default = supabaseProduct.images.length > 0 ? supabaseProduct.images : ['https://placehold.co/600x500.png'];
+  } else {
+    imagesData.default = ['https://placehold.co/600x500.png'];
   }
-  
-  // If imagesData.default is still empty after processing, add a placeholder for safety
+
   if (!imagesData.default || imagesData.default.length === 0) {
-    // Also ensure all color arrays have at least one image or are not present if empty
-     Object.keys(imagesData).forEach(key => {
-        if (Array.isArray(imagesData[key as keyof ProductImageStructure]) && (imagesData[key as keyof ProductImageStructure] as string[]).length === 0) {
-            if (key === 'default') {
-                imagesData.default = ['https://placehold.co/600x500.png'];
-            } else {
-                delete imagesData[key as keyof ProductImageStructure];
-            }
-        } else if (!Array.isArray(imagesData[key as keyof ProductImageStructure])) {
-             if (key === 'default') {
-                imagesData.default = ['https://placehold.co/600x500.png'];
-            } else {
-                 delete imagesData[key as keyof ProductImageStructure];
-            }
-        }
-    });
-     if (!imagesData.default || imagesData.default.length === 0) {
-        imagesData.default = ['https://placehold.co/600x500.png'];
-    }
+    imagesData.default = ['https://placehold.co/600x500.png'];
   }
 
 
@@ -48,7 +35,7 @@ function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
     id: supabaseProduct.id,
     name: supabaseProduct.name,
     description: supabaseProduct.description,
-    images: imagesData, // Use the processed imagesData
+    images: imagesData, 
     price: supabaseProduct.price,
     colors: supabaseProduct.colors || [],
     category: supabaseProduct.categories?.name || 'Uncategorized',
