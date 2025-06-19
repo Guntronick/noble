@@ -55,9 +55,10 @@ export default function ProductListingClientComponent({
     }
     
     if (searchTerm) {
+      const lowerSearchTerm = searchTerm.toLowerCase();
       productsToFilter = productsToFilter.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchTerm.toLowerCase())
+        p.name.toLowerCase().includes(lowerSearchTerm) ||
+        (p.description && p.description.toLowerCase().includes(lowerSearchTerm))
       );
     }
     return productsToFilter;
