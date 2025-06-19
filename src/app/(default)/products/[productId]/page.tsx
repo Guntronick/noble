@@ -14,7 +14,7 @@ import { Twitter, Facebook, Instagram, Mail, MessageSquare, X } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
-import { useRouter, useParams } from 'next/navigation'; // Import useParams
+import { useRouter, useParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -25,22 +25,23 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger, // Import AlertDialogTrigger directly
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 
-interface ProductDetailPageProps {
-  params: { productId: string }; 
-}
+// interface ProductDetailPageProps { // No longer needed as we use useParams for client components
+//   params: { productId: string }; 
+// }
 
 const ZOOM_FACTOR = 2.5; 
 
-export default function ProductDetailPage({ params: propParams }: ProductDetailPageProps) { // Renamed params to propParams to avoid conflict if needed, though not strictly necessary here
+export default function ProductDetailPage(/*{ params: propParams }: ProductDetailPageProps*/) {
   const router = useRouter();
   const { toast } = useToast();
-  const params = useParams<{ productId: string }>(); // Use the useParams hook
-  const productSlug = params.productId; // Access slug from the hook
+  const params = useParams<{ productId: string }>(); 
+  const productSlug = params ? params.productId : null;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,7 +64,10 @@ export default function ProductDetailPage({ params: propParams }: ProductDetailP
 
   useEffect(() => {
     async function loadProduct() {
-      if (!productSlug) return;
+      if (!productSlug) {
+        setLoading(false); // Ensure loading stops if no slug
+        return;
+      }
       setLoading(true);
       try {
         const fetchedProduct = await getProductBySlug(productSlug);
@@ -360,7 +364,7 @@ export default function ProductDetailPage({ params: propParams }: ProductDetailP
               onMouseMove={handleMouseMove}
             >
               <Image 
-                src={mainImageSrc} 
+                src={product.images[currentImageIndex] || 'https://placehold.co/600x500.png'}
                 alt={product.name} 
                 fill
                 sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 100%"
@@ -473,7 +477,7 @@ export default function ProductDetailPage({ params: propParams }: ProductDetailP
           
           <div className="space-y-3 pt-2">
             <AlertDialog open={isQuoteModalOpen} onOpenChange={setIsQuoteModalOpen}>
-               <AlertDialog.Trigger asChild>
+               <AlertDialogTrigger asChild>
                 <Button 
                   size="lg" 
                   variant="accent"
@@ -483,7 +487,7 @@ export default function ProductDetailPage({ params: propParams }: ProductDetailP
                 >
                   Solicitar Presupuesto
                 </Button>
-              </AlertDialog.Trigger>
+              </AlertDialogTrigger>
               <AlertDialogContent>
                 <Button
                   variant="ghost"
@@ -538,3 +542,6 @@ export default function ProductDetailPage({ params: propParams }: ProductDetailP
     </div>
   );
 }
+
+
+    
