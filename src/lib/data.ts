@@ -1,17 +1,38 @@
 
-import type { Product, Category } from './types';
+import type { Product, Category, ProductImageStructure } from './types';
 import { supabase } from './supabaseClient';
 
 // Helper function to map Supabase product (snake_case, with joined category) to our Product type (camelCase)
 function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
+  let imagesData: ProductImageStructure = { default: [] };
+  if (supabaseProduct.images && typeof supabaseProduct.images === 'object') {
+    // Ensure 'default' key exists and is an array
+    imagesData.default = Array.isArray(supabaseProduct.images.default) ? supabaseProduct.images.default : [];
+    // Copy other color-specific image arrays
+    for (const color in supabaseProduct.images) {
+      if (color !== 'default' && Array.isArray(supabaseProduct.images[color])) {
+        imagesData[color] = supabaseProduct.images[color];
+      }
+    }
+  } else if (Array.isArray(supabaseProduct.images)) {
+    // Handle legacy case where images might still be a simple array
+    // Treat them as default images. This helps with transition.
+    imagesData.default = supabaseProduct.images;
+  }
+  // If imagesData.default is still empty after processing, add a placeholder
+  if (imagesData.default.length === 0) {
+    imagesData.default = ['https://placehold.co/600x500.png'];
+  }
+
+
   return {
     id: supabaseProduct.id,
     name: supabaseProduct.name,
     description: supabaseProduct.description,
-    images: supabaseProduct.images || [], // Ensure images is an array
+    images: imagesData, // Use the processed imagesData
     price: supabaseProduct.price,
-    colors: supabaseProduct.colors || [], // Ensure colors is an array
-    category: supabaseProduct.categories?.name || 'Uncategorized', // Joined category name
+    colors: supabaseProduct.colors || [],
+    category: supabaseProduct.categories?.name || 'Uncategorized',
     productCode: supabaseProduct.product_code,
     slug: supabaseProduct.slug,
     stock: supabaseProduct.stock,
@@ -46,12 +67,10 @@ export async function getCategories(): Promise<Category[]> {
 export async function getProducts(options?: { categorySlug?: string; limit?: number }): Promise<Product[]> {
   let query = supabase
     .from('products')
-    .select('*, categories(name, slug)') // Join with categories table to get name and slug
+    .select('*, categories(name, slug)')
     .order('created_at', { ascending: false });
 
   if (options?.categorySlug) {
-    // To filter by category slug, we first need the category_id
-    // This assumes 'categories' table has unique 'slug'
     const { data: categoryData, error: categoryError } = await supabase
       .from('categories')
       .select('id')
@@ -106,8 +125,6 @@ export async function getProductById(id: string): Promise<Product | null> {
   return data ? mapSupabaseProductToAppProduct(data) : null;
 }
 
-// This function is for the RelatedProductsClient which expects an array of AI products.
-// It will now fetch actual products from Supabase based on AI-generated product IDs.
 export async function getProductsByIds(productIds: string[]): Promise<Product[]> {
   if (!productIds || productIds.length === 0) {
     return [];
@@ -123,7 +140,3 @@ export async function getProductsByIds(productIds: string[]): Promise<Product[]>
   }
   return data ? data.map(mapSupabaseProductToAppProduct) : [];
 }
-
-// The old static data (products and categories arrays) should be removed from here.
-// And the old getProductsByCategory, getProductBySlug, getProductById functions.
-// The new functions above replace them.

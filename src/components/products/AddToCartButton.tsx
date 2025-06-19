@@ -83,7 +83,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
         id: product.id,
         name: product.name,
         description: product.description,
-        images: product.images,
+        images: product.images.default && product.images.default.length > 0 ? product.images.default : ['https://placehold.co/100x100.png'],
         price: product.price,
         selectedColor: product.colors.length > 0 ? selectedColor : undefined,
         category: product.category,
@@ -108,7 +108,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     <Button 
       onClick={handleAddToCart} 
       size="lg" 
-      variant="success" // Verde Oliva Oscuro
+      variant="success"
       className={cn(
         "w-full flex items-center gap-2 text-base py-3",
         className 

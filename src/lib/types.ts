@@ -1,16 +1,21 @@
 
+export interface ProductImageStructure {
+  default: string[];
+  [color: string]: string[]; // Allows for color-specific image arrays
+}
+
 export interface Product {
   id: string;
   name: string;
   description: string;
-  images: string[]; // URLs
+  images: ProductImageStructure; // Updated structure
   price: number;
   colors: string[];
   category: string;
   productCode: string;
   slug: string;
   stock: number;
-  dataAiHint?: string; // Optional hint for main image
+  dataAiHint?: string;
 }
 
 export interface Category {
@@ -21,13 +26,11 @@ export interface Category {
   dataAiHint?: string;
 }
 
-// Type for items stored in localStorage and used in cart state
-// It does not include UI-specific properties like 'isRemoving'
 export interface CartItemBase {
   id: string;
   name: string;
   description: string;
-  images: string[];
+  images: string[]; // Will store default images for cart display
   price: number;
   selectedColor?: string;
   category: string;
@@ -38,7 +41,6 @@ export interface CartItemBase {
   dataAiHint?: string;
 }
 
-// Type used in the CartPage component's state, including UI properties
 export interface CartItemType extends CartItemBase {
   isRemoving?: boolean;
 }

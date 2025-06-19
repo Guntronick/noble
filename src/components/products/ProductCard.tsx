@@ -9,16 +9,19 @@ import { cn } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
-  // TODO: Add properties for highlight badges if needed, e.g., isNew?: boolean, isBestSeller?: boolean, onSale?: boolean
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const displayImage = product.images.default && product.images.default.length > 0 
+    ? product.images.default[0] 
+    : 'https://placehold.co/300x400.png';
+
   return (
     <Card className="overflow-hidden bg-card text-card-foreground shadow-lg hover:shadow-[0_4px_15px_rgba(31,59,77,0.2)] transition-shadow duration-300 flex flex-col h-full group">
       <CardHeader className="p-0 relative">
         <Link href={`/products/${product.slug}`} className="block aspect-[3/4] relative">
           <Image
-            src={product.images[0]}
+            src={displayImage}
             alt={product.name}
             layout="fill"
             objectFit="cover"
@@ -26,8 +29,6 @@ export function ProductCard({ product }: ProductCardProps) {
             data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
           />
         </Link>
-        {/* Example of how to add a highlight badge if product data supports it */}
-        {/* {product.isNew && <Badge variant="highlight" className="absolute top-3 right-3">NUEVO</Badge>} */}
       </CardHeader>
       <CardContent className="p-4 flex-grow">
         <CardTitle className="text-lg mb-1 font-headline">
@@ -49,4 +50,3 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   );
 }
-

@@ -1,8 +1,8 @@
 
 "use client"; 
 
-import type { Product, CartItemBase } from '@/lib/types';
-import { getProductBySlug } from '@/lib/data'; // This will now be the async version
+import type { Product, CartItemBase, ProductImageStructure } from '@/lib/types';
+import { getProductBySlug } from '@/lib/data';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
 import { Badge } from '@/components/ui/badge';
@@ -25,19 +25,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger, // Import AlertDialogTrigger directly
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
-
-// interface ProductDetailPageProps { // No longer needed as we use useParams for client components
-//   params: { productId: string }; 
-// }
-
 const ZOOM_FACTOR = 2.5; 
 
-export default function ProductDetailPage(/*{ params: propParams }: ProductDetailPageProps*/) {
+export default function ProductDetailPage() {
   const router = useRouter();
   const { toast } = useToast();
   const params = useParams<{ productId: string }>(); 
@@ -50,6 +45,8 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
+  const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
+
   const [showZoom, setShowZoom] = useState(false);
   const [lensRect, setLensRect] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [zoomBackgroundPosition, setZoomBackgroundPosition] = useState({ x: 0, y: 0 });
@@ -61,11 +58,10 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
   const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
   const [zoomPanelStyle, setZoomPanelStyle] = useState<React.CSSProperties>({});
 
-
   useEffect(() => {
     async function loadProduct() {
       if (!productSlug) {
-        setLoading(false); // Ensure loading stops if no slug
+        setLoading(false);
         return;
       }
       setLoading(true);
@@ -77,7 +73,6 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
         } else if (fetchedProduct) {
           setSelectedColor(''); 
         }
-        setCurrentImageIndex(0); 
         setQuantity(1); 
       } catch (error) {
         console.error("Failed to load product:", error);
@@ -90,19 +85,38 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
   }, [productSlug]);
 
   useEffect(() => {
+    if (product) {
+      let newImages: string[] = [];
+      if (selectedColor && product.images[selectedColor] && product.images[selectedColor].length > 0) {
+        newImages = product.images[selectedColor];
+      } else if (product.images.default && product.images.default.length > 0) {
+        newImages = product.images.default;
+      } else {
+        newImages = ['https://placehold.co/600x500.png']; // Fallback if no images at all
+      }
+      setImagesToDisplay(newImages);
+      setCurrentImageIndex(0); // Reset index when images change
+    } else {
+      setImagesToDisplay(['https://placehold.co/600x500.png']); // Fallback if no product
+      setCurrentImageIndex(0);
+    }
+  }, [product, selectedColor]);
+
+
+  useEffect(() => {
     if (imageContainerRef.current) {
       const rect = imageContainerRef.current.getBoundingClientRect();
       setImageDimensions({ width: rect.width, height: rect.height });
     }
-  }, [currentImageIndex, product, showZoom, typeof window !== 'undefined' ? window.innerWidth : 0]);
+  }, [currentImageIndex, product, imagesToDisplay, showZoom, typeof window !== 'undefined' ? window.innerWidth : 0]);
 
   useEffect(() => {
-    if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product) {
+    if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product || imagesToDisplay.length === 0) {
       setZoomPanelStyle(prev => ({ ...prev, display: 'none' }));
       return;
     }
   
-    const mainImageSrc = product.images[currentImageIndex] || 'https://placehold.co/600x500.png';
+    const mainImageSrc = imagesToDisplay[currentImageIndex] || 'https://placehold.co/600x500.png';
     
     const panelWidth = purchaseBoxRef.current.offsetWidth;
     const panelHeight = imageDimensions.height; 
@@ -128,7 +142,8 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
       overflow: 'hidden',
     });
   
-  }, [showZoom, imageDimensions, product, currentImageIndex, zoomBackgroundPosition]);
+  }, [showZoom, imageDimensions, product, currentImageIndex, imagesToDisplay, zoomBackgroundPosition]);
+
 
   const handleShare = (platform: string) => {
     if (typeof window === "undefined" || !product) return;
@@ -200,10 +215,10 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
         id: product.id,
         name: product.name,
         description: product.description,
-        images: product.images,
+        images: product.images.default && product.images.default.length > 0 ? product.images.default : ['https://placehold.co/100x100.png'],
         price: product.price,
         selectedColor: product.colors.length > 0 ? selectedColor : undefined,
-        category: product.category, // Product category name
+        category: product.category, 
         productCode: product.productCode,
         slug: product.slug,
         stock: product.stock,
@@ -326,14 +341,12 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
     return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-destructive">Producto no encontrado.</p></div>;
   }
   
-  const mainImageSrc = product.images[0] || 'https://placehold.co/600x500.png';
-
   return (
     <div className="container mx-auto px-4 py-12">
       <div ref={mainGridRef} className="grid grid-cols-1 lg:grid-cols-[minmax(100px,0.7fr)_3fr_2fr] xl:grid-cols-[minmax(120px,0.5fr)_3fr_2fr] gap-6 lg:gap-8 items-start relative">
         
         <div className="self-start hidden lg:flex lg:flex-col space-y-3 pr-2">
-          {product.images.map((img, index) => (
+          {imagesToDisplay.map((img, index) => (
             <button 
               key={index} 
               onClick={() => setCurrentImageIndex(index)}
@@ -363,16 +376,18 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
               onMouseLeave={handleMouseLeave}
               onMouseMove={handleMouseMove}
             >
-              <Image 
-                src={product.images[currentImageIndex] || 'https://placehold.co/600x500.png'}
-                alt={product.name} 
-                fill
-                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 100%"
-                className="object-contain transition-opacity duration-300 ease-in-out" 
-                priority 
-                data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-              />
-              {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && lensRect.width > 0 && lensRect.height > 0 && (
+              {imagesToDisplay.length > 0 && (
+                <Image 
+                  src={imagesToDisplay[currentImageIndex]}
+                  alt={product.name} 
+                  fill
+                  sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 100%"
+                  className="object-contain transition-opacity duration-300 ease-in-out" 
+                  priority 
+                  data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+                />
+              )}
+              {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && lensRect.width > 0 && lensRect.height > 0 && imagesToDisplay.length > 0 && (
                 <div 
                   className="absolute border-2 border-primary/50 bg-white/20 pointer-events-none"
                   style={{
@@ -386,7 +401,7 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
             </div>
             
             <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
-              {product.images.map((img, index) => (
+              {imagesToDisplay.map((img, index) => (
                 <button
                   key={`mobile-thumb-${index}`}
                   onClick={() => setCurrentImageIndex(index)}
@@ -528,7 +543,7 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
           </div>
         </div>
 
-        {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && product && purchaseBoxRef.current && (
+        {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && product && purchaseBoxRef.current && imagesToDisplay.length > 0 && (
           <div
             className="absolute hidden lg:block pointer-events-none" 
             style={zoomPanelStyle}
@@ -542,6 +557,3 @@ export default function ProductDetailPage(/*{ params: propParams }: ProductDetai
     </div>
   );
 }
-
-
-    
