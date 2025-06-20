@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, ArrowRight } from 'lucide-react'; // Import ArrowRight
 import type { Product, CartItemBase } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -110,13 +110,27 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center gap-2 text-base py-3 group", // Added group class
+        "w-full flex items-center justify-center gap-2 text-base py-3 group", // Added group class
         className
       )}
       disabled={product.stock <= 0}
     >
-      <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover:scale-110" /> {/* Added animation classes */}
-      {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
+      <span className="relative inline-flex items-center justify-center h-5 w-5"> {/* Container for icons */}
+        <ShoppingCart
+          className="h-full w-full" // ShoppingCart remains static
+        />
+        <ArrowRight
+          className={cn(
+            "absolute h-3 w-3 opacity-0 transition-all duration-300 ease-in-out",
+            "transform translate-x-[-8px] scale-75", // Starts left, small, and invisible
+            "group-hover:opacity-100 group-hover:translate-x-[1px] group-hover:scale-100" // On hover: visible, moves right, scales up
+          )}
+        />
+      </span>
+      <span>
+        {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
+      </span>
     </Button>
   );
 }
+
