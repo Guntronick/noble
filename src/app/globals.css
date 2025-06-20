@@ -27,7 +27,7 @@
     --accent: 29 70% 44%; /* Cobre #B26E30 (para "Solicitar Presupuesto") - Saturación aumentada */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
-    --success-bg: 80 45% 36%; /* Verde Oliva Oscuro #6E7C3D (para "Agregar al carrito") - Saturación aumentada */
+    --success-bg: 145 50% 40%; /* Verde WhatsApp-like #3DAA60 (para "Agregar al carrito") */
     --success-foreground: 0 0% 100%; /* Blanco #FFFFFF */
     
     --price-text-color: 87 45% 44%; /* Verde Precio #7AA33F */
@@ -88,7 +88,7 @@
     --accent: 29 65% 50%; /* Cobre (ligeramente ajustado para tema oscuro) - Saturación aumentada */
     --accent-foreground: 0 0% 100%;
 
-    --success-bg: 80 40% 40%; /* Verde Oliva Oscuro (ligeramente ajustado) - Saturación aumentada */
+    --success-bg: 145 50% 45%; /* Verde WhatsApp-like #4FBB73 (para "Agregar al carrito") */
     --success-foreground: 0 0% 100%;
     
     --price-text-color: 87 40% 50%; /* Verde Precio (ligeramente ajustado) #88B353 */
