@@ -12,7 +12,7 @@ const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 interface AddToCartButtonProps {
   product: Product;
   selectedColor: string;
-  quantity: number; 
+  quantity: number;
   className?: string;
 }
 
@@ -20,7 +20,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
   const { toast } = useToast();
 
   const getValidatedQuantity = (currentQty: number): number => {
-    if (!product) return 1; 
+    if (!product) return 1;
     let newQuantity = currentQty;
     if (typeof newQuantity !== 'number' || isNaN(newQuantity) || newQuantity <= 0) {
       newQuantity = 1;
@@ -44,7 +44,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       });
       return;
     }
-    
+
     if (userOriginalQuantity !== validatedQuantityForAction) {
       if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
         toast({
@@ -60,8 +60,8 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
         });
       }
     }
-    
-    if (validatedQuantityForAction <= 0) { 
+
+    if (validatedQuantityForAction <= 0) {
       toast({
         title: "Cantidad inválida",
         description: "Por favor, introduce una cantidad mayor que cero.",
@@ -77,7 +77,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
 
     if (existingItemIndex > -1) {
       const newTotalQuantity = cart[existingItemIndex].quantityInCart + validatedQuantityForAction;
-      cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock); 
+      cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock);
     } else {
       const newItem: CartItemBase = {
         id: product.id,
@@ -103,19 +103,19 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       description: `${validatedQuantityForAction} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
     });
   };
-  
+
   return (
-    <Button 
-      onClick={handleAddToCart} 
-      size="lg" 
+    <Button
+      onClick={handleAddToCart}
+      size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center gap-2 text-base py-3",
-        className 
+        "w-full flex items-center gap-2 text-base py-3 group", // Added group class
+        className
       )}
       disabled={product.stock <= 0}
     >
-      <ShoppingCart className="h-5 w-5" />
+      <ShoppingCart className="h-5 w-5 transition-transform duration-200 ease-in-out group-hover:scale-110" /> {/* Added animation classes */}
       {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
     </Button>
   );

@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         accent: "bg-accent text-accent-foreground hover:bg-[#8E5527]", // Cobre con hover específico
-        success: "bg-success text-success-foreground hover:bg-[#586A30]", // Verde Oliva con hover específico
+        success: "bg-success text-success-foreground hover:bg-[#318C53]", // Verde WhatsApp-like con hover específico (más oscuro)
         "cta-orange": "bg-cta-orange text-cta-orange-foreground hover:bg-[#E86620]", // Naranja con hover específico
       },
       size: {

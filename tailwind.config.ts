@@ -49,7 +49,7 @@ export default {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        success: { // Verde Oliva Oscuro (para "Agregar al Carrito")
+        success: { // Verde WhatsApp-like (para "Agregar al Carrito")
           DEFAULT: 'hsl(var(--success-bg))',
           foreground: 'hsl(var(--success-foreground))',
         },
