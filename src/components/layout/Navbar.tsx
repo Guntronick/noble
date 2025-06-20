@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Menu } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 
 const navItems = [
   { href: '/', label: 'Inicio' },
@@ -48,6 +48,7 @@ export function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="bg-primary text-primary-foreground">
+                <SheetTitle className="sr-only">Navegación Principal</SheetTitle>
                 <div className="flex flex-col space-y-4 p-4">
                   <Logo className="mb-4" />
                   {navItems.map((item) => (
