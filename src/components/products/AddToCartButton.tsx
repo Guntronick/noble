@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowRight } from 'lucide-react'; // Import ArrowRight
+import { ShoppingCart, ArrowDown } from 'lucide-react'; // Cambiado a ArrowDown
 import type { Product, CartItemBase } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -110,20 +110,20 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center justify-center gap-2 text-base py-3 group", // Added group class
+        "w-full flex items-center justify-center gap-2 text-base py-3 group",
         className
       )}
       disabled={product.stock <= 0}
     >
-      <span className="relative inline-flex items-center justify-center h-5 w-5"> {/* Container for icons */}
+      <span className="relative inline-flex items-center justify-center h-6 w-6"> {/* Contenedor de icono más grande */}
         <ShoppingCart
-          className="h-full w-full" // ShoppingCart remains static
+          className="h-full w-full" 
         />
-        <ArrowRight
+        <ArrowDown // Cambiado a ArrowDown
           className={cn(
-            "absolute h-3 w-3 opacity-0 transition-all duration-300 ease-in-out",
-            "transform translate-x-[-8px] scale-75", // Starts left, small, and invisible
-            "group-hover:opacity-100 group-hover:translate-x-[1px] group-hover:scale-100" // On hover: visible, moves right, scales up
+            "absolute h-4 w-4 opacity-0 transition-all duration-300 ease-in-out transform",
+            "-translate-y-2 scale-75", // Empieza arriba, invisible y pequeña
+            "group-hover:opacity-100 group-hover:translate-y-0.5 group-hover:scale-100" // En hover: visible, se mueve hacia abajo (dentro del carrito), escala normal
           )}
         />
       </span>
@@ -133,4 +133,3 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     </Button>
   );
 }
-
