@@ -73,22 +73,8 @@ export async function getCategories(): Promise<Category[]> {
 export async function getProducts(options?: { categorySlug?: string; limit?: number }): Promise<Product[]> {
   let query = supabase
     .from('products')
-    .select('*, categories(name, slug)')
+    .select('*')
     .order('created_at', { ascending: false });
-
-  if (options?.categorySlug) {
-    const { data: categoryData, error: categoryError } = await supabase
-      .from('categories')
-      .select('id')
-      .eq('slug', options.categorySlug)
-      .single();
-
-    if (categoryError || !categoryData) {
-      console.error('Error fetching category for slug:', options.categorySlug, categoryError);
-      return [];
-    }
-    query = query.eq('category_id', categoryData.id);
-  }
 
   if (options?.limit) {
     query = query.limit(options.limit);
@@ -112,7 +98,7 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name, slug)')
+    .select('*')
     .eq('slug', slug)
     .single();
 
@@ -132,7 +118,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 export async function getProductById(id: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name, slug)')
+    .select('*')
     .eq('id', id)
     .single();
     
@@ -155,7 +141,7 @@ export async function getProductsByIds(productIds: string[]): Promise<Product[]>
   }
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name, slug)')
+    .select('*')
     .in('id', productIds);
 
   if (error) {
@@ -172,4 +158,3 @@ export async function getProductsByIds(productIds: string[]): Promise<Product[]>
   }
   return data ? data.map(mapSupabaseProductToAppProduct) : [];
 }
-
