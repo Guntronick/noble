@@ -17,7 +17,7 @@ export function ProductCard({ product }: ProductCardProps) {
     : 'https://placehold.co/300x400.png';
 
   return (
-    <Card className="overflow-hidden bg-card text-card-foreground shadow-lg dark:shadow-md dark:border dark:border-border hover:shadow-[0_4px_15px_rgba(31,59,77,0.2)] dark:hover:shadow-dark-hover hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full group">
+    <Card className="overflow-hidden bg-card text-card-foreground shadow-lg dark:border dark:border-[rgba(255,255,255,0.05)] hover:shadow-xl dark:hover:shadow-dark-hover hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full group">
       <CardHeader className="p-0 relative">
         <Link href={`/products/${product.slug}`} className="block aspect-[3/4] relative">
           <Image

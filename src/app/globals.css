@@ -66,55 +66,55 @@
   }
 
   .dark {
-    /* Nueva Paleta Dark Soberbia - Inspirada en el Modo Claro */
-    --background: 205 20% 10%; /* #14191F - Carbón azulado muy oscuro */
-    --foreground: 210 15% 90%; /* #E0E3E6 - Blanco roto para texto */
+    /* Nueva Paleta Dark - Armónica y Moderna */
+    --background: 216 25% 10%; /* #12181F - Azul grisáceo muy oscuro */
+    --foreground: 216 27% 92%; /* #E4E9F0 - Blanco grisáceo, suave */
 
-    --card: 205 20% 15%; /* #1E262E - Ligeramente más claro que el fondo */
-    --card-foreground: 210 15% 90%; /* #E0E3E6 */
+    --card: 212 25% 18%; /* #232F3B */
+    --card-foreground: 216 27% 92%; /* #E4E9F0 */
 
-    --popover: 205 20% 15%; /* #1E262E */
-    --popover-foreground: 210 15% 90%; /* #E0E3E6 */
+    --popover: 214 25% 16%; /* #1E2733 */
+    --popover-foreground: 216 27% 92%; /* #E4E9F0 */
 
-    --primary: 205 50% 60%; /* #6699CC - Azul sobrio y legible */
-    --primary-foreground: 208 12% 15%; /* #212529 - Texto oscuro para contraste */
+    --primary: 224 82% 53%; /* #2563EB - Azul vibrante */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --secondary: 145 20% 30%; /* #3D4D44 - Verde salvia oscuro para badges */
-    --secondary-foreground: 210 15% 90%; /* #E0E3E6 */
+    --secondary: 215 22% 23%; /* #2C3848 - Para badges */
+    --secondary-foreground: 215 27% 83%; /* #CBD5E1 */
 
-    --muted: 205 20% 12%; /* #181F26 - Para paneles, más sutil */
-    --muted-foreground: 210 10% 60%; /* #8F99A3 - Texto de apoyo */
+    --muted: 214 25% 16%; /* #1E2733 - Para paneles */
+    --muted-foreground: 217 19% 80%; /* #C2CBD6 - Subtítulos/descripciones */
 
-    --accent: 29 60% 55%; /* #D48C52 - Cobre/naranja terroso */
-    --accent-foreground: 208 12% 15%; /* #212529 */
-    
-    --success-bg: 145 45% 45%; /* #5BA678 - Verde desaturado */
-    --success-foreground: 208 12% 15%; /* #212529 */
+    --accent: 27 95% 53%; /* #F97316 - Naranja suave */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --price-text-color: 87 35% 65%; /* #A6C28F - Verde oliva claro */
+    --success-bg: 145 63% 46%; /* #22C55E - Verde moderado */
+    --success-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --cta-orange: 29 60% 55%; /* #D48C52 - Consistente con el acento */
-    --cta-orange-foreground: 208 12% 15%; /* #212529 */
+    --price-text-color: 145 63% 46%; /* #22C55E - Verde para precios */
 
-    --destructive: 0 50% 55%; /* Rojo menos saturado */
+    --cta-orange: 27 95% 53%; /* #F97316 */
+    --cta-orange-foreground: 0 0% 100%; /* #FFFFFF */
+
+    --destructive: 0 63% 51%; /* Rojo estándar, ligeramente ajustado para el tema */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 205 15% 25%; /* #333E47 - Borde sutil */
-    --input: 205 20% 8%; /* #10141A - Fondo de input muy oscuro */
-    --ring: 29 60% 55%; /* #D48C52 - Anillo de foco consistente */
+    --border: 215 25% 27%; /* #334155 */
+    --input: 214 25% 14%; /* #1A222C */
+    --ring: 221 92% 61%; /* #3B82F6 - Azul para focus */
 
     --disabled-background: 208 10% 25%;
     --disabled-foreground: 210 10% 50%;
 
     /* Sidebar colors based on new theme */
-    --sidebar-background: 205 20% 10%;
-    --sidebar-foreground: 210 15% 90%;
-    --sidebar-primary: 205 50% 60%;
-    --sidebar-primary-foreground: 208 12% 15%;
-    --sidebar-accent: 29 60% 55%;
-    --sidebar-accent-foreground: 208 12% 15%;
-    --sidebar-border: 205 15% 25%;
-    --sidebar-ring: 29 60% 55%;
+    --sidebar-background: 216 25% 10%;
+    --sidebar-foreground: 216 27% 92%;
+    --sidebar-primary: 224 82% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 27 95% 53%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 25% 27%;
+    --sidebar-ring: 221 92% 61%;
   }
 }
 
