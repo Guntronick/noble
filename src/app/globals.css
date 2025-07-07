@@ -66,56 +66,55 @@
   }
 
   .dark {
-    /* Paleta Noble - Tema Oscuro (Ajustar según necesidad, manteniendo la lógica de los nuevos colores) */
-    --background: 208 24% 10%; /* Azul petróleo muy oscuro/grisáceo #13171A */
-    --foreground: 210 20% 95%; /* Blanco humo claro #F0F3F5 */
+    /* Nueva Paleta Dark Premium */
+    --background: 220 11% 6%; /* #0E0F11 */
+    --foreground: 0 0% 100%; /* #FFFFFF */
 
-    --card: 208 20% 14%; /* Gris oscuro #1A1D21 */
-    --card-foreground: 210 20% 95%;
+    --card: 223 11% 13%; /* #1D1F23 */
+    --card-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --popover: 208 20% 14%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 223 11% 13%; /* #1D1F23 */
+    --popover-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --primary: 205 40% 55%; /* Azul petróleo claro #6184A1 */
-    --primary-foreground: 0 0% 100%;
+    --primary: 221 83% 53%; /* #2563EB - Azul para botones secundarios */
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --secondary: 145 30% 65%; /* Verde salvia claro #A8C6A8 */
-    --secondary-foreground: 208 12% 15%;
+    --secondary: 215 25% 27%; /* #334155 - Para chips/etiquetas */
+    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    --muted: 208 18% 20%; /* Gris medio oscuro #2A2F33 */
-    --muted-foreground: 210 15% 65%; /* Gris grafito claro #949CA4 */
+    --muted: 220 11% 10%; /* #17191D - Paneles y bloques */
+    --muted-foreground: 215 14% 84%; /* #D1D5DB - Descripciones y subtítulos */
 
-    --accent: 29 65% 50%; /* Cobre (ligeramente ajustado para tema oscuro) - Saturación aumentada */
-    --accent-foreground: 0 0% 100%;
-
-    --success-bg: 145 50% 45%; /* Verde WhatsApp-like #4FBB73 (para "Agregar al carrito") */
-    --success-foreground: 0 0% 100%;
+    --accent: 27 95% 53%; /* #F97316 - Naranja para acciones */
+    --accent-foreground: 0 0% 100%; /* #FFFFFF */
     
-    --price-text-color: 87 40% 50%; /* Verde Precio (ligeramente ajustado) #88B353 */
+    --success-bg: 145 50% 45%; /* Verde existente */
+    --success-foreground: 0 0% 100%;
 
-    --cta-orange: 18 90% 55%; /* Naranja Vibrante (ajustado para tema oscuro) #FF6B21 */
+    --price-text-color: 145 63% 47%; /* #22C55E - Verde brillante */
+
+    --cta-orange: 27 95% 53%; /* #F97316 */
     --cta-orange-foreground: 0 0% 100%;
 
     --destructive: 0 60% 55%; 
     --destructive-foreground: 0 0% 100%;
 
-    --border: 208 16% 28%; 
-    --input: 208 18% 18%; 
-    --ring: 205 40% 55%;
+    --border: 215 25% 27%; /* #334155 */
+    --input: 220 6% 8%; /* #111213 */
+    --ring: 27 95% 53%; /* #F97316 - Naranja para focus */
 
-    --disabled-background: 208 10% 25%; /* Gris Oscuro para tema oscuro #383B3E */
-    --disabled-foreground: 210 10% 50%; /* Gris Medio para tema oscuro #717880 */
+    --disabled-background: 208 10% 25%;
+    --disabled-foreground: 210 10% 50%;
 
-
-    /* Sidebar specific vars for dark theme */
-    --sidebar-background: 208 22% 12%; 
-    --sidebar-foreground: 210 17% 95%; 
-    --sidebar-primary: 205 40% 55%; 
-    --sidebar-primary-foreground: 0 0% 100%; 
-    --sidebar-accent: 29 50% 50%; 
-    --sidebar-accent-foreground: 0 0% 100%; 
-    --sidebar-border: 208 18% 20%; 
-    --sidebar-ring: 205 40% 55%; 
+    /* Sidebar colors based on new theme */
+    --sidebar-background: 220 11% 6%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 27 95% 53%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 25% 27%;
+    --sidebar-ring: 27 95% 53%;
   }
 }
 
