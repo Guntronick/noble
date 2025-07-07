@@ -4,19 +4,12 @@
 import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './ProductCard';
-import { getRelatedProducts, RelatedProductsInput, RelatedProductsOutput } from '@/ai/flows/related-products';
-import { getProductsByIds } from '@/lib/data'; 
+import { getRelatedProducts } from '@/lib/data';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface RelatedProductsClientProps {
   productId: string; 
   categoryName: string; 
-}
-
-function isValidUUID(uuid: string): boolean {
-  if (typeof uuid !== 'string') return false;
-  const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-  return uuidRegex.test(uuid);
 }
 
 export function RelatedProductsClient({ productId, categoryName }: RelatedProductsClientProps) {
@@ -26,29 +19,15 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
 
   useEffect(() => {
     async function fetchRelated() {
+      if (!productId || !categoryName) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       setError(null);
       try {
-        const aiInput: RelatedProductsInput = {
-          category: categoryName,
-          productId: productId,
-          numberOfProducts: 4, 
-        };
-        const aiOutput: RelatedProductsOutput = await getRelatedProducts(aiInput);
-        
-        const relatedProductIds = aiOutput
-          .map(p => p.productId)
-          .filter(id => typeof id === 'string' && id.trim() !== '' && isValidUUID(id)) 
-          .filter(id => id !== productId) 
-          .slice(0, 4); 
-
-        if (relatedProductIds.length > 0) {
-          const fetchedProducts = await getProductsByIds(relatedProductIds);
-          setRelatedProducts(fetchedProducts);
-        } else {
-          setRelatedProducts([]);
-        }
-
+        const products = await getRelatedProducts(categoryName, productId, 4);
+        setRelatedProducts(products);
       } catch (err) {
         let errorMessage = 'Error al cargar productos relacionados.';
         if (err instanceof Error) {
@@ -61,9 +40,7 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
       }
     }
 
-    if (productId && categoryName) {
-      fetchRelated();
-    }
+    fetchRelated();
   }, [productId, categoryName]);
 
   if (loading) {
@@ -95,12 +72,8 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
   }
 
   if (relatedProducts.length === 0) {
-    return (
-      <div className="mt-16 text-center">
-        <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También Te Podría Gustar</h2>
-        <p className="text-muted-foreground">No se encontraron productos relacionados en este momento.</p>
-      </div>
-    );
+    // We don't show the section if there are no related products to avoid showing an empty state.
+    return null;
   }
 
   return (

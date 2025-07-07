@@ -150,6 +150,40 @@ export async function getProductById(id: string): Promise<Product | null> {
   return data ? mapSupabaseProductToAppProduct(data) : null;
 }
 
+export async function getRelatedProducts(
+  categoryName: string,
+  currentProductId: string,
+  limit: number = 4
+): Promise<Product[]> {
+  // First, find the category ID from the name
+  const { data: category, error: categoryError } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('name', categoryName)
+    .single();
+
+  if (categoryError || !category) {
+    console.error('Error fetching category for related products:', categoryError);
+    return [];
+  }
+
+  // Now, fetch products in that category, excluding the current one.
+  const { data, error } = await supabase
+    .from('products')
+    .select('*, categories(name)')
+    .eq('category_id', category.id)
+    .neq('id', currentProductId)
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching related products:', error);
+    return [];
+  }
+
+  return data ? data.map(mapSupabaseProductToAppProduct) : [];
+}
+
+
 export async function getProductsByIds(productIds: string[]): Promise<Product[]> {
   if (!productIds || productIds.length === 0) {
     return [];
