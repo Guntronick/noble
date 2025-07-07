@@ -8,6 +8,17 @@ import { Button } from "@/components/ui/button";
 
 export function ThemeToggleButton() {
   const { setTheme, theme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  // When mounted on client, now we can show the UI
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Render a placeholder to avoid hydration mismatch. It has the same dimensions as the real button.
+    return <Button variant="ghost" size="icon" disabled className="hover:bg-primary-foreground/10 text-primary-foreground" />;
+  }
 
   return (
     <Button
