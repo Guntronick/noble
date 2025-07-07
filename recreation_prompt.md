@@ -2,8 +2,6 @@
 
 Este documento contiene un conjunto de prompts e instrucciones detalladas para construir una aplicación web de e-commerce con Next.js, ShadCN, Tailwind y Genkit AI. El objetivo es replicar la funcionalidad y el diseño de un proyecto base, permitiendo una personalización rápida para futuros desarrollos.
 
-<!-- TODO: Reemplaza "[NOMBRE_DEL_PROYECTO]" por el nombre del nuevo proyecto en todo el documento. -->
-
 ---
 
 ## Sección 1: Branding y Configuración Inicial de la Interfaz
@@ -11,8 +9,10 @@ Este documento contiene un conjunto de prompts e instrucciones detalladas para c
 ### **Prompt 1.1: Configurar Paleta de Colores y Tema**
 
 **Instrucción para la IA:** Modifica el archivo `src/app/globals.css`. Reemplaza el contenido completo del archivo con el siguiente código CSS.
-<!-- TODO: Reemplaza los valores HSL en los bloques :root y .dark con la paleta de colores de la nueva marca. -->
 
+**Personalización:** Antes de enviar, reemplaza los valores HSL en los bloques `:root` y `.dark` con la paleta de colores de tu nueva marca.
+
+**Código a utilizar:**
 ```css
 @tailwind base;
 @tailwind components;
@@ -20,7 +20,7 @@ Este documento contiene un conjunto de prompts e instrucciones detalladas para c
 
 @layer base {
   :root {
-    /* Paleta de Ejemplo - Reemplazar con la de la nueva marca */
+    /* Proporciona aquí tu paleta de colores para el tema claro */
     --background: 210 20% 98%;
     --foreground: 208 12% 15%;
     --panel-background: 205 44% 21%;
@@ -51,7 +51,7 @@ Este documento contiene un conjunto de prompts e instrucciones detalladas para c
   }
 
   .dark {
-    /* Paleta Oscura de Ejemplo - Reemplazar con la de la nueva marca */
+    /* Proporciona aquí tu paleta de colores para el tema oscuro */
     --background: 220 13% 18%;
     --foreground: 0 0% 100%;
     --panel-background: 220 13% 15%;
@@ -90,126 +90,123 @@ Este documento contiene un conjunto de prompts e instrucciones detalladas para c
 
 ### **Prompt 1.2: Configurar Tipografía**
 
-**Instrucción para la IA:** Realiza los siguientes dos cambios:
-1.  **En `src/app/layout.tsx`**, asegúrate de que se importen las fuentes correctas desde Google Fonts en la sección `<head>`.
-    <!-- TODO: Reemplaza 'Poppins' y 'Roboto' si la nueva marca requiere tipografías diferentes. -->
-    ```html
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    ```
-2.  **En `tailwind.config.ts`**, configura las `fontFamily` dentro de `theme.extend` para usar estas fuentes.
-    ```javascript
-    extend: {
-      fontFamily: {
-        body: ['Roboto', 'sans-serif'],
-        headline: ['Poppins', 'sans-serif'],
-        code: ['monospace'],
-      },
-      // ...el resto de la configuración
-    }
-    ```
+**Instrucción para la IA:**
+1.  Verifica que el archivo `src/app/layout.tsx` incluya las siguientes etiquetas `<link>` dentro de `<head>` para importar las fuentes.
+2.  Modifica `tailwind.config.ts` para que `theme.extend.fontFamily` use estas fuentes.
+
+**Personalización:** Reemplaza 'Poppins' y 'Roboto' si tu marca requiere tipografías diferentes.
+
+**Código para `src/app/layout.tsx`:**
+```html
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+```
+
+**Código para `tailwind.config.ts`:**
+```javascript
+// ...
+extend: {
+  fontFamily: {
+    body: ['Roboto', 'sans-serif'],
+    headline: ['Poppins', 'sans-serif'],
+    code: ['monospace'],
+  },
+// ...
+```
 
 ### **Prompt 1.3: Actualizar el Logo**
 
-**Instrucción para la IA:** Modifica el componente `src/components/ui/Logo.tsx`. Cambia el `src` del componente `Image` para que apunte a la nueva ruta del logo.
-<!-- TODO: Asegúrate de que el logo esté en la carpeta /public/images/ y actualiza la ruta. -->
+**Instrucción para la IA:** En el archivo `src/components/ui/Logo.tsx`, localiza el componente `<Image>` y cambia su prop `src`.
+
+**Personalización:** Proporciona la ruta a tu nuevo archivo de logo, que debe estar en la carpeta `/public/images/`.
+
+**Ejemplo de cambio:**
 ```jsx
-// Antes: src="/images/logo-noble.png"
-// Después (ejemplo):
+// De:
+src="/images/logo-noble.png"
+// A (ejemplo):
 src="/images/nuevo-logo.png"
 ```
 
 ### **Prompt 1.4: Personalizar el Pie de Página (Footer)**
 
-**Instrucción para la IA:** Modifica el archivo `src/components/layout/Footer.tsx`. Actualiza el texto y el enlace del desarrollador.
-<!-- TODO: Actualiza el nombre y la URL del desarrollador. -->
--   El texto debe ser "Desarrollado por `[NOMBRE_DESARROLLADOR]`".
--   La palabra `[NOMBRE_DESARROLLADOR]` debe ser un hipervínculo a `[URL_DESARROLLADOR]`.
+**Instrucción para la IA:** Modifica `src/components/layout/Footer.tsx`. Actualiza el texto y el enlace del desarrollador.
 
+**Personalización:** Proporciona el nombre y la URL del desarrollador.
+
+**Instrucción específica:**
+-   El texto debe ser "Desarrollado por [NOMBRE_DEL_DESARROLLADOR]".
+-   La palabra [NOMBRE_DEL_DESARROLLADOR] debe ser un hipervínculo a [URL_DEL_DESARROLLADOR].
+
+### **Prompt 1.5: Configurar Botón de WhatsApp**
+
+**Instrucción para la IA:** En `src/components/layout/FloatingWhatsAppButton.tsx`, actualiza la variable `phoneNumber`.
+
+**Personalización:** Proporciona el número de teléfono del negocio.
+
+**Ejemplo de cambio:**
 ```jsx
-// ...
-<span>Desarrollado por</span>
-<a
-  href="[URL_DESARROLLADOR]" // Reemplazar URL
-  // ...
->
-  <svg>...</svg>
-  [NOMBRE_DESARROLLADOR] // Reemplazar Nombre
-</a>
-// ...
-```
-
-### **Prompt 1.5: Configurar Botón de Contacto Flotante**
-
-**Instrucción para la IA:** Modifica `src/components/layout/FloatingWhatsAppButton.tsx`. Actualiza la variable `phoneNumber` con el nuevo número de WhatsApp.
-<!-- TODO: Reemplaza con el número de teléfono del nuevo negocio. -->
-```jsx
-// Antes: const phoneNumber = "3516769103";
-// Después (ejemplo):
+// De:
+const phoneNumber = "3516769103";
+// A (ejemplo):
 const phoneNumber = "5491112345678";
 ```
 
 ---
 
-## Sección 2: Contenido Específico de la Página
+## Sección 2: Contenido de Páginas Específicas
 
 ### **Prompt 2.1: Personalizar Página de Inicio**
 
-**Instrucción para la IA:** Modifica `src/app/(default)/page.tsx`. Adapta los textos del *Hero Section* y las características para que se alineen con la nueva marca.
-<!-- TODO: Adapta los textos del hero section y las características al nuevo negocio. -->
--   **Hero Section:**
-    -   `h1`: Actualiza el eslogan principal (antes: "Bienvenido a Noble").
-    -   `p`: Cambia el texto descriptivo (antes: "Descubre diseños únicos...").
--   **Sección "¿Por Qué Elegirnos?":**
-    -   `h3` y `p`: Adapta los títulos y descripciones de las tres características para reflejar las fortalezas del nuevo e-commerce.
+**Instrucción para la IA:** Edita el archivo `src/app/(default)/page.tsx`.
+
+**Personalización:** Proporciona los textos para el "Hero Section" y las características principales.
+-   Actualiza el `<h1>` con el eslogan principal.
+-   Actualiza el `<p>` con el texto descriptivo.
+-   Actualiza los `<h3>` y `<p>` de las tres características en la sección "¿Por Qué Elegirnos?".
 
 ### **Prompt 2.2: Actualizar Página de Contacto**
 
-**Instrucción para la IA:** Modifica `src/app/(default)/contact/page.tsx`. Reemplaza la información de contacto de ejemplo con los datos reales del negocio.
-<!-- TODO: Rellena la información de contacto real del nuevo negocio. -->
--   **Dirección:** Actualiza el texto dentro del `<p>` bajo "Nuestra Oficina".
--   **Email:** Actualiza el texto dentro del `<p>` bajo "Escríbenos".
--   **Teléfono:** Actualiza el texto dentro del `<p>` bajo "Llámanos".
--   **Horario de Atención:** Actualiza los textos con el horario correcto.
+**Instrucción para la IA:** Edita el archivo `src/app/(default)/contact/page.tsx`.
 
-### **Prompt 2.3: Configurar API de Contacto**
+**Personalización:** Proporciona la información de contacto real del negocio.
+-   Actualiza el texto para la dirección, email, teléfono y horario de atención.
 
-**Instrucción para la IA:** Modifica el archivo `src/app/api/contact/route.ts`. Cambia el valor de la variable `mailTo` para establecer el email de destino que recibirá los envíos del formulario de contacto.
-<!-- TODO: Configura el email de destino para los formularios de contacto. -->
+### **Prompt 2.3: Configurar Email de Destino del Formulario de Contacto**
+
+**Instrucción para la IA:** Edita el archivo `src/app/api/contact/route.ts`. Cambia el valor de la variable `mailTo`.
+
+**Personalización:** Proporciona el email que recibirá los mensajes del formulario.
+
+**Ejemplo de cambio:**
 ```javascript
-// Antes: const mailTo = process.env.CONTACT_FORM_EMAIL_TARGET || "your-email@example.com";
-// Después (ejemplo):
-const mailTo = process.env.CONTACT_FORM_EMAIL_TARGET || "ventas@nuevo-ecommerce.com";
+// De:
+const mailTo = process.env.CONTACT_FORM_EMAIL_TARGET || "your-email@example.com";
+// A (ejemplo):
+const mailTo = process.env.CONTACT_FORM_EMAIL_TARGET || "ventas@mi-ecommerce.com";
 ```
 
 ---
 
-## Sección 3: Lógica del E-commerce y Correcciones Clave
+## Sección 3: Lógica Clave del E-commerce
 
 ### **Prompt 3.1: Corregir Página de Detalles del Producto**
 
-**Instrucción para la IA:** Aplica las siguientes correcciones en `src/app/(default)/products/[productId]/page.tsx`:
-1.  **Panel de Descripción en Modo Oscuro:** Asegúrate de que el contenedor de la descripción del producto (`<div>` que envuelve `h1`, `p`, etc.) use un color de fondo semántico (`bg-muted`) para que se adapte correctamente a los temas claro y oscuro.
-2.  **Decodificación de Slugs:** Decodifica el `productSlug` de la URL usando `decodeURIComponent()` antes de pasarlo a la función `getProductBySlug`. Esto es crucial para manejar correctamente los caracteres especiales como tildes.
-    ```javascript
-    // Añadir esta línea al inicio de la función loadProduct
-    const decodedSlug = decodeURIComponent(productSlug);
-    // Usar decodedSlug en la llamada a la BD
-    const fetchedProduct = await getProductBySlug(decodedSlug);
-    ```
-3.  **Lógica del Zoom de Imagen:** Localiza el `useEffect` que calcula las dimensiones de la imagen para el zoom. Elimina `window.innerWidth` de su array de dependencias. El componente ya tiene un event listener de `resize` que maneja esto correctamente, y esta dependencia innecesaria puede causar problemas en el servidor.
-4.  **Botón "Agregar al Carrito":** Asegúrate de que el componente `AddToCartButton` use la variante `success` (`variant="success"`), y que esta variante esté correctamente definida en `src/components/ui/button.tsx` y `src/app/globals.css` para que tenga un estilo visual distintivo.
+**Instrucción para la IA:** En el archivo `src/app/(default)/products/[productId]/page.tsx`, realiza las siguientes modificaciones directas al código:
+1.  **Panel de descripción:** Aplica la clase `bg-muted` al `<div>` que contiene la descripción del producto (`h1`, `p`, etc.) para que se vea bien en modo oscuro.
+2.  **Decodificación de Slugs:** Dentro de la función `loadProduct`, justo antes de la línea `const fetchedProduct = await getProductBySlug(productSlug);`, inserta esta línea: `const decodedSlug = decodeURIComponent(productSlug);`. Luego, usa `decodedSlug` en la llamada a la función.
+3.  **Botón "Agregar al Carrito":** Asegúrate de que el componente `AddToCartButton` use `variant="success"`.
 
 ---
 
 ## Sección 4: Personalización con Inteligencia Artificial
 
-### **Prompt 4.1: Implementar Seguimiento del Historial del Usuario**
+### **Prompt 4.1: Implementar Seguimiento de Historial de Usuario**
 
-**Instrucción para la IA:** En `src/app/(default)/products/[productId]/page.tsx`, dentro del `useEffect` donde se carga el producto (`loadProduct`), añade la lógica para guardar los IDs de los productos visitados en `localStorage`.
+**Instrucción para la IA:** En `src/app/(default)/products/[productId]/page.tsx`, dentro del `useEffect` de `loadProduct`, localiza el `if (fetchedProduct)` y añade el siguiente bloque de código dentro de él para guardar los productos visitados en `localStorage`.
 
+**Código a insertar:**
 ```javascript
-// Dentro del if (fetchedProduct) { ... }
 const viewedProducts = JSON.parse(localStorage.getItem('nobleViewedProducts') || '[]');
 const updatedViewed = [fetchedProduct.id, ...viewedProducts.filter((id: string) => id !== fetchedProduct.id)].slice(0, 20);
 localStorage.setItem('nobleViewedProducts', JSON.stringify(updatedViewed));
@@ -217,9 +214,11 @@ localStorage.setItem('nobleViewedProducts', JSON.stringify(updatedViewed));
 
 ### **Prompt 4.2: Crear Flujo de IA para Recomendaciones (Genkit)**
 
-**Instrucción para la IA:** Crea el archivo `src/ai/flows/recommend-products-flow.ts` con el siguiente contenido. Este flujo analiza el historial de productos vistos y recomienda categorías.
+**Instrucción para la IA:** Crea el archivo `src/ai/flows/recommend-products-flow.ts` y pega el siguiente contenido.
 
-<!-- TODO: Adapta los ejemplos de slugs de categoría (ej., 'tazas', 'accesorios-tech') para que sean representativos de las categorías del nuevo proyecto. -->
+**Personalización:** Puedes adaptar los ejemplos de slugs (`'tazas'`, `'accesorios-tech'`) en la descripción de `recommendedCategorySlugs` para que coincidan con las categorías de tu proyecto.
+
+**Código a utilizar:**
 ```typescript
 'use server';
 /**
@@ -300,8 +299,9 @@ export async function getPersonalizedRecommendations(
 
 ### **Prompt 4.3: Integrar Recomendaciones en el Frontend**
 
-**Instrucción para la IA:** Reemplaza el contenido completo de `src/components/products/RelatedProductsClient.tsx` con el siguiente código. Este componente obtendrá el historial del usuario, llamará al flujo de IA y mostrará una combinación de productos recomendados y productos de la categoría actual.
+**Instrucción para la IA:** Reemplaza el contenido completo de `src/components/products/RelatedProductsClient.tsx` con el siguiente código para que obtenga y muestre las recomendaciones de la IA.
 
+**Código a utilizar:**
 ```tsx
 "use client";
 
@@ -331,7 +331,6 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
       try {
         let personalizedProducts: Product[] = [];
         
-        // 1. Get personalized recommendations based on localStorage history
         const viewedProductIds = JSON.parse(localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY) || '[]') as string[];
         if (viewedProductIds.length > 1) {
             const viewedProducts = await getProductsByIds(viewedProductIds);
@@ -353,14 +352,12 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
             }
         }
         
-        // 2. Get standard related products from the same category
         const sameCategoryProducts = await getRelatedProducts(categoryName, productId, 4);
 
-        // 3. Combine, de-duplicate, and limit results
         const combined = [...personalizedProducts, ...sameCategoryProducts];
         const uniqueProductIds = new Set<string>();
         const finalProducts = combined
-          .filter(p => p.id !== productId) // Ensure current product is not shown
+          .filter(p => p.id !== productId)
           .filter(p => {
             if (uniqueProductIds.has(p.id)) {
               return false;
@@ -382,21 +379,60 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
     fetchRelated();
   }, [productId, categoryName]);
 
-  // ... (código JSX para mostrar skeletons, errores y productos) ...
-  // El JSX debe ser idéntico al de la versión final del archivo.
+  if (loading) {
+    return (
+      <div className="mt-16">
+        <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También te podría gustar...</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex flex-col space-y-3">
+              <Skeleton className="h-[300px] w-full rounded-xl" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[200px]" />
+                <Skeleton className="h-4 w-[150px]" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-16 text-center">
+        <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También te podría gustar...</h2>
+        <p className="text-destructive">{error}</p>
+      </div>
+    );
+  }
+  
+  if (relatedProducts.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-16">
+      <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También te podría gustar...</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {relatedProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
+    </div>
+  );
 }
 ```
 
 ---
+## Sección 5: Dependencias y Versiones
 
-## Sección 5: Textos Finales
+**Nota para el desarrollador:** Este proyecto fue construido con las siguientes dependencias principales. Para recrearlo, asegúrate de tener versiones compatibles en tu `package.json`.
+- `next`: ~15.2.3
+- `react`: ~18.3.1
+- `tailwindcss`: ~3.4.1
+- `genkit`: ~1.8.0
+- `lucide-react`: ~0.475.0
+- `@supabase/supabase-js`: ~2.44.4
 
-### **Prompt 5.1: Ajustar Título de la Sección de Recomendaciones**
-
-**Instrucción para la IA:** En el archivo `src/components/products/RelatedProductsClient.tsx`, localiza el `<h2>` de la sección de recomendaciones y cambia el texto de "También Te Podría Gustar" a "También te podría gustar...".
-
-```jsx
-// Antes: <h2 ...>También Te Podría Gustar</h2>
-// Después:
-<h2 ...>También te podría gustar...</h2>
-```
+Esta guía asume que los componentes de ShadCN ya están instalados en el proyecto.
