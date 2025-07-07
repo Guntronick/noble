@@ -25,11 +25,11 @@ export function ThemeToggleButton() {
       variant="ghost"
       size="icon"
       onClick={() => setTheme(theme === "light" || theme === 'system' ? "dark" : "light")}
-      className="hover:bg-panel-foreground/10 text-panel-foreground"
+      className="hover:bg-panel-foreground/10 text-panel-foreground group"
       aria-label="Toggle theme"
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 dark:scale-0 transition-transform duration-500 rotate-0 dark:-rotate-90 group-hover:scale-0 group-hover:rotate-90 dark:group-hover:scale-100 dark:group-hover:rotate-0" />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 dark:scale-100 transition-transform duration-500 rotate-90 dark:rotate-0 group-hover:scale-100 group-hover:rotate-0 dark:group-hover:scale-0 dark:group-hover:-rotate-90" />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );
