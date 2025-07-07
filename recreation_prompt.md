@@ -54,7 +54,7 @@ Realiza las siguientes correcciones y mejoras en `src/app/(default)/products/[pr
 1.  **Panel de Descripción en Modo Oscuro:** El contenedor de la descripción del producto debe usar un color de fondo semántico (`bg-muted`) en lugar de un color fijo para que se adapte correctamente al modo claro y oscuro.
 2.  **Decodificación de Slugs en URL:** Para evitar fallos con productos que tienen caracteres especiales en el nombre (ej., "bolígrafo"), asegúrate de decodificar el `slug` del producto extraído de los parámetros de la URL usando `decodeURIComponent()` antes de pasarlo a la función que consulta la base de datos (`getProductBySlug`).
 3.  **Lógica del Zoom de Imagen:** Refactoriza el `useEffect` que gestiona el zoom para que no dependa directamente de `window.innerWidth` en su array de dependencias. Utiliza un event listener de `resize` para recalcular las dimensiones, evitando así cuelgues del servidor de desarrollo de Next.js.
-4.  **Botón "Agregar al Carrito":** Asegúrate de que la variante `success` del botón en `src/components/ui/button.tsx` utilice la variable CSS correcta (`--success-bg`) para que el botón sea visible.
+4.  **Botón "Agregar al Carrito":** Asegúrate de que la variante `success` del botón en `src/components/ui/button.tsx` utilice la clase CSS correcta (`bg-success`) para que el botón sea visible.
 
 ## Sección 4: Personalización con Inteligencia Artificial
 
