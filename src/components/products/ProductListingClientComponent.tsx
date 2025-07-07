@@ -29,16 +29,14 @@ export default function ProductListingClientComponent({
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProducts = useMemo(() => {
-    let productsToFilter = initialProducts;
-    
-    if (searchTerm) {
-      const lowerSearchTerm = searchTerm.toLowerCase();
-      productsToFilter = productsToFilter.filter(p =>
-        p.name.toLowerCase().includes(lowerSearchTerm) ||
-        (p.description && p.description.toLowerCase().includes(lowerSearchTerm))
-      );
+    if (!searchTerm) {
+      return initialProducts;
     }
-    return productsToFilter;
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return initialProducts.filter(p =>
+      p.name.toLowerCase().includes(lowerSearchTerm) ||
+      (p.description && p.description.toLowerCase().includes(lowerSearchTerm))
+    );
   }, [searchTerm, initialProducts]);
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
