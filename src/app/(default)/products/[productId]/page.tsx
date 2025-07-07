@@ -423,7 +423,7 @@ export default function ProductDetailPage() {
               ))}
             </div>
 
-            <div className="mt-6 space-y-4 p-6 bg-[#F1F3F5] rounded-lg">
+            <div className="mt-6 space-y-4 p-6 bg-muted rounded-lg">
               <div className="flex items-center space-x-2 flex-wrap">
                 <Badge variant="secondary">Categoría: {product.category}</Badge>
                 <Badge variant="outline">Código: {product.productCode}</Badge>
