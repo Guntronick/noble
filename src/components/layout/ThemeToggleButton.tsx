@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -28,7 +29,7 @@ export function ThemeToggleButton() {
       className="hover:bg-panel-foreground/10 text-panel-foreground group"
       aria-label="Toggle theme"
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 dark:scale-0 transition-transform duration-500 rotate-0 dark:-rotate-90 group-hover:scale-0 group-hover:rotate-90 dark:group-hover:scale-100 dark:group-hover:rotate-0" />
+      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 dark:scale-0 transition-transform duration-500 rotate-0 dark:-rotate-90 group-hover:scale-0 group-hover:rotate-90 dark:group-hover:scale-100 dark:group-hover:rotate-0 text-yellow-500" />
       <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 dark:scale-100 transition-transform duration-500 rotate-90 dark:rotate-0 group-hover:scale-100 group-hover:rotate-0 dark:group-hover:scale-0 dark:group-hover:-rotate-90" />
       <span className="sr-only">Toggle theme</span>
     </Button>
