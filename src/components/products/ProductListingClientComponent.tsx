@@ -2,8 +2,9 @@
 "use client";
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { ProductCard } from '@/components/products/ProductCard';
-import type { Product } from '@/lib/types';
+import type { Product, Category } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -13,17 +14,22 @@ const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48];
 
 interface ProductListingClientProps {
   initialProducts: Product[];
+  categories: Category[];
+  initialCategory?: string;
 }
 
 export default function ProductListingClientComponent({
   initialProducts,
+  categories,
+  initialCategory,
 }: ProductListingClientProps) {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProducts = useMemo(() => {
-    let productsToFilter: Product[] = initialProducts;
+    let productsToFilter = initialProducts;
     
     if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase();
@@ -46,7 +52,12 @@ export default function ProductListingClientComponent({
     setCurrentPage(1);
   };
   
-  const pageTitle = 'Todos los Productos';
+  const handleCategoryChange = (slug: string) => {
+    router.push(slug === 'all' ? '/products' : `/products?category=${slug}`);
+  };
+
+  const selectedCategoryDetails = categories.find(c => c.slug === initialCategory);
+  const pageTitle = selectedCategoryDetails ? selectedCategoryDetails.name : 'Todos los Productos';
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -56,7 +67,7 @@ export default function ProductListingClientComponent({
       </p>
 
       <div className="mb-8 p-4 bg-muted/50 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div>
             <label htmlFor="search" className="block text-sm font-medium text-foreground mb-1">Buscar Productos</label>
             <div className="relative">
@@ -73,6 +84,20 @@ export default function ProductListingClientComponent({
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             </div>
+          </div>
+           <div>
+            <label htmlFor="category-filter" className="block text-sm font-medium text-foreground mb-1">Filtrar por Categoría</label>
+            <Select value={initialCategory ?? 'all'} onValueChange={handleCategoryChange}>
+              <SelectTrigger id="category-filter">
+                <SelectValue placeholder="Seleccionar categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las Categorías</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.slug}>{category.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
            <div>
             <label htmlFor="items-per-page" className="block text-sm font-medium text-foreground mb-1">Artículos por Página</label>
@@ -99,7 +124,7 @@ export default function ProductListingClientComponent({
       ) : (
         <div className="text-center py-16">
           <p className="text-2xl text-muted-foreground">No se encontraron productos.</p>
-          {(searchTerm) && <p className="mt-2">Intenta ajustar tu búsqueda o filtros.</p>}
+          {(searchTerm || initialCategory) && <p className="mt-2">Intenta ajustar tu búsqueda o filtros.</p>}
         </div>
       )}
 
