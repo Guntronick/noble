@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -46,7 +45,7 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
   if (loading) {
     return (
       <div className="mt-16">
-        <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También Te Podría Gustar</h2>
+        <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También te podría gustar...</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex flex-col space-y-3">
@@ -65,7 +64,7 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
   if (error) {
     return (
       <div className="mt-16 text-center">
-        <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También Te Podría Gustar</h2>
+        <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También te podría gustar...</h2>
         <p className="text-destructive">{error}</p>
       </div>
     );
@@ -78,7 +77,7 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
 
   return (
     <div className="mt-16">
-      <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También Te Podría Gustar</h2>
+      <h2 className="text-3xl font-bold mb-8 text-primary font-headline">También te podría gustar...</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {relatedProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
