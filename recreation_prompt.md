@@ -1,4 +1,3 @@
-
 # Guía de Recreación de E-commerce con IA - Plantilla Genérica
 
 Este documento contiene un conjunto de instrucciones para construir una aplicación web de e-commerce con Next.js, ShadCN, Tailwind y Genkit AI. El objetivo es replicar la funcionalidad y el diseño de un proyecto base, permitiendo una personalización rápida para futuros desarrollos.
