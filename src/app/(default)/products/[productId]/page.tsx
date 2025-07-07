@@ -68,7 +68,8 @@ export default function ProductDetailPage() {
       }
       setLoading(true);
       try {
-        const fetchedProduct = await getProductBySlug(productSlug);
+        const decodedSlug = decodeURIComponent(productSlug);
+        const fetchedProduct = await getProductBySlug(decodedSlug);
         setProduct(fetchedProduct);
         if (fetchedProduct) {
            if (fetchedProduct.colors.length > 0) {
