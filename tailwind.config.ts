@@ -25,6 +25,10 @@ export default {
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        panel: {
+          DEFAULT: 'hsl(var(--panel-background))',
+          foreground: 'hsl(var(--panel-foreground))',
+        },
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',

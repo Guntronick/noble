@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <div className="container mx-auto px-4">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 text-center rounded-lg overflow-hidden my-8 shadow-xl bg-primary text-primary-foreground">
+      <section className="relative py-20 md:py-32 text-center rounded-lg overflow-hidden my-8 shadow-xl bg-panel text-panel-foreground">
         <div className="absolute inset-0 opacity-10">
           <Image 
             src="https://placehold.co/1200x600.png" 
@@ -26,10 +26,10 @@ export default function HomePage() {
           <div className="flex justify-center mb-8">
             <Logo width={heroLogoWidth} height={heroLogoHeight} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-primary-foreground font-headline">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-panel-foreground font-headline">
             Bienvenido a Noble
           </h1>
-          <p className="text-xl md:text-2xl mb-10 text-primary-foreground/80 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl mb-10 text-panel-foreground/80 max-w-2xl mx-auto">
             Descubre diseños únicos y productos tecnológicos de vanguardia.
           </p>
           <Button asChild size="lg" variant="cta-orange" className="px-10 py-6 text-lg">

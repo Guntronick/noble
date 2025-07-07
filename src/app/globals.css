@@ -9,6 +9,9 @@
     --background: 210 20% 98%; /* Blanco Humo #F8F9FA */
     --foreground: 208 12% 15%; /* Negro Carbón #212529 */
 
+    --panel-background: 205 44% 21%; /* Azul Petróleo #1F3B4D */
+    --panel-foreground: 0 0% 100%; /* Blanco #FFFFFF */
+
     --card: 0 0% 100%; /* Blanco #FFFFFF */
     --card-foreground: 208 12% 15%; /* Negro Carbón #212529 */
 
@@ -69,6 +72,9 @@
     /* Paleta sobria basada en azules, inspirada en el modo claro */
     --background: 220 13% 18%; /* #282A30 */
     --foreground: 0 0% 100%; /* Blanco puro */
+
+    --panel-background: 220 13% 15%; /* Ligeramente más oscuro que el fondo general */
+    --panel-foreground: 0 0% 100%; /* Blanco puro */
 
     --card: 220 13% 22%; /* #32353D */
     --card-foreground: 0 0% 100%; /* Blanco puro */
