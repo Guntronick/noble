@@ -5,7 +5,7 @@ export function Footer() {
       <div className="container py-8 text-center text-sm text-panel-foreground/80">
         <p>&copy; {currentYear} Noble. Todos los derechos reservados.</p>
         <div className="mt-2 flex items-center justify-center gap-2">
-          <span>desarrollado por</span>
+          <span>Desarrollado por</span>
           <a
             href="https://dendev.ar"
             target="_blank"
