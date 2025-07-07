@@ -130,7 +130,7 @@ export default function ProductDetailPage() {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [currentImageIndex, product, imagesToDisplay, showZoom]); 
+  }, []); 
 
   useEffect(() => {
     if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product || imagesToDisplay.length === 0) {
