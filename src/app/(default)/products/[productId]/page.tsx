@@ -30,6 +30,8 @@ import {
 import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
+const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
+const MAX_VIEWED_PRODUCTS = 20;
 const ZOOM_FACTOR = 2.5; 
 
 export default function ProductDetailPage() {
@@ -68,12 +70,19 @@ export default function ProductDetailPage() {
       try {
         const fetchedProduct = await getProductBySlug(productSlug);
         setProduct(fetchedProduct);
-        if (fetchedProduct && fetchedProduct.colors.length > 0) {
-          setSelectedColor(fetchedProduct.colors[0]);
-        } else if (fetchedProduct) {
-          setSelectedColor(''); 
+        if (fetchedProduct) {
+           if (fetchedProduct.colors.length > 0) {
+            setSelectedColor(fetchedProduct.colors[0]);
+          } else {
+            setSelectedColor(''); 
+          }
+          setQuantity(1);
+
+          // Add to recently viewed
+          const viewedProducts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY) || '[]');
+          const updatedViewed = [fetchedProduct.id, ...viewedProducts.filter((id: string) => id !== fetchedProduct.id)].slice(0, MAX_VIEWED_PRODUCTS);
+          localStorage.setItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY, JSON.stringify(updatedViewed));
         }
-        setQuantity(1); 
       } catch (error) {
         console.error("Failed to load product:", error);
         setProduct(null);
@@ -121,7 +130,7 @@ export default function ProductDetailPage() {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [currentImageIndex, product, imagesToDisplay, showZoom]); // Recalculate when these change
+  }, [currentImageIndex, product, imagesToDisplay, showZoom]); 
 
   useEffect(() => {
     if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product || imagesToDisplay.length === 0) {
