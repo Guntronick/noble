@@ -104,11 +104,24 @@ export default function ProductDetailPage() {
 
 
   useEffect(() => {
-    if (imageContainerRef.current) {
-      const rect = imageContainerRef.current.getBoundingClientRect();
-      setImageDimensions({ width: rect.width, height: rect.height });
-    }
-  }, [currentImageIndex, product, imagesToDisplay, showZoom, typeof window !== 'undefined' ? window.innerWidth : 0]);
+    const handleResize = () => {
+      if (imageContainerRef.current) {
+        const rect = imageContainerRef.current.getBoundingClientRect();
+        setImageDimensions({ width: rect.width, height: rect.height });
+      }
+    };
+
+    // Initial calculation
+    handleResize();
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [currentImageIndex, product, imagesToDisplay, showZoom]); // Recalculate when these change
 
   useEffect(() => {
     if (!showZoom || !imageContainerRef.current || !purchaseBoxRef.current || !mainGridRef.current || imageDimensions.width === 0 || imageDimensions.height === 0 || !product || imagesToDisplay.length === 0) {
