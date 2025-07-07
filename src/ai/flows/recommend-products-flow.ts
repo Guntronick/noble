@@ -17,12 +17,12 @@ const ViewedProductSchema = z.object({
   category: z.string().describe('The category of the product.'),
 });
 
-export const RecommendationRequestSchema = z.object({
+const RecommendationRequestSchema = z.object({
   viewedProducts: z.array(ViewedProductSchema).describe('A list of products the user has recently viewed.'),
 });
 export type RecommendationRequest = z.infer<typeof RecommendationRequestSchema>;
 
-export const RecommendationResponseSchema = z.object({
+const RecommendationResponseSchema = z.object({
   interestSummary: z.string().describe("A brief, one-sentence summary of the user's likely interests based on their browsing history."),
   recommendedCategorySlugs: z.array(z.string()).describe("A list of up to 3 relevant category slugs (e.g., 'tazas', 'accesorios-tech', 'indumentaria') that the user might be interested in. These slugs must be based on the categories from the viewed products."),
 });
