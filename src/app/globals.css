@@ -68,36 +68,39 @@
   .dark {
     /* Paleta sobria basada en azules, inspirada en el modo claro */
     --background: 220 13% 18%; /* #282A30 */
-    --foreground: 210 20% 95%; /* #F0F2F5 */
+    --foreground: 0 0% 100%; /* Blanco puro */
 
     --card: 220 13% 22%; /* #32353D */
-    --card-foreground: 210 20% 95%; /* #F0F2F5 */
+    --card-foreground: 0 0% 100%; /* Blanco puro */
 
-    --popover: 220 13% 18%; /* #282A30 */
-    --popover-foreground: 210 20% 95%; /* #F0F2F5 */
+    --popover: 220 13% 18%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 205 44% 60%; /* #6A91AD - Azul sobrio */
-    --primary-foreground: 220 13% 15%; /* #212429 - Para contraste con el azul */
+    /* El primario se adapta para ser legible en modo oscuro (botones default, links) */
+    --primary: 205 44% 60%; /* #6A91AD - Azul sobrio, claro */
+    --primary-foreground: 220 13% 15%; /* #212429 - Para contraste con el azul claro */
 
+    /* El secundario se adapta para ser legible en modo oscuro */
     --secondary: 220 13% 30%; /* #454952 */
-    --secondary-foreground: 210 20% 95%; /* #F0F2F5 */
+    --secondary-foreground: 0 0% 100%; /* Blanco puro */
 
     --muted: 220 13% 26%; /* #3A3E45 */
-    --muted-foreground: 220 10% 65%; /* #9CA3AF */
+    --muted-foreground: 220 10% 70%; /* #A6ABB3 - Aclarado para mejor contraste */
 
-    --accent: 205 44% 55%; /* #5C85A3 - Un poco más oscuro para hover */
-    --accent-foreground: 210 20% 95%; /* #F0F2F5 */
+    /* Colores de acento consistentes con el modo claro */
+    --accent: 34 81% 54%; /* Cobre #E67E22 - Copiado de modo claro */
+    --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF - Copiado de modo claro */
     
-    --success-bg: 205 44% 60%; /* #6A91AD - Mismo azul que el primario */
-    --success-foreground: 220 13% 15%; /* #212429 */
+    --success-bg: 145 50% 40%; /* Verde #3DAA60 - Copiado de modo claro */
+    --success-foreground: 0 0% 100%; /* Blanco #FFFFFF - Copiado de modo claro */
     
-    --price-text-color: 205 44% 75%; /* #A1BED4 - Azul más claro para el precio */
+    --price-text-color: 87 45% 55%; /* Verde Precio más brillante para modo oscuro */
 
-    --cta-orange: 205 44% 60%; /* #6A91AD - Mismo azul que el primario */
-    --cta-orange-foreground: 220 13% 15%; /* #212429 */
+    --cta-orange: 18 100% 60%; /* Naranja Vibrante #FF7A30 - Copiado de modo claro */
+    --cta-orange-foreground: 0 0% 100%; /* Blanco #FFFFFF - Copiado de modo claro */
     
     --destructive: 0 63% 51%; /* #DC2626 */
-    --destructive-foreground: 210 20% 95%; /* #F0F2F5 */
+    --destructive-foreground: 0 0% 100%;
 
     --border: 220 13% 28%; /* #40444C */
     --input: 220 13% 28%; /* #40444C */
@@ -108,11 +111,11 @@
 
     /* Sidebar colors based on new theme */
     --sidebar-background: 220 13% 18%;
-    --sidebar-foreground: 210 20% 95%;
+    --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 205 44% 60%;
     --sidebar-primary-foreground: 220 13% 15%;
-    --sidebar-accent: 205 44% 55%;
-    --sidebar-accent-foreground: 210 20% 95%;
+    --sidebar-accent: 34 81% 54%;
+    --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 220 13% 28%;
     --sidebar-ring: 205 44% 60%;
   }
