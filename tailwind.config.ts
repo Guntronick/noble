@@ -22,9 +22,6 @@ export default {
         headline: ['Poppins', 'sans-serif'],
         code: ['monospace'],
       },
-      boxShadow: {
-        'dark-hover': '0 0 0 1px rgba(255,255,255,0.1), 0 10px 20px rgba(0,0,0,0.5)',
-      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
@@ -36,11 +33,11 @@ export default {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
-        primary: { // Azul Petróleo (light) / Azul brillante (dark)
+        primary: { 
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
-        secondary: { // Verde Salvia (light) / Gris azulado (dark)
+        secondary: { 
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
         },
@@ -48,22 +45,22 @@ export default {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
         },
-        accent: { // Cobre (light) / Naranja (dark)
+        accent: { 
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
         },
-        success: { // Verde WhatsApp-like
+        success: { 
           DEFAULT: 'hsl(var(--success-bg))',
           foreground: 'hsl(var(--success-foreground))',
         },
-        price: { // Verde Precio
+        price: { 
           DEFAULT: 'hsl(var(--price-text-color))',
         },
-        'cta-orange': { // Naranja Vibrante
+        'cta-orange': { 
           DEFAULT: 'hsl(var(--cta-orange))',
           foreground: 'hsl(var(--cta-orange-foreground))',
         },
-        disabled: { // Para botones deshabilitados
+        disabled: { 
           DEFAULT: 'hsl(var(--disabled-background))',
           foreground: 'hsl(var(--disabled-foreground))',
         },

@@ -24,10 +24,10 @@
     --muted: 210 16% 93%; /* Gris claro #E9ECEF (similar a #F1F3F5 para bloques) */
     --muted-foreground: 210 9% 40%; /* Gris Grafito #6C757D */
 
-    --accent: 29 70% 44%; /* Cobre #B26E30 (para "Solicitar Presupuesto") - Saturación aumentada */
+    --accent: 34 81% 54%; /* Cobre #E67E22 - Saturación y brillo aumentados */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
-    --success-bg: 145 50% 40%; /* Verde WhatsApp-like #3DAA60 (para "Agregar al carrito") */
+    --success-bg: 145 50% 40%; /* Verde #3DAA60 */
     --success-foreground: 0 0% 100%; /* Blanco #FFFFFF */
     
     --price-text-color: 87 45% 44%; /* Verde Precio #7AA33F */
@@ -66,55 +66,55 @@
   }
 
   .dark {
-    /* Nueva Paleta Dark - Armónica y Moderna */
-    --background: 216 25% 10%; /* #12181F - Azul grisáceo muy oscuro */
-    --foreground: 216 27% 92%; /* #E4E9F0 - Blanco grisáceo, suave */
+    /* Paleta dendev.ar */
+    --background: 0 0% 5%; /* #0E0E0E */
+    --foreground: 0 0% 92%; /* #EAEAEA */
 
-    --card: 212 25% 18%; /* #232F3B */
-    --card-foreground: 216 27% 92%; /* #E4E9F0 */
+    --card: 0 0% 10%; /* #1A1A1A */
+    --card-foreground: 0 0% 92%; /* #EAEAEA */
 
-    --popover: 214 25% 16%; /* #1E2733 */
-    --popover-foreground: 216 27% 92%; /* #E4E9F0 */
+    --popover: 0 0% 8%; /* #141414 */
+    --popover-foreground: 0 0% 92%; /* #EAEAEA */
 
-    --primary: 224 82% 53%; /* #2563EB - Azul vibrante */
-    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --primary: 149 100% 46%; /* #00ED64 */
+    --primary-foreground: 0 0% 5%; /* #0E0E0E */
 
-    --secondary: 215 22% 23%; /* #2C3848 - Para badges */
-    --secondary-foreground: 215 27% 83%; /* #CBD5E1 */
+    --secondary: 0 0% 17%; /* #2C2C2C */
+    --secondary-foreground: 0 0% 92%; /* #EAEAEA */
 
-    --muted: 214 25% 16%; /* #1E2733 - Para paneles */
-    --muted-foreground: 217 19% 80%; /* #C2CBD6 - Subtítulos/descripciones */
+    --muted: 0 0% 17%; /* #2C2C2C */
+    --muted-foreground: 0 0% 53%; /* #888888 */
 
-    --accent: 27 95% 53%; /* #F97316 - Naranja suave */
-    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    --accent: 149 100% 46%; /* #00ED64 */
+    --accent-foreground: 0 0% 5%; /* #0E0E0E */
 
-    --success-bg: 145 63% 46%; /* #22C55E - Verde moderado */
-    --success-foreground: 0 0% 100%; /* #FFFFFF */
+    --success-bg: 149 100% 46%; /* #00ED64 */
+    --success-foreground: 0 0% 5%; /* #0E0E0E */
 
-    --price-text-color: 145 63% 46%; /* #22C55E - Verde para precios */
+    --price-text-color: 149 100% 46%; /* #00ED64 */
 
-    --cta-orange: 27 95% 53%; /* #F97316 */
-    --cta-orange-foreground: 0 0% 100%; /* #FFFFFF */
+    --cta-orange: 149 100% 46%; /* #00ED64 */
+    --cta-orange-foreground: 0 0% 5%; /* #0E0E0E */
 
-    --destructive: 0 63% 51%; /* Rojo estándar, ligeramente ajustado para el tema */
+    --destructive: 0 63% 51%; /* Rojo estándar */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 25% 27%; /* #334155 */
-    --input: 214 25% 14%; /* #1A222C */
-    --ring: 221 92% 61%; /* #3B82F6 - Azul para focus */
+    --border: 0 0% 17%; /* #2C2C2C */
+    --input: 0 0% 10%; /* #1A1A1A */
+    --ring: 149 100% 46%; /* #00ED64 */
 
-    --disabled-background: 208 10% 25%;
-    --disabled-foreground: 210 10% 50%;
+    --disabled-background: 0 0% 15%;
+    --disabled-foreground: 0 0% 40%;
 
     /* Sidebar colors based on new theme */
-    --sidebar-background: 216 25% 10%;
-    --sidebar-foreground: 216 27% 92%;
-    --sidebar-primary: 224 82% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 27 95% 53%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 215 25% 27%;
-    --sidebar-ring: 221 92% 61%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 92%;
+    --sidebar-primary: 149 100% 46%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 149 100% 46%;
+    --sidebar-accent-foreground: 0 0% 5%;
+    --sidebar-border: 0 0% 17%;
+    --sidebar-ring: 149 100% 46%;
   }
 }
 
