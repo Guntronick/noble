@@ -1,93 +1,114 @@
 
-# Guía de Recreación del Proyecto "Noble"
+# Guía de Recreación de E-commerce con IA - Plantilla Genérica
 
-Este documento contiene un conjunto de instrucciones para construir la aplicación web "Noble", un e-commerce con Next.js, ShadCN, Tailwind y Genkit AI. El objetivo es replicar la funcionalidad y el diseño del proyecto actual.
+Este documento contiene un conjunto de instrucciones para construir una aplicación web de e-commerce con Next.js, ShadCN, Tailwind y Genkit AI. El objetivo es replicar la funcionalidad y el diseño de un proyecto base, permitiendo una personalización rápida para futuros desarrollos.
+
+<!-- TODO: Reemplaza "[NOMBRE_DEL_PROYECTO]" por el nombre del nuevo proyecto en todo el documento. -->
 
 ## Sección 1: Branding y Configuración Inicial de la Interfaz
 
 ### 1.1 Paleta de Colores y Tema
 
-Configura los colores principales del sitio en `src/app/globals.css`. La paleta debe reflejar una estética moderna y profesional.
+Configura los colores principales del sitio en `src/app/globals.css`. La paleta debe reflejar la estética de la nueva marca.
 
 **Variables CSS a definir (`:root`):**
-- **Background/Foreground:** Un fondo claro (Blanco Humo) con texto oscuro (Negro Carbón).
-- **Panel:** El header y footer deben usar un color distintivo (Azul Petróleo) con texto blanco.
-- **Primary:** Usa el mismo Azul Petróleo para los elementos primarios.
-- **Accent:** Un color cobre o naranja vibrante para llamadas a la acción y elementos destacados.
-- **Price:** Un color verde específico para los precios.
-- **Dark Mode:** Define una paleta de colores complementaria para el modo oscuro, asegurando que los colores semánticos (`primary`, `accent`, `muted`, etc.) se adapten correctamente.
+<!-- TODO: Reemplaza los valores HSL con la paleta de colores de la nueva marca. -->
+- **Background/Foreground:** Un fondo claro con texto oscuro.
+- **Panel:** Color para header y footer con texto de alto contraste.
+- **Primary:** Color principal para botones y elementos interactivos.
+- **Accent:** Un color de acento para llamadas a la acción y elementos destacados.
+- **Price:** Un color específico para los precios (opcional).
+- **Dark Mode:** Define una paleta de colores complementaria para el modo oscuro.
 
 ### 1.2 Tipografía
 
-En `src/app/layout.tsx`, importa y configura las siguientes fuentes de Google Fonts:
+En `src/app/layout.tsx`, importa y configura las fuentes de Google Fonts deseadas.
+<!-- TODO: Reemplaza 'Poppins' y 'Roboto' si la nueva marca requiere tipografías diferentes. -->
 - **Poppins:** Para todos los encabezados (`h1`-`h6`).
 - **Roboto:** Para el cuerpo del texto.
 Configura esto en `tailwind.config.ts` bajo `theme.extend.fontFamily`.
 
 ### 1.3 Logo
 
-Actualiza el componente `src/components/ui/Logo.tsx` para que utilice la imagen del logo ubicada en `/public/images/logo-noble.png`.
+<!-- TODO: Asegúrate de que el logo esté en la carpeta /public/images/ y actualiza la ruta. -->
+Actualiza el componente `src/components/ui/Logo.tsx` para que utilice la imagen del logo ubicada en `[RUTA_AL_LOGO_AQUI]`. Por ejemplo: `/images/nuevo-logo.png`.
 
 ### 1.4 Pie de Página (Footer)
 
-Modifica `src/components/layout/Footer.tsx`. El texto debe ser "Desarrollado por DenDev".
-- La palabra "DenDev" debe ser un hipervínculo a `https://dendev.ar`.
-- A la izquierda de "DenDev", incluye un ícono SVG de código (`<>`) para evocar la marca del desarrollador.
+Modifica `src/components/layout/Footer.tsx`.
+<!-- TODO: Actualiza el nombre y la URL del desarrollador. -->
+- El texto debe ser "Desarrollado por [NOMBRE_DESARROLLADOR]".
+- La palabra "[NOMBRE_DESARROLLADOR]" debe ser un hipervínculo a `[URL_DESARROLLADOR]`.
+- A la izquierda, incluye un ícono SVG relevante.
 
-## Sección 2: Componentes de UI y Mejoras de Experiencia
+### 1.5 Botón Flotante de Contacto
 
-### 2.1 Botón de Cambio de Tema (Claro/Oscuro)
+En `src/components/layout/FloatingWhatsAppButton.tsx`:
+<!-- TODO: Reemplaza con el número de teléfono del nuevo negocio. -->
+- Actualiza el `phoneNumber` con el número de WhatsApp correspondiente.
 
-En `src/components/layout/ThemeToggleButton.tsx`:
-- Implementa una animación de transición fluida al pasar el cursor sobre el botón. Los íconos de sol y luna deben transformarse uno en el otro.
-- El ícono del sol (`<Sun />`) debe ser de color amarillo para que sea más intuitivo.
+## Sección 2: Contenido Específico de la Página
 
-### 2.2 Efectos Hover en Botones
+### 2.1 Página de Inicio (`/`)
 
-Asegúrate de que todos los botones tengan un efecto `hover` claramente visible. En `src/components/ui/button.tsx`, define estados `hover` que alteren el color de fondo de manera notoria para mejorar la retroalimentación visual.
+En `src/app/(default)/page.tsx`:
+<!-- TODO: Adapta los textos del hero section y las características al nuevo negocio. -->
+- **Hero Section:** Modifica el eslogan y el texto descriptivo para que se alineen con la marca de `[NOMBRE_DEL_PROYECTO]`.
+- **Sección "¿Por Qué Elegirnos?":** Adapta los títulos y descripciones de las tres características principales para reflejar las fortalezas del nuevo e-commerce.
 
-## Sección 3: Lógica del E-commerce y Correcciones
+### 2.2 Página de Contacto (`/contact`)
+
+En `src/app/(default)/contact/page.tsx`:
+<!-- TODO: Rellena la información de contacto real del nuevo negocio. -->
+- **Información de Contacto:** Reemplaza la dirección, email, teléfono y horario de atención con los datos correctos.
+
+### 2.3 API de Contacto
+
+En `src/app/api/contact/route.ts`:
+<!-- TODO: Configura el email de destino para los formularios de contacto. -->
+- **Email de Destino:** Cambia el valor de `mailTo` a la dirección de correo electrónico que debe recibir las consultas del formulario.
+
+## Sección 3: Lógica del E-commerce y Correcciones Clave
 
 ### 3.1 Página de Detalles del Producto (`/products/[productId]`)
 
-Realiza las siguientes correcciones y mejoras en `src/app/(default)/products/[productId]/page.tsx`:
-1.  **Panel de Descripción en Modo Oscuro:** El contenedor de la descripción del producto debe usar un color de fondo semántico (`bg-muted`) en lugar de un color fijo para que se adapte correctamente al modo claro y oscuro.
-2.  **Decodificación de Slugs en URL:** Para evitar fallos con productos que tienen caracteres especiales en el nombre (ej., "bolígrafo"), asegúrate de decodificar el `slug` del producto extraído de los parámetros de la URL usando `decodeURIComponent()` antes de pasarlo a la función que consulta la base de datos (`getProductBySlug`).
-3.  **Lógica del Zoom de Imagen:** Refactoriza el `useEffect` que gestiona el zoom para que no dependa directamente de `window.innerWidth` en su array de dependencias. Utiliza un event listener de `resize` para recalcular las dimensiones, evitando así cuelgues del servidor de desarrollo de Next.js.
-4.  **Botón "Agregar al Carrito":** Asegúrate de que la variante `success` del botón en `src/components/ui/button.tsx` utilice la clase CSS correcta (`bg-success`) para que el botón sea visible.
+Aplica las siguientes correcciones en `src/app/(default)/products/[productId]/page.tsx`:
+1.  **Panel de Descripción en Modo Oscuro:** Asegúrate de que el contenedor de la descripción del producto use un color de fondo semántico (`bg-muted`) para que se adapte al modo claro/oscuro.
+2.  **Decodificación de Slugs:** Decodifica el `slug` de la URL usando `decodeURIComponent()` antes de pasarlo a la función de consulta a la base de datos (`getProductBySlug`) para manejar correctamente los caracteres especiales.
+3.  **Lógica del Zoom de Imagen:** Refactoriza el `useEffect` del zoom para que no dependa de `window.innerWidth` en su array de dependencias. Usa un event listener de `resize` para evitar cuelgues del servidor.
+4.  **Botón "Agregar al Carrito":** Confirma que la variante `success` del botón en `src/components/ui/button.tsx` use una clase CSS existente en el tema (`bg-success`).
 
 ## Sección 4: Personalización con Inteligencia Artificial
 
-Implementa un sistema de recomendaciones de productos personalizado basado en el historial de navegación del usuario.
+Implementa un sistema de recomendaciones de productos basado en el historial de navegación del usuario.
 
 ### 4.1 Seguimiento del Historial del Usuario
 
-En la página de detalles del producto (`src/app/(default)/products/[productId]/page.tsx`), utiliza `localStorage` para guardar una lista de los IDs de los productos que el usuario visita. Mantén esta lista con un máximo de 20 productos para no sobrecargar el almacenamiento.
+En la página de detalles del producto (`/products/[productId]`), usa `localStorage` para guardar los IDs de los productos que el usuario visita (máximo 20).
 
 ### 4.2 Flujo de IA para Recomendaciones (Genkit)
 
-Crea un nuevo flujo de Genkit en `src/ai/flows/recommend-products-flow.ts`:
+Crea el flujo de Genkit en `src/ai/flows/recommend-products-flow.ts`:
 - **Directiva:** Usa `'use server'`.
-- **Input:** El flujo debe aceptar un `RecommendationRequest`, que contiene un array de `viewedProducts` (con `name`, `description`, y `category`).
-- **Output:** Debe devolver un `RecommendationResponse`, que contiene:
-    - `interestSummary`: Un resumen de una frase sobre los intereses del usuario.
-    - `recommendedCategorySlugs`: Un array de hasta 3 slugs de categorías que la IA considera relevantes.
-- **Prompt:** El prompt debe instruir a la IA para que actúe como un experto en e-commerce, analice el historial de productos vistos y, basándose en ello, identifique los intereses principales y las categorías más relevantes.
-- **Corrección Importante:** Asegúrate de que los esquemas de Zod (Input y Output) **no se exporten** desde este archivo para cumplir con las reglas de `'use server'`. Solo se deben exportar los tipos inferidos y la función asíncrona principal.
+- **Input:** Acepta un `RecommendationRequest` con un array de `viewedProducts`.
+- **Output:** Devuelve un `RecommendationResponse` con un `interestSummary` y un array de `recommendedCategorySlugs`.
+- **Prompt:**
+    <!-- TODO: Adapta los ejemplos de slugs de categoría al nuevo e-commerce. -->
+    - El prompt debe instruir a la IA para que actúe como un experto en e-commerce y analice el historial.
+    - Los ejemplos de slugs de categoría (ej., 'tazas', 'accesorios-tech') deben ser representativos de las categorías del nuevo proyecto.
+- **Exportaciones:** Asegúrate de que los esquemas de Zod **no se exporten**. Solo exporta los tipos inferidos y la función asíncrona principal.
 
-### 4.3 Integración en el Frontend
+### 4.3 Integración en el Frontend (`RelatedProductsClient.tsx`)
 
-En el componente `src/components/products/RelatedProductsClient.tsx`:
-1.  **Obtener Historial:** Al cargar el componente, lee los IDs de los productos vistos desde `localStorage`.
-2.  **Llamar a la IA:** Obtén los detalles completos de esos productos y llama al flujo de Genkit `getPersonalizedRecommendations` con esa información.
-3.  **Obtener Productos:**
-    - Realiza una consulta a la base de datos para obtener productos de las categorías recomendadas por la IA.
-    - Realiza otra consulta para obtener productos de la misma categoría que el producto actual (como fallback o complemento).
-4.  **Mostrar Resultados:** Combina los resultados de ambas consultas, elimina duplicados y el producto actual, y muestra hasta 4 productos en la sección "También te podría gustar...".
+En `src/components/products/RelatedProductsClient.tsx`:
+1.  **Obtener Historial:** Lee los IDs de productos desde `localStorage`.
+2.  **Llamar a la IA:** Llama al flujo de Genkit con los detalles de los productos vistos.
+3.  **Obtener Productos:** Realiza consultas para obtener productos de las categorías recomendadas por la IA y de la categoría actual del producto.
+4.  **Mostrar Resultados:** Combina, elimina duplicados y muestra hasta 4 productos relevantes.
 
 ## Sección 5: Textos Finales
 
 Aplica los siguientes cambios de texto:
 - **Sección de Recomendaciones:** Cambia el título de "También Te Podría Gustar" a "También te podría gustar...".
 
-Siguiendo estos pasos, se recreará la aplicación "Noble" con todas sus características actuales.
+Siguiendo esta plantilla, podrás recrear y adaptar la aplicación para diferentes proyectos de e-commerce de manera eficiente.
