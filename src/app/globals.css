@@ -66,55 +66,55 @@
   }
 
   .dark {
-    /* Nueva Paleta Dark Premium */
-    --background: 220 11% 6%; /* #0E0F11 */
-    --foreground: 0 0% 100%; /* #FFFFFF */
+    /* Nueva Paleta Dark Soberbia - Inspirada en el Modo Claro */
+    --background: 205 20% 10%; /* #14191F - Carbón azulado muy oscuro */
+    --foreground: 210 15% 90%; /* #E0E3E6 - Blanco roto para texto */
 
-    --card: 223 11% 13%; /* #1D1F23 */
-    --card-foreground: 0 0% 100%; /* #FFFFFF */
+    --card: 205 20% 15%; /* #1E262E - Ligeramente más claro que el fondo */
+    --card-foreground: 210 15% 90%; /* #E0E3E6 */
 
-    --popover: 223 11% 13%; /* #1D1F23 */
-    --popover-foreground: 0 0% 100%; /* #FFFFFF */
+    --popover: 205 20% 15%; /* #1E262E */
+    --popover-foreground: 210 15% 90%; /* #E0E3E6 */
 
-    --primary: 221 83% 53%; /* #2563EB - Azul para botones secundarios */
-    --primary-foreground: 0 0% 100%; /* #FFFFFF */
+    --primary: 205 50% 60%; /* #6699CC - Azul sobrio y legible */
+    --primary-foreground: 208 12% 15%; /* #212529 - Texto oscuro para contraste */
 
-    --secondary: 215 25% 27%; /* #334155 - Para chips/etiquetas */
-    --secondary-foreground: 0 0% 100%; /* #FFFFFF */
+    --secondary: 145 20% 30%; /* #3D4D44 - Verde salvia oscuro para badges */
+    --secondary-foreground: 210 15% 90%; /* #E0E3E6 */
 
-    --muted: 220 11% 10%; /* #17191D - Paneles y bloques */
-    --muted-foreground: 215 14% 84%; /* #D1D5DB - Descripciones y subtítulos */
+    --muted: 205 20% 12%; /* #181F26 - Para paneles, más sutil */
+    --muted-foreground: 210 10% 60%; /* #8F99A3 - Texto de apoyo */
 
-    --accent: 27 95% 53%; /* #F97316 - Naranja para acciones */
-    --accent-foreground: 0 0% 100%; /* #FFFFFF */
+    --accent: 29 60% 55%; /* #D48C52 - Cobre/naranja terroso */
+    --accent-foreground: 208 12% 15%; /* #212529 */
     
-    --success-bg: 145 50% 45%; /* Verde existente */
-    --success-foreground: 0 0% 100%;
+    --success-bg: 145 45% 45%; /* #5BA678 - Verde desaturado */
+    --success-foreground: 208 12% 15%; /* #212529 */
 
-    --price-text-color: 145 63% 47%; /* #22C55E - Verde brillante */
+    --price-text-color: 87 35% 65%; /* #A6C28F - Verde oliva claro */
 
-    --cta-orange: 27 95% 53%; /* #F97316 */
-    --cta-orange-foreground: 0 0% 100%;
+    --cta-orange: 29 60% 55%; /* #D48C52 - Consistente con el acento */
+    --cta-orange-foreground: 208 12% 15%; /* #212529 */
 
-    --destructive: 0 60% 55%; 
+    --destructive: 0 50% 55%; /* Rojo menos saturado */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 25% 27%; /* #334155 */
-    --input: 220 6% 8%; /* #111213 */
-    --ring: 27 95% 53%; /* #F97316 - Naranja para focus */
+    --border: 205 15% 25%; /* #333E47 - Borde sutil */
+    --input: 205 20% 8%; /* #10141A - Fondo de input muy oscuro */
+    --ring: 29 60% 55%; /* #D48C52 - Anillo de foco consistente */
 
     --disabled-background: 208 10% 25%;
     --disabled-foreground: 210 10% 50%;
 
     /* Sidebar colors based on new theme */
-    --sidebar-background: 220 11% 6%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 27 95% 53%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 215 25% 27%;
-    --sidebar-ring: 27 95% 53%;
+    --sidebar-background: 205 20% 10%;
+    --sidebar-foreground: 210 15% 90%;
+    --sidebar-primary: 205 50% 60%;
+    --sidebar-primary-foreground: 208 12% 15%;
+    --sidebar-accent: 29 60% 55%;
+    --sidebar-accent-foreground: 208 12% 15%;
+    --sidebar-border: 205 15% 25%;
+    --sidebar-ring: 29 60% 55%;
   }
 }
 

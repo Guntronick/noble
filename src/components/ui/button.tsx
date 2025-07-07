@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 dark:hover:bg-[#3b82f6]",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -19,9 +19,9 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        accent: "bg-accent text-accent-foreground hover:bg-[#8E5527] dark:hover:bg-[#fb923c]", // Cobre con hover específico
-        success: "bg-success text-success-foreground hover:bg-[#318C53]", // Verde WhatsApp-like con hover específico (más oscuro)
-        "cta-orange": "bg-cta-orange text-cta-orange-foreground hover:bg-[#E86620] dark:hover:bg-[#fb923c]", // Naranja con hover específico
+        accent: "bg-accent text-accent-foreground hover:bg-accent/90", // Cobre
+        success: "bg-success text-success-foreground hover:bg-success/90", // Verde WhatsApp-like
+        "cta-orange": "bg-cta-orange text-cta-orange-foreground hover:bg-cta-orange/90", // Naranja
       },
       size: {
         default: "h-10 px-4 py-2",
