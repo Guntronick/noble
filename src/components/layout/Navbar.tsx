@@ -4,6 +4,7 @@ import { Logo } from '@/components/ui/Logo';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import { ThemeToggleButton } from './ThemeToggleButton';
 
 const navItems = [
   { href: '/', label: 'Inicio' },
@@ -15,7 +16,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-primary text-primary-foreground backdrop-blur supports-[backdrop-filter]:bg-primary/90">
       <div className="container flex h-16 items-center justify-between">
-        <Logo /> {/* El logo debería tener texto blanco o dorado para contrastar con bg-primary (Azul Petróleo) */}
+        <Logo />
         <nav className="hidden md:flex items-center space-x-6">
           {navItems.map((item) => (
             <Link
@@ -28,6 +29,7 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center space-x-4">
+           <ThemeToggleButton />
           <Button variant="ghost" asChild className="hover:bg-primary-foreground/10">
             <Link
               href="/cart"
@@ -35,7 +37,7 @@ export function Navbar() {
               className="flex items-center gap-2 px-3 py-2 rounded-md text-primary-foreground hover:text-primary-foreground transition-colors"
             >
               <ShoppingCart className="h-5 w-5 shrink-0" />
-              <span className="text-sm font-medium">Ir al Carrito</span>
+              <span className="text-sm font-medium hidden sm:inline">Ir al Carrito</span>
             </Link>
           </Button>
           <div className="md:hidden">
