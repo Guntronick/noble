@@ -1,5 +1,5 @@
 
-import { getProducts, getCategories } from '@/lib/data';
+import { getProducts } from '@/lib/data';
 import ProductListingClientComponent from '@/components/products/ProductListingClientComponent';
 import type { Metadata } from 'next';
 
@@ -14,23 +14,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // This is the Server Component
-export default async function ProductListingServerPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const initialCategorySlug = typeof searchParams?.category === 'string' ? searchParams.category : undefined;
-  
-  // Fetch initial data on the server
-  // Pass categorySlug to getProducts if present, otherwise it fetches all products
-  const initialProducts = await getProducts(initialCategorySlug ? { categorySlug: initialCategorySlug } : {});
-  const allCategories = await getCategories();
+export default async function ProductListingServerPage() {
+  const initialProducts = await getProducts();
 
   return (
     <ProductListingClientComponent
       initialProducts={initialProducts}
-      initialCategories={allCategories}
-      initialCategorySlugFromSearch={initialCategorySlug} // Pass the slug from URL search params
     />
   );
 }

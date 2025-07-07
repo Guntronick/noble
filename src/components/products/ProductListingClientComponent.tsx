@@ -1,10 +1,9 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useMemo } from 'react';
 import { ProductCard } from '@/components/products/ProductCard';
-import type { Product, Category } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -14,45 +13,17 @@ const ITEMS_PER_PAGE_OPTIONS = [12, 24, 48];
 
 interface ProductListingClientProps {
   initialProducts: Product[];
-  initialCategories: Category[];
-  initialCategorySlugFromSearch?: string;
 }
 
 export default function ProductListingClientComponent({
   initialProducts,
-  initialCategories,
-  initialCategorySlugFromSearch,
 }: ProductListingClientProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams(); // To read other potential search params
-
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
-  // Initialize selectedCategory with the slug from server, or 'all'
-  const [selectedCategory, setSelectedCategory] = useState(initialCategorySlugFromSearch || 'all');
-
-  // Update selectedCategory if the initialCategorySlugFromSearch prop changes (e.g., direct navigation)
-  useEffect(() => {
-    setSelectedCategory(initialCategorySlugFromSearch || 'all');
-    setCurrentPage(1); // Reset page when category changes via prop
-  }, [initialCategorySlugFromSearch]);
-
 
   const filteredProducts = useMemo(() => {
     let productsToFilter: Product[] = initialProducts;
-
-    // Category filtering is now primarily handled by the server for initial load.
-    // This client-side filter will act on the `initialProducts` if the `selectedCategory`
-    // is changed via the dropdown AFTER the initial load.
-    // For a full server-side filtering experience on dropdown change, we'd need to navigate.
-    if (selectedCategory !== 'all') {
-      const categoryObj = initialCategories.find(c => c.slug === selectedCategory);
-      if (categoryObj) {
-        // This filters based on the `product.category` which should be the category NAME
-        productsToFilter = productsToFilter.filter(p => p.category === categoryObj.name);
-      }
-    }
     
     if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase();
@@ -62,7 +33,7 @@ export default function ProductListingClientComponent({
       );
     }
     return productsToFilter;
-  }, [selectedCategory, searchTerm, initialProducts, initialCategories]);
+  }, [searchTerm, initialProducts]);
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice(
@@ -70,28 +41,12 @@ export default function ProductListingClientComponent({
     currentPage * itemsPerPage
   );
 
-  const handleCategoryChange = (slug: string) => {
-    setSelectedCategory(slug);
-    setCurrentPage(1);
-    // For full server-side filtering on category change, navigate:
-    const current = new URLSearchParams(Array.from(searchParams.entries()));
-    if (slug === 'all') {
-      current.delete('category');
-    } else {
-      current.set('category', slug);
-    }
-    const query = current.toString();
-    router.push(`/products${query ? `?${query}` : ''}`);
-  };
-
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(parseInt(value, 10));
     setCurrentPage(1);
   };
   
-  const pageTitle = selectedCategory === 'all' 
-    ? 'Todos los Productos' 
-    : initialCategories.find(c => c.slug === selectedCategory)?.name || 'Productos';
+  const pageTitle = 'Todos los Productos';
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -101,7 +56,7 @@ export default function ProductListingClientComponent({
       </p>
 
       <div className="mb-8 p-4 bg-muted/50 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
           <div>
             <label htmlFor="search" className="block text-sm font-medium text-foreground mb-1">Buscar Productos</label>
             <div className="relative">
@@ -118,20 +73,6 @@ export default function ProductListingClientComponent({
               />
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             </div>
-          </div>
-          <div>
-            <label htmlFor="category-filter" className="block text-sm font-medium text-foreground mb-1">Filtrar por Categoría</label>
-            <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-              <SelectTrigger id="category-filter">
-                <SelectValue placeholder="Seleccionar categoría" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas las Categorías</SelectItem>
-                {initialCategories.map(cat => (
-                  <SelectItem key={cat.id} value={cat.slug}>{cat.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
            <div>
             <label htmlFor="items-per-page" className="block text-sm font-medium text-foreground mb-1">Artículos por Página</label>
@@ -158,7 +99,7 @@ export default function ProductListingClientComponent({
       ) : (
         <div className="text-center py-16">
           <p className="text-2xl text-muted-foreground">No se encontraron productos.</p>
-          {(searchTerm || selectedCategory !== 'all') && <p className="mt-2">Intenta ajustar tu búsqueda o filtros, o selecciona "Todas las Categorías".</p>}
+          {(searchTerm) && <p className="mt-2">Intenta ajustar tu búsqueda o filtros.</p>}
         </div>
       )}
 
