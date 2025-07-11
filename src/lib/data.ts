@@ -2,6 +2,17 @@
 import type { Product, Category, ProductImageStructure } from './types';
 import { supabase } from './supabaseClient';
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+// Helper function to construct the full image URL from a path
+function constructImageUrl(imagePath: string): string {
+  if (!imagePath || imagePath.startsWith('http')) {
+    return imagePath || 'https://placehold.co/600x500.png';
+  }
+   // Assuming 'products' is your public bucket name
+  return `${SUPABASE_URL}/storage/v1/object/public/products/${imagePath}`;
+}
+
 // Helper function to map Supabase product (snake_case, with joined category) to our Product type (camelCase)
 function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
   let imagesData: ProductImageStructure = { default: [] };
@@ -9,23 +20,20 @@ function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
   if (supabaseProduct.images && typeof supabaseProduct.images === 'object' && supabaseProduct.images !== null) {
     // Populate default images
     if (Array.isArray(supabaseProduct.images.default) && supabaseProduct.images.default.every((img: any) => typeof img === 'string')) {
-      imagesData.default = supabaseProduct.images.default.length > 0 ? supabaseProduct.images.default : ['https://placehold.co/600x500.png'];
-    } else {
-      imagesData.default = ['https://placehold.co/600x500.png'];
+      imagesData.default = supabaseProduct.images.default.map(constructImageUrl);
     }
 
     // Populate color-specific images
     for (const color in supabaseProduct.images) {
       if (color !== 'default' && Array.isArray(supabaseProduct.images[color]) && supabaseProduct.images[color].every((img: any) => typeof img === 'string') && supabaseProduct.images[color].length > 0) {
-        imagesData[color] = supabaseProduct.images[color];
+        imagesData[color] = supabaseProduct.images[color].map(constructImageUrl);
       }
     }
   } else if (Array.isArray(supabaseProduct.images) && supabaseProduct.images.every((img: any) => typeof img === 'string')) {
-    imagesData.default = supabaseProduct.images.length > 0 ? supabaseProduct.images : ['https://placehold.co/600x500.png'];
-  } else {
-    imagesData.default = ['https://placehold.co/600x500.png'];
+     imagesData.default = supabaseProduct.images.map(constructImageUrl);
   }
 
+  // Fallback if no images are found
   if (!imagesData.default || imagesData.default.length === 0) {
     imagesData.default = ['https://placehold.co/600x500.png'];
   }
@@ -52,7 +60,7 @@ function mapSupabaseCategoryToAppCategory(supabaseCategory: any): Category {
     id: supabaseCategory.id,
     name: supabaseCategory.name,
     slug: supabaseCategory.slug,
-    imageUrl: supabaseCategory.image_url || 'https://placehold.co/400x400.png',
+    imageUrl: constructImageUrl(supabaseCategory.image_url) || 'https://placehold.co/400x400.png',
     dataAiHint: supabaseCategory.data_ai_hint,
   };
 }
