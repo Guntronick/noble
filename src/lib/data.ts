@@ -81,7 +81,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function getProducts(options?: { categorySlug?: string; limit?: number }): Promise<Product[]> {
   let query = supabase
     .from('products')
-    .select('*, categories(name)')
+    .select('*, categories:category_id(name)')
     .order('created_at', { ascending: false });
 
   if (options?.categorySlug) {
@@ -121,7 +121,7 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name)')
+    .select('*, categories:category_id(name)')
     .eq('slug', slug)
     .single();
 
@@ -141,7 +141,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 export async function getProductById(id: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name)')
+    .select('*, categories:category_id(name)')
     .eq('id', id)
     .single();
     
@@ -178,7 +178,7 @@ export async function getRelatedProducts(
   // Now, fetch products in that category, excluding the current one.
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name)')
+    .select('*, categories:category_id(name)')
     .eq('category_id', category.id)
     .neq('id', currentProductId)
     .limit(limit);
@@ -198,7 +198,7 @@ export async function getProductsByIds(productIds: string[]): Promise<Product[]>
   }
   const { data, error } = await supabase
     .from('products')
-    .select('*, categories(name)')
+    .select('*, categories:category_id(name)')
     .in('id', productIds);
 
   if (error) {
