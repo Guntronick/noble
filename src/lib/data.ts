@@ -1,3 +1,4 @@
+import "dotenv/config";
 import type { Product, Category, ProductImageStructure } from './types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
