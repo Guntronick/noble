@@ -6,7 +6,7 @@ import type { Database } from '@/lib/database.types';
 
 // SERVER-SIDE DATA FETCHING
 // We use the non-public variables here for server-side operations.
-const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
