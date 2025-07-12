@@ -1,18 +1,21 @@
 
+import 'dotenv/config';
 import type { Product, Category, ProductImageStructure } from './types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
+// SERVER-SIDE DATA FETCHING
+// Leemos las variables directamente de process.env. Next.js las carga automáticamente desde .env.local
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Supabase URL or Service Key is missing from environment variables.');
+// Validación crucial para asegurar que las variables de entorno existen.
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error("Faltan las variables SUPABASE_URL o SUPABASE_ANON_KEY en el entorno. Asegúrate de que tu archivo .env.local esté configurado correctamente.");
 }
 
-// Initialize a separate client with the service_role key for server-side data fetching
-const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
-
+// Inicializamos el cliente de Supabase solo si las variables son válidas.
+const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
 

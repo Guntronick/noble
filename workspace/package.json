@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env.local -- next dev --turbopack -p 9002",
-    "genkit:dev": "dotenv -e .env.local -- genkit start -- tsx src/ai/genkit.ts",
-    "genkit:watch": "dotenv -e .env.local -- genkit start -- tsx --watch src/ai/genkit.ts",
+    "dev": "next dev --turbopack -p 9002",
+    "genkit:dev": "genkit start -- tsx src/ai/genkit.ts",
+    "genkit:watch": "genkit start -- tsx --watch src/ai/genkit.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
