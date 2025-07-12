@@ -1,15 +1,20 @@
+
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 import type { Product, Category, ProductImageStructure } from '@/lib/types';
 
+// These variables are loaded from .env.local
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
+// Crucial validation to ensure environment variables are loaded
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("❌ Variables SUPABASE_URL o SUPABASE_ANON_KEY indefinidas.");
-  throw new Error("Faltan variables de entorno para Supabase. Asegúrate de que .env.local existe y está configurado.");
+  console.error("❌ Crucial Supabase environment variables are missing.");
+  console.error("Ensure that SUPABASE_URL and SUPABASE_ANON_KEY are defined in your .env.local file.");
+  throw new Error("Supabase environment variables are not defined. The application cannot start.");
 }
 
+// This client can be used for server-side fetching.
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
