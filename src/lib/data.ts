@@ -7,7 +7,7 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error("❌ Variables SUPABASE_URL o SUPABASE_ANON_KEY indefinidas.");
-  throw new Error("Faltan variables de entorno para Supabase");
+  throw new Error("Faltan variables de entorno para Supabase. Asegúrate de que .env.local existe y está configurado.");
 }
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
