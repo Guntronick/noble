@@ -7,10 +7,13 @@ import type { Product, Category, ProductImageStructure } from '@/lib/types';
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
+// Debugging log to verify environment variables are loaded
+console.log('Attempting to connect to Supabase with URL:', supabaseUrl);
+
 // Crucial validation to ensure environment variables are loaded
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error("❌ Crucial Supabase environment variables are missing.");
-  console.error("Ensure that SUPABASE_URL and SUPABASE_ANON_KEY are defined in your .env.local file.");
+  console.error("Ensure that SUPABASE_URL and SUPABASE_ANON_KEY are defined in your .env.local file and the server is restarted.");
   throw new Error("Supabase environment variables are not defined. The application cannot start.");
 }
 
