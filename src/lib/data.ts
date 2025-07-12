@@ -91,7 +91,8 @@ export async function getCategories(): Promise<Category[]> {
     .order('name', { ascending: true });
 
   if (error) {
-    console.error('Error fetching categories:', JSON.stringify(error, null, 2));
+    console.error('Error fetching categories. This is likely a network or configuration issue.', JSON.stringify(error, null, 2));
+    console.error('ACTION: Verify your network connection, DNS, and that SUPABASE_URL in .env.local is correct and accessible.');
     return [];
   }
   if (!data || data.length === 0) {
@@ -128,7 +129,8 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching products. Supabase error:', JSON.stringify(error, null, 2));
+        console.error('Error fetching products. This is likely a network or configuration issue. Supabase error:', JSON.stringify(error, null, 2));
+        console.error('ACTION: Verify your network connection, DNS, and that SUPABASE_URL in .env.local is correct and accessible.');
         return [];
     }
      if (!data || data.length === 0) {
