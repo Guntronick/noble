@@ -2,7 +2,7 @@ import type { Product, Category, ProductImageStructure } from './types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
-const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
@@ -13,7 +13,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
 
 
-const SUPABASE_STORAGE_URL = supabaseUrl; // Use the same server-side URL
+const SUPABASE_STORAGE_URL = supabaseUrl;
 
 // Helper function to construct the full image URL from a path
 function constructImageUrl(imagePath: string): string {
