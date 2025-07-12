@@ -1,8 +1,20 @@
 
 import type { Product, Category, ProductImageStructure } from './types';
-import { supabase } from './supabaseClient';
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/lib/database.types';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error('Supabase URL or Service Key is missing from environment variables.');
+}
+
+// Initialize a separate client with the service_role key for server-side data fetching
+const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+
+
+const SUPABASE_STORAGE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
 // Helper function to construct the full image URL from a path
 function constructImageUrl(imagePath: string): string {
@@ -10,7 +22,7 @@ function constructImageUrl(imagePath: string): string {
     return imagePath || 'https://placehold.co/600x500.png';
   }
    // Assuming 'products' is your public bucket name
-  return `${SUPABASE_URL}/storage/v1/object/public/products/${imagePath}`;
+  return `${SUPABASE_STORAGE_URL}/storage/v1/object/public/products/${imagePath}`;
 }
 
 // Helper function to map Supabase product (snake_case, with joined category) to our Product type (camelCase)
@@ -79,44 +91,39 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function getProducts(options?: { categorySlug?: string; limit?: number }): Promise<Product[]> {
-  let query = supabase
-    .from('products')
-    .select('*, categories:category_id(name)')
-    .order('created_at', { ascending: false });
+    let query = supabase
+        .from('products')
+        .select('*, categories (name)') // Correct syntax for foreign table join
+        .order('created_at', { ascending: false });
 
-  if (options?.categorySlug) {
-    const { data: category } = await supabase
-      .from('categories')
-      .select('id')
-      .eq('slug', options.categorySlug)
-      .single();
+    if (options?.categorySlug) {
+        const { data: category } = await supabase
+            .from('categories')
+            .select('id')
+            .eq('slug', options.categorySlug)
+            .single();
 
-    if (category) {
-      query = query.eq('category_id', category.id);
-    } else {
-      // If a slug is provided but not found, return no products.
-      return [];
+        if (category) {
+            query = query.eq('category_id', category.id);
+        } else {
+            // If a slug is provided but not found, return no products.
+            return [];
+        }
     }
-  }
 
-  if (options?.limit) {
-    query = query.limit(options.limit);
-  }
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.error('Error fetching products. Supabase error:', error);
-    if (typeof error === 'object' && error !== null) {
-      console.error('Error message:', (error as any).message);
-      console.error('Error details:', (error as any).details);
-      console.error('Error code:', (error as any).code);
-      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
+    if (options?.limit) {
+        query = query.limit(options.limit);
     }
-    return [];
-  }
-  return data ? data.map(mapSupabaseProductToAppProduct) : [];
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error('Error fetching products. Supabase error:', error);
+        return [];
+    }
+    return data ? data.map(mapSupabaseProductToAppProduct) : [];
 }
+
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
