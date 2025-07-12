@@ -5,17 +5,17 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
 // SERVER-SIDE DATA FETCHING
-// We use the public variables here as they are available in both server and client environments
-// in Next.js. The anon key is safe for read operations.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// We use the non-public variables here for server-side operations.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase public URL or Anon Key is missing from environment variables. Please check your .env.local file.');
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error("Faltan las variables SUPABASE_URL o SUPABASE_SERVICE_KEY en .env.local");
 }
 
-// This client can be used for server-side fetching.
-const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+// Initialize a separate client with the service_role key for server-side data fetching
+const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
 
