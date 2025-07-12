@@ -3,46 +3,33 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 import type { Product, Category, ProductImageStructure } from '@/lib/types';
 
-// These variables are loaded from .env.local
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-// Debugging log to verify environment variables are loaded
-console.log('Attempting to connect to Supabase with URL:', supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'undefined');
-
-
-// Crucial validation to ensure environment variables are loaded
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error("❌ Crucial Supabase environment variables are missing.");
-  console.error("Ensure that SUPABASE_URL and SUPABASE_ANON_KEY are defined in your .env.local file and the server is restarted.");
+  console.error("ACTION: Verify that SUPABASE_URL and SUPABASE_ANON_KEY are defined in your .env.local file and the server is restarted.");
   throw new Error("Supabase environment variables are not defined. The application cannot start.");
 }
 
-// This client can be used for server-side fetching.
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
 
-// Helper function to construct the full image URL from a path
 function constructImageUrl(imagePath: string): string {
   if (!imagePath || imagePath.startsWith('http')) {
     return imagePath || 'https://placehold.co/600x500.png';
   }
-   // Assuming 'products' is your public bucket name
   return `${SUPABASE_STORAGE_URL}/storage/v1/object/public/products/${imagePath}`;
 }
 
-// Helper function to map Supabase product (snake_case, with joined category) to our Product type (camelCase)
 function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
   let imagesData: ProductImageStructure = { default: [] };
 
   if (supabaseProduct.images && typeof supabaseProduct.images === 'object' && supabaseProduct.images !== null) {
-    // Populate default images
     if (Array.isArray(supabaseProduct.images.default) && supabaseProduct.images.default.every((img: any) => typeof img === 'string')) {
       imagesData.default = supabaseProduct.images.default.map(constructImageUrl);
     }
-
-    // Populate color-specific images
     for (const color in supabaseProduct.images) {
       if (color !== 'default' && Array.isArray(supabaseProduct.images[color]) && supabaseProduct.images[color].every((img: any) => typeof img === 'string') && supabaseProduct.images[color].length > 0) {
         imagesData[color] = supabaseProduct.images[color].map(constructImageUrl);
@@ -52,11 +39,9 @@ function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
      imagesData.default = supabaseProduct.images.map(constructImageUrl);
   }
 
-  // Fallback if no images are found
   if (!imagesData.default || imagesData.default.length === 0) {
     imagesData.default = ['https://placehold.co/600x500.png'];
   }
-
 
   return {
     id: supabaseProduct.id,
@@ -73,7 +58,6 @@ function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
   };
 }
 
-// Helper function to map Supabase category to our Category type
 function mapSupabaseCategoryToAppCategory(supabaseCategory: any): Category {
   return {
     id: supabaseCategory.id,
@@ -91,8 +75,8 @@ export async function getCategories(): Promise<Category[]> {
     .order('name', { ascending: true });
 
   if (error) {
-    console.error('Error fetching categories. This is likely a network or configuration issue.', JSON.stringify(error, null, 2));
-    console.error('ACTION: Verify your network connection, DNS, and that SUPABASE_URL in .env.local is correct and accessible.');
+    console.error('Error fetching categories. This is likely a network, DNS, or firewall issue.', JSON.stringify(error, null, 2));
+    console.error('ACTION: Please follow the network troubleshooting guide to test connectivity with `curl` or `ping`.');
     return [];
   }
   if (!data || data.length === 0) {
@@ -117,7 +101,6 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
         if (category) {
             query = query.eq('category_id', category.id);
         } else {
-            // If a slug is provided but not found, return no products.
             return [];
         }
     }
@@ -129,8 +112,8 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching products. This is likely a network or configuration issue. Supabase error:', JSON.stringify(error, null, 2));
-        console.error('ACTION: Verify your network connection, DNS, and that SUPABASE_URL in .env.local is correct and accessible.');
+        console.error('Error fetching products. This is likely a network, DNS, or firewall issue. Supabase error:', JSON.stringify(error, null, 2));
+        console.error('ACTION: Please follow the network troubleshooting guide to test connectivity with `curl` or `ping`.');
         return [];
     }
      if (!data || data.length === 0) {
@@ -138,7 +121,6 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
     }
     return data ? data.map(mapSupabaseProductToAppProduct) : [];
 }
-
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
@@ -173,7 +155,6 @@ export async function getRelatedProducts(
   currentProductId: string,
   limit: number = 4
 ): Promise<Product[]> {
-  // First, find the category ID from the name
   const { data: category, error: categoryError } = await supabase
     .from('categories')
     .select('id')
@@ -185,7 +166,6 @@ export async function getRelatedProducts(
     return [];
   }
 
-  // Now, fetch products in that category, excluding the current one.
   const { data, error } = await supabase
     .from('products')
     .select('*, categories:category_id(name)')
@@ -200,7 +180,6 @@ export async function getRelatedProducts(
 
   return data ? data.map(mapSupabaseProductToAppProduct) : [];
 }
-
 
 export async function getProductsByIds(productIds: string[]): Promise<Product[]> {
   if (!productIds || productIds.length === 0) {

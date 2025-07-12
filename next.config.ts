@@ -3,7 +3,7 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   experimental: {
-    turbo: false, // Explicitly disable Turbopack as per debugging instructions
+    turbo: false, 
     allowedDevOrigins: ["*.cloudworkstations.dev"],
   },
   typescript: {
@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**.supabase.co', // Allow any Supabase subdomain
+        hostname: '**.supabase.co', 
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
