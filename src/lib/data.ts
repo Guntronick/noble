@@ -11,7 +11,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 // Initialize a separate client with the service_role key for server-side data fetching
-const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
+const supabase = createClient <Database> (supabaseUrl, supabaseServiceKey);
 
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
