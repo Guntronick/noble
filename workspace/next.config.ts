@@ -1,32 +1,4 @@
-import type {NextConfig} from 'next';
-
-const nextConfig: NextConfig = {
-  /* config options here */
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: process.env.NEXT_PUBLIC_SUPABASE_HOSTNAME,
-        port: '',
-        pathname: '/storage/v1/object/public/**',
-      },
-    ],
-  },
-  experimental: {
-    allowedDevOrigins: ["*.cloudworkstations.dev"],
-  }
-};
-
-export default nextConfig;
+SUPABASE_URL=https://tusupabaseurl.supabase.co
+SUPABASE_ANON_KEY=tu_clave_anonima
+NEXT_PUBLIC_SUPABASE_URL=https://tusupabaseurl.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima

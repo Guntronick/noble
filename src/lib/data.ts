@@ -1,21 +1,15 @@
-
-import "dotenv/config";
-import type { Product, Category, ProductImageStructure } from './types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
-// SERVER-SIDE DATA FETCHING
-// We use the non-public variables here for server-side operations.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error("Faltan las variables SUPABASE_URL o SUPABASE_SERVICE_KEY en .env.local");
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error("❌ Variables SUPABASE_URL o SUPABASE_ANON_KEY indefinidas.");
+  throw new Error("Faltan variables de entorno para Supabase");
 }
 
-// Initialize a separate client with the service_role key for server-side data fetching
-const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey);
-
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
 
