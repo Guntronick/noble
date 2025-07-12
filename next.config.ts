@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -18,7 +19,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: process.env.NEXT_PUBLIC_SUPABASE_HOSTNAME,
+        hostname: '**.supabase.co', // Permite cualquier subdominio de Supabase
         port: '',
         pathname: '/storage/v1/object/public/**',
       },
