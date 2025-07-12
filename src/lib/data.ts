@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
+import type { Product, Category, ProductImageStructure } from '@/lib/types';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -81,7 +82,7 @@ export async function getCategories(): Promise<Category[]> {
     .order('name', { ascending: true });
 
   if (error) {
-    console.error('Error fetching categories:', error);
+    console.error('Error fetching categories:', JSON.stringify(error, null, 2));
     return [];
   }
   return data ? data.map(mapSupabaseCategoryToAppCategory) : [];
@@ -115,7 +116,7 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
     const { data, error } = await query;
 
     if (error) {
-        console.error('Error fetching products. Supabase error:', error);
+        console.error('Error fetching products. Supabase error:', JSON.stringify(error, null, 2));
         return [];
     }
     return data ? data.map(mapSupabaseProductToAppProduct) : [];
@@ -130,13 +131,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .single();
 
   if (error) {
-    console.error(`Error fetching product by slug ${slug}. Supabase error:`, error);
-     if (typeof error === 'object' && error !== null) {
-      console.error('Error message:', (error as any).message);
-      console.error('Error details:', (error as any).details);
-      console.error('Error code:', (error as any).code);
-      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
-    }
+    console.error(`Error fetching product by slug ${slug}. Supabase error:`, JSON.stringify(error, null, 2));
     return null;
   }
   return data ? mapSupabaseProductToAppProduct(data) : null;
@@ -150,13 +145,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     .single();
     
   if (error) {
-    console.error(`Error fetching product by id ${id}. Supabase error:`, error);
-    if (typeof error === 'object' && error !== null) {
-      console.error('Error message:', (error as any).message);
-      console.error('Error details:', (error as any).details);
-      console.error('Error code:', (error as any).code);
-      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
-    }
+    console.error(`Error fetching product by id ${id}. Supabase error:`, JSON.stringify(error, null, 2));
     return null;
   }
   return data ? mapSupabaseProductToAppProduct(data) : null;
@@ -175,7 +164,7 @@ export async function getRelatedProducts(
     .single();
 
   if (categoryError || !category) {
-    console.error('Error fetching category for related products:', categoryError);
+    console.error('Error fetching category for related products:', JSON.stringify(categoryError, null, 2));
     return [];
   }
 
@@ -188,7 +177,7 @@ export async function getRelatedProducts(
     .limit(limit);
 
   if (error) {
-    console.error('Error fetching related products:', error);
+    console.error('Error fetching related products:', JSON.stringify(error, null, 2));
     return [];
   }
 
@@ -206,15 +195,7 @@ export async function getProductsByIds(productIds: string[]): Promise<Product[]>
     .in('id', productIds);
 
   if (error) {
-    console.error('Error fetching products by IDs. Supabase error:', error);
-    if (typeof error === 'object' && error !== null) {
-      console.error('Error message:', (error as any).message);
-      console.error('Error details:', (error as any).details);
-      console.error('Error code:', (error as any).code);
-      console.error('Full error object (stringified):', JSON.stringify(error, null, 2));
-    } else {
-      console.error('Full error (primitive):', error);
-    }
+    console.error('Error fetching products by IDs. Supabase error:', JSON.stringify(error, null, 2));
     return [];
   }
   return data ? data.map(mapSupabaseProductToAppProduct) : [];
