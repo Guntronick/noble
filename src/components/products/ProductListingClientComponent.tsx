@@ -122,7 +122,7 @@ export default function ProductListingClientComponent({
       ) : (
         <div className="text-center py-16">
           <p className="text-2xl text-muted-foreground">No se encontraron productos.</p>
-          {(searchTerm || initialCategory) && <p className="mt-2">Intenta ajustar tu búsqueda o filtros.</p>}
+          <p className="mt-2 text-muted-foreground">Puede que no haya productos que coincidan con tus filtros, o que la base de datos no esté devolviendo datos. Revisa la consola del servidor para más detalles.</p>
         </div>
       )}
 

@@ -8,7 +8,8 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 // Debugging log to verify environment variables are loaded
-console.log('Attempting to connect to Supabase with URL:', supabaseUrl);
+console.log('Attempting to connect to Supabase with URL:', supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'undefined');
+
 
 // Crucial validation to ensure environment variables are loaded
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -93,6 +94,9 @@ export async function getCategories(): Promise<Category[]> {
     console.error('Error fetching categories:', JSON.stringify(error, null, 2));
     return [];
   }
+  if (!data || data.length === 0) {
+    console.warn("⚠️ Warning: getCategories returned no data. This might be correct, or it could indicate an RLS (Row Level Security) policy is blocking the query. Please check your Supabase 'categories' table policies.");
+  }
   return data ? data.map(mapSupabaseCategoryToAppCategory) : [];
 }
 
@@ -126,6 +130,9 @@ export async function getProducts(options?: { categorySlug?: string; limit?: num
     if (error) {
         console.error('Error fetching products. Supabase error:', JSON.stringify(error, null, 2));
         return [];
+    }
+     if (!data || data.length === 0) {
+      console.warn("⚠️ Warning: getProducts returned no data. This might be correct, or it could indicate an RLS (Row Level Security) policy is blocking the query. Please check your Supabase 'products' table policies.");
     }
     return data ? data.map(mapSupabaseProductToAppProduct) : [];
 }
