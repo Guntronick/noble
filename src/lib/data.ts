@@ -3,8 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
 // SERVER-SIDE DATA FETCHING
-// Use NEXT_PUBLIC_SUPABASE_URL for the URL, as it's public.
-// Use SUPABASE_SERVICE_KEY for the service role key, as it's secret and for server-side use only.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 

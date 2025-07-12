@@ -25,7 +25,6 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    // This allows all subdomains of cloudworkstations.dev to access the dev server.
     allowedDevOrigins: ["*.cloudworkstations.dev"],
   }
 };
