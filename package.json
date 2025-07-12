@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e .env -- next dev --turbopack -p 9002",
+    "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "dotenv -e .env -- genkit start -- tsx src/ai/genkit.ts",
     "genkit:watch": "dotenv -e .env -- genkit start -- tsx --watch src/ai/genkit.ts",
     "build": "next build",
