@@ -1,15 +1,17 @@
+
 import "dotenv/config";
 import type { Product, Category, ProductImageStructure } from './types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
-// SERVER-SIDE DATA FETCHING & CLIENT-SIDE INITIALIZATION
-// Using public variables for consistency, as service_role key is not strictly needed for read operations.
+// SERVER-SIDE DATA FETCHING
+// We use the public variables here as they are available in both server and client environments
+// in Next.js. The anon key is safe for read operations.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase public URL or Anon Key is missing from environment variables.');
+  throw new Error('Supabase public URL or Anon Key is missing from environment variables. Please check your .env.local file.');
 }
 
 // This client can be used for server-side fetching.
