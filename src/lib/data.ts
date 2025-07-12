@@ -92,7 +92,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function getProducts(options?: { categorySlug?: string; limit?: number }): Promise<Product[]> {
     let query = supabase
         .from('products')
-        .select('*, categories!inner(name)')
+        .select('*, categories(name)')
         .order('created_at', { ascending: false });
 
     if (options?.categorySlug) {
