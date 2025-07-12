@@ -1,4 +1,4 @@
-
+import "dotenv/config";
 import type { Product, Category, ProductImageStructure } from './types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
@@ -93,7 +93,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function getProducts(options?: { categorySlug?: string; limit?: number }): Promise<Product[]> {
     let query = supabase
         .from('products')
-        .select('*, categories (name)') // Correct syntax for foreign table join
+        .select('*, categories!inner(name)')
         .order('created_at', { ascending: false });
 
     if (options?.categorySlug) {
