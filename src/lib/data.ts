@@ -2,17 +2,17 @@ import type { Product, Category, ProductImageStructure } from './types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 
-// SERVER-SIDE DATA FETCHING
+// SERVER-SIDE DATA FETCHING & CLIENT-SIDE INITIALIZATION
+// Using public variables for consistency, as service_role key is not strictly needed for read operations.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Supabase URL or Service Key is missing from environment variables.');
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Supabase public URL or Anon Key is missing from environment variables.');
 }
 
-// Initialize a separate client with the service_role key for server-side data fetching
-const supabase = createClient <Database> (supabaseUrl, supabaseServiceKey);
-
+// This client can be used for server-side fetching.
+const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
 
