@@ -256,89 +256,94 @@ export default function ProductDetailPage() {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <div ref={mainGridRef} className="grid grid-cols-1 lg:grid-cols-[minmax(100px,0.7fr)_3fr_2fr] xl:grid-cols-[minmax(120px,0.5fr)_3fr_2fr] gap-6 lg:gap-8 items-start relative">
+      <div ref={mainGridRef} className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[5fr_4fr] gap-x-8 lg:gap-x-12 items-start relative">
         
-        <div className="self-start hidden lg:flex lg:flex-col space-y-3 pr-2">
-          {imagesToDisplay.map((img, index) => (
-            <button 
-              key={index} 
-              onClick={() => setCurrentImageIndex(index)}
-              className={cn(
-                "block w-full aspect-square relative rounded-md overflow-hidden border-2 transition-all duration-200 focus:outline-none",
-                currentImageIndex === index ? 'border-primary ring-2 ring-primary shadow-md' : 'border-border hover:border-muted-foreground/50'
-              )}
-              aria-label={`Ver imagen ${index + 1}`}
-            >
-              <Image 
-                src={img} 
-                alt={`${product.name} miniatura ${index + 1}`} 
-                fill
-                sizes="(max-width: 1023px) 0vw, 100px" 
-                className="object-cover hover:opacity-80 transition-opacity" 
-                data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
-              />
-            </button>
-          ))}
-        </div>
-
-        <div className="lg:col-start-2 space-y-6">
-            <div 
-              ref={imageContainerRef}
-              className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl cursor-crosshair bg-card" 
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onMouseMove={handleMouseMove}
-            >
-              {imagesToDisplay.length > 0 && (
+        {/* Columna de Imágenes (Izquierda) */}
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Thumbnails Verticales (Desktop) */}
+          <div className="self-start hidden lg:flex flex-col space-y-3">
+            {imagesToDisplay.map((img, index) => (
+              <button 
+                key={index} 
+                onClick={() => setCurrentImageIndex(index)}
+                className={cn(
+                  "block w-20 h-20 relative rounded-md overflow-hidden border-2 transition-all duration-200 focus:outline-none",
+                  currentImageIndex === index ? 'border-primary ring-2 ring-primary shadow-md' : 'border-border hover:border-muted-foreground/50'
+                )}
+                aria-label={`Ver imagen ${index + 1}`}
+              >
                 <Image 
-                  src={imagesToDisplay[currentImageIndex]}
-                  alt={product.name} 
+                  src={img} 
+                  alt={`${product.name} miniatura ${index + 1}`} 
                   fill
-                  sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 100%"
-                  className="object-contain transition-opacity duration-300 ease-in-out" 
-                  priority 
-                  data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+                  sizes="100px" 
+                  className="object-cover hover:opacity-80 transition-opacity" 
+                  data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
                 />
-              )}
-              {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && lensRect.width > 0 && lensRect.height > 0 && imagesToDisplay.length > 0 && (
-                <div 
-                  className="absolute border-2 border-primary/50 bg-white/20 pointer-events-none"
-                  style={{
-                    left: `${lensRect.x}px`,
-                    top: `${lensRect.y}px`,
-                    width: `${lensRect.width}px`,
-                    height: `${lensRect.height}px`,
-                  }}
-                />
-              )}
-            </div>
-            
-            <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
-              {imagesToDisplay.map((img, index) => (
-                <button
-                  key={`mobile-thumb-${index}`}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={cn(
-                    "aspect-square rounded-md overflow-hidden border-2 transition-all relative bg-card",
-                    currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
-                  )}
-                  aria-label={`Ver imagen ${index + 1} (móvil)`}
-                >
-                  <Image 
-                    src={img} 
-                    alt={`${product.name} miniatura ${index + 1}`} 
-                    fill
-                    sizes="20vw"
-                    className="object-cover hover:opacity-80"
-                    data-ai-hint={product.dataAiHint ? `${product.dataAiHint} mobile thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} mobile thumb ${index+1}`}
-                  />
-                </button>
-              ))}
-            </div>
-        </div>
+              </button>
+            ))}
+          </div>
 
-        <div ref={purchaseBoxRef} className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
-          <div className="space-y-4">
+          {/* Imagen Principal y Thumbnails Horizontales (Mobile) */}
+          <div className="flex-1 space-y-4">
+              <div 
+                ref={imageContainerRef}
+                className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl cursor-crosshair bg-card" 
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onMouseMove={handleMouseMove}
+              >
+                {imagesToDisplay.length > 0 && (
+                  <Image 
+                    src={imagesToDisplay[currentImageIndex]}
+                    alt={product.name} 
+                    fill
+                    sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 100%"
+                    className="object-contain transition-opacity duration-300 ease-in-out" 
+                    priority 
+                    data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+                  />
+                )}
+                {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && lensRect.width > 0 && lensRect.height > 0 && imagesToDisplay.length > 0 && (
+                  <div 
+                    className="absolute border-2 border-primary/50 bg-white/20 pointer-events-none"
+                    style={{
+                      left: `${lensRect.x}px`,
+                      top: `${lensRect.y}px`,
+                      width: `${lensRect.width}px`,
+                      height: `${lensRect.height}px`,
+                    }}
+                  />
+                )}
+              </div>
+              
+              <div className="lg:hidden grid grid-cols-4 sm:grid-cols-5 gap-2">
+                {imagesToDisplay.map((img, index) => (
+                  <button
+                    key={`mobile-thumb-${index}`}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={cn(
+                      "aspect-square rounded-md overflow-hidden border-2 transition-all relative bg-card",
+                      currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
+                    )}
+                    aria-label={`Ver imagen ${index + 1} (móvil)`}
+                  >
+                    <Image 
+                      src={img} 
+                      alt={`${product.name} miniatura ${index + 1}`} 
+                      fill
+                      sizes="20vw"
+                      className="object-cover hover:opacity-80"
+                      data-ai-hint={product.dataAiHint ? `${product.dataAiHint} mobile thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} mobile thumb ${index+1}`}
+                    />
+                  </button>
+                ))}
+              </div>
+          </div>
+        </div>
+        
+        {/* Columna de Compra (Derecha) */}
+        <div ref={purchaseBoxRef} className="lg:sticky lg:top-24 p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
             <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
 
             <div className="flex items-center space-x-2 flex-wrap">
@@ -364,11 +369,6 @@ export default function ProductDetailPage() {
                 </div>
               )}
             </div>
-          </div>
-          <Separator/>
-          <div className="text-muted-foreground leading-relaxed space-y-2 text-sm">
-            <p>{product.description}</p>
-          </div>
           
           <p className="text-lg font-semibold text-foreground">
             {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
@@ -452,6 +452,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
+        {/* Panel de Zoom (se muestra sobre la columna de compra en desktop) */}
         {showZoom && imageDimensions.width > 0 && imageDimensions.height > 0 && product && purchaseBoxRef.current && imagesToDisplay.length > 0 && (
           <div
             className="absolute hidden lg:block pointer-events-none" 
@@ -460,10 +461,18 @@ export default function ProductDetailPage() {
         )}
       </div>
       
+      {/* Sección de Descripción */}
       <Separator className="my-12 lg:my-16" />
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-2xl font-bold mb-4 font-headline text-primary">Descripción del Producto</h2>
+        <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
+          <p>{product.description}</p>
+        </div>
+      </div>
       
+      {/* Productos Relacionados */}
+      <Separator className="my-12 lg:my-16" />
       {product && <RelatedProductsClient productId={product.id} categoryName={product.category} />}
     </div>
   );
-
-    
+}
