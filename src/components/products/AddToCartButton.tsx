@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowDown, CheckCircle } from 'lucide-react';
+import { ShoppingCart, ArrowDown } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -105,19 +105,21 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       description: (
         <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+                 <span className="bg-success/20 p-2 rounded-full">
+                    <ShoppingCart className="h-5 w-5 text-success" />
+                 </span>
                 <div className="flex flex-col">
-                  <p className="font-semibold">¡Agregado al Carrito!</p>
+                  <p className="font-semibold text-foreground">¡Agregado al Carrito!</p>
                   <p className="text-sm text-muted-foreground">
                     {product.name}
                   </p>
                 </div>
             </div>
             <div className="flex items-center justify-end gap-2 mt-2">
-                <Button variant="outline" asChild onClick={() => dismiss()}>
+                 <Button variant="outline" size="sm" asChild onClick={() => dismiss()}>
                     <Link href="/cart">Ver carrito</Link>
                 </Button>
-                <Button variant="ghost" onClick={() => dismiss()}>
+                <Button variant="ghost" size="sm" onClick={() => dismiss()}>
                     Cerrar
                 </Button>
             </div>
@@ -133,7 +135,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center justify-center gap-2 text-base py-3 group",
+        "w-full flex items-center justify-center gap-2 text-base py-3 group transition-transform duration-150 ease-in-out active:scale-[0.98]",
         className
       )}
       disabled={product.stock <= 0}
