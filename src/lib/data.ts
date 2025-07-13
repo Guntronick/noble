@@ -1,5 +1,4 @@
 
-'use server';
 
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
@@ -14,7 +13,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Server-side Supabase environment variables are not defined. Check your .env.local file or hosting configuration.");
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 const SUPABASE_STORAGE_URL = supabaseUrl;
 

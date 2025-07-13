@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { CartItemType, Product } from '@/lib/types';
-import { getProductsByIds } from '@/lib/data';
+import { getProductsByIds } from '@/app/actions'; // Changed to import from actions
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
