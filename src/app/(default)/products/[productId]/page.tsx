@@ -6,7 +6,6 @@ import { getProductBySlug } from '@/app/actions';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -17,10 +16,34 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
 const ZOOM_FACTOR = 2.5; 
+
+// Simple map to convert color names to hex codes for the swatches
+const colorNameToHex: { [key: string]: string } = {
+  'rojo': '#dc2626',
+  'azul': '#2563eb',
+  'verde': '#16a34a',
+  'negro': '#171717',
+  'blanco': '#ffffff',
+  'gris': '#a1a1aa',
+  'amarillo': '#f59e0b',
+  'naranja': '#f97316',
+  'violeta': '#9333ea',
+  'celeste': '#0ea5e9',
+};
+
+const getColorHex = (colorName: string) => {
+  const lowerCaseColor = colorName.toLowerCase();
+  if (colorNameToHex[lowerCaseColor]) {
+    return colorNameToHex[lowerCaseColor];
+  }
+  // If it's already a hex, return it. Otherwise, default to gray.
+  return lowerCaseColor.startsWith('#') ? lowerCaseColor : '#a1a1aa';
+};
 
 
 export default function ProductDetailPage() {
@@ -312,63 +335,41 @@ export default function ProductDetailPage() {
                 </button>
               ))}
             </div>
+        </div>
 
-            <div className="mt-6 space-y-4 p-6 bg-muted rounded-lg">
-              <div className="flex items-center space-x-2 flex-wrap">
-                <Badge variant="secondary">Categoría: {product.category}</Badge>
-                <Badge variant="outline">Código: {product.productCode}</Badge>
-              </div>
-              <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
-              
-              <div className="flex items-baseline gap-2">
-                {product.compareAtPrice && product.compareAtPrice > product.price ? (
-                  <>
-                    <span className="text-2xl text-muted-foreground line-through">
-                      ${product.compareAtPrice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                    <div className="text-4xl lg:text-5xl font-bold text-price">
-                      <span className="text-3xl lg:text-4xl align-top">$</span>
-                      <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                    </div>
-                  </>
-                ) : (
+        <div ref={purchaseBoxRef} className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
+          <div className="space-y-4">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
+
+            <div className="flex items-center space-x-2 flex-wrap">
+              <Badge variant="secondary">Categoría: {product.category}</Badge>
+              <Badge variant="outline">Código: {product.productCode}</Badge>
+            </div>
+          
+            <div className="flex items-baseline gap-2">
+              {product.compareAtPrice && product.compareAtPrice > product.price ? (
+                <>
+                  <span className="text-2xl text-muted-foreground line-through">
+                    ${product.compareAtPrice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                   <div className="text-4xl lg:text-5xl font-bold text-price">
                     <span className="text-3xl lg:text-4xl align-top">$</span>
                     <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
-                )}
-              </div>
-              
-              <Separator/>
-              
-              <h2 className="text-xl font-semibold mt-4 mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
-              <div className="text-muted-foreground leading-relaxed space-y-2">
-                  <p>{product.description}</p>
-              </div>
-              
-              <Separator className="my-6"/>
-
-              {product.colors.length > 0 && (
-                <div>
-                  <Label htmlFor="color-select" className="text-base font-medium text-foreground">Color:</Label>
-                  <Select value={selectedColor} onValueChange={setSelectedColor} disabled={product.stock <= 0}>
-                    <SelectTrigger id="color-select" className="w-full md:w-2/3 mt-1">
-                      <SelectValue placeholder="Selecciona un color" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.colors.map((color) => (
-                        <SelectItem key={color} value={color}>
-                          {color}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                </>
+              ) : (
+                <div className="text-4xl lg:text-5xl font-bold text-price">
+                  <span className="text-3xl lg:text-4xl align-top">$</span>
+                  <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               )}
             </div>
-        </div>
-
-        <div ref={purchaseBoxRef} className="p-6 bg-card rounded-xl shadow-2xl space-y-5 self-start">
+          </div>
+          <Separator/>
+          <div className="text-muted-foreground leading-relaxed space-y-2 text-sm">
+            <p>{product.description}</p>
+          </div>
+          
           <p className="text-lg font-semibold text-foreground">
             {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
             {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
@@ -397,6 +398,41 @@ export default function ProductDetailPage() {
               </div>
             </div>
           )}
+
+          {product.colors.length > 0 && (
+              <div>
+                <Label className="text-base font-medium text-foreground">Color:</Label>
+                <TooltipProvider>
+                  <div className="flex items-center gap-3 mt-2 flex-wrap">
+                    {product.colors.map((color) => {
+                       const hex = getColorHex(color);
+                       const isSelected = selectedColor === color;
+                       return (
+                         <Tooltip key={color} delayDuration={150}>
+                           <TooltipTrigger asChild>
+                             <button
+                               type="button"
+                               onClick={() => setSelectedColor(color)}
+                               className={cn(
+                                 "h-8 w-8 rounded-full border-2 transition-all duration-200",
+                                 isSelected ? 'ring-2 ring-offset-2 ring-primary' : 'hover:scale-110',
+                                 color.toLowerCase() === 'blanco' ? 'border-gray-300' : 'border-transparent'
+                               )}
+                               style={{ backgroundColor: hex }}
+                               aria-label={`Seleccionar color ${color}`}
+                               disabled={product.stock <= 0}
+                             />
+                           </TooltipTrigger>
+                           <TooltipContent>
+                             <p>{color}</p>
+                           </TooltipContent>
+                         </Tooltip>
+                       );
+                    })}
+                  </div>
+                </TooltipProvider>
+              </div>
+            )}
           
           <div className="space-y-3 pt-2">
             <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
@@ -429,4 +465,5 @@ export default function ProductDetailPage() {
       {product && <RelatedProductsClient productId={product.id} categoryName={product.category} />}
     </div>
   );
-}
+
+    
