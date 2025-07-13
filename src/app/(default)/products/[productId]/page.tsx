@@ -10,23 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Twitter, Facebook, Instagram, Mail, MessageSquare, X } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Mail, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
@@ -53,7 +42,6 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1); 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
 
@@ -239,12 +227,14 @@ export default function ProductDetailPage() {
     const storedCartJson = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
     let cart: StoredCartItem[] = storedCartJson ? JSON.parse(storedCartJson) : [];
     
+    // Check if an item with the same ID and color already exists, but don't sum quantities.
     const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedColor === (product.colors.length > 0 ? selectedColor : undefined));
 
     if (existingItemIndex > -1) {
-      const newTotalQuantity = cart[existingItemIndex].quantityInCart + quantityToAdd;
-      cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock);
+      // If item exists, overwrite its quantity with the new one.
+      cart[existingItemIndex].quantityInCart = Math.min(quantityToAdd, product.stock);
     } else {
+      // If item doesn't exist, add it as a new item.
       const newItem: StoredCartItem = {
         id: product.id,
         selectedColor: product.colors.length > 0 ? selectedColor : undefined,
@@ -252,71 +242,19 @@ export default function ProductDetailPage() {
       };
       cart.push(newItem);
     }
+
     localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cart));
     return true;
   };
 
-  const handleRequestQuoteOnly = () => {
+  const handleRequestQuote = () => {
     if (!product) return;
-    const userOriginalQuantity = quantity;
-    const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
-
-    if (userOriginalQuantity !== validatedQuantityForAction) {
-        if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
-            toast({
-                title: "Cantidad ajustada",
-                description: `Se procesó como ${validatedQuantityForAction} unidad. El mínimo es 1.`,
-                variant: "default",
-            });
-        } else {
-            toast({
-                title: "Cantidad ajustada",
-                description: `La cantidad se procesó como ${validatedQuantityForAction} debido a disponibilidad o mínimo requerido.`,
-                variant: "default",
-            });
-        }
-    }
+    const validatedQuantity = getValidatedQuantity(quantity);
     
-    if (validatedQuantityForAction > 0) {
-      const addedToCart = addItemToCartStorage(validatedQuantityForAction); 
-      if (addedToCart) {
-        router.push('/cart'); 
-      }
+    const wasAdded = addItemToCartStorage(validatedQuantity);
+    if (wasAdded) {
+      router.push('/cart');
     }
-    setIsQuoteModalOpen(false);
-  };
-
-  const handleAddToCartAndContinue = () => {
-    if (!product) return;
-    const userOriginalQuantity = quantity;
-    const validatedQuantityForAction = getValidatedQuantity(userOriginalQuantity);
-
-     if (userOriginalQuantity !== validatedQuantityForAction) {
-        if (userOriginalQuantity === 0 && validatedQuantityForAction === 1){
-            toast({
-                title: "Cantidad ajustada",
-                description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
-                variant: "default",
-            });
-        } else {
-            toast({
-                title: "Cantidad ajustada",
-                description: `La cantidad se procesó como ${validatedQuantityForAction} para el carrito debido a disponibilidad o mínimo requerido.`,
-                variant: "default",
-            });
-        }
-    }
-
-    if (validatedQuantityForAction > 0) {
-        const addedSuccessfully = addItemToCartStorage(validatedQuantityForAction);
-        if (addedSuccessfully) {
-            toast({
-            title: "¡Artículo Añadido!",
-            description: `${validatedQuantityForAction} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
-            });
-        }
-    }
-    setIsQuoteModalOpen(false);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -516,40 +454,15 @@ export default function ProductDetailPage() {
           )}
           
           <div className="space-y-3 pt-2">
-            <AlertDialog open={isQuoteModalOpen} onOpenChange={setIsQuoteModalOpen}>
-               <AlertDialogTrigger asChild>
-                <Button 
-                  size="lg" 
-                  variant="accent"
-                  className="w-full text-base py-3"
-                  disabled={product.stock <= 0}
-                  onClick={() => setIsQuoteModalOpen(true)}
-                >
-                  Solicitar Presupuesto
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsQuoteModalOpen(false)}
-                  className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  aria-label="Cerrar"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-foreground">Confirmar Acción</AlertDialogTitle>
-                  <AlertDialogDescription className="text-muted-foreground">
-                    ¿Desea solicitar el presupuesto solo de este producto o desea agregar más productos al carrito?
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="gap-2 sm:gap-0 flex-col sm:flex-row">
-                  <AlertDialogAction onClick={handleRequestQuoteOnly} variant="accent" className="w-full sm:w-auto">Solicitar presupuesto</AlertDialogAction>
-                  <AlertDialogCancel onClick={handleAddToCartAndContinue} variant="success" className="w-full sm:w-auto mt-2 sm:mt-0">Agregar al carrito</AlertDialogCancel>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button 
+              size="lg" 
+              variant="accent"
+              className="w-full text-base py-3"
+              disabled={product.stock <= 0}
+              onClick={handleRequestQuote}
+            >
+              Solicitar Presupuesto
+            </Button>
             
             <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
           </div>
