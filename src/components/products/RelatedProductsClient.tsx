@@ -15,6 +15,44 @@ interface RelatedProductsClientProps {
   categoryName: string; 
 }
 
+async function fetchPersonalizedProducts(): Promise<Product[]> {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  const viewedProductIdsJSON = localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY);
+  const viewedProductIds = viewedProductIdsJSON ? (JSON.parse(viewedProductIdsJSON) as string[]) : [];
+
+  if (viewedProductIds.length < 2) {
+    return [];
+  }
+
+  const viewedProducts = await getProductsByIds(viewedProductIds);
+  if (viewedProducts.length === 0) {
+    return [];
+  }
+
+  const recommendationRequest: RecommendationRequest = {
+    viewedProducts: viewedProducts.map(p => ({
+      name: p.name,
+      description: p.description,
+      category: p.category,
+    })),
+  };
+
+  const recommendations = await getPersonalizedRecommendations(recommendationRequest);
+
+  if (recommendations.recommendedCategorySlugs.length === 0) {
+    return [];
+  }
+
+  const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug =>
+    getProducts({ categorySlug: slug, limit: 2 })
+  );
+  const productsByCat = await Promise.all(recommendedProductsPromises);
+  return productsByCat.flat();
+}
+
+
 export function RelatedProductsClient({ productId, categoryName }: RelatedProductsClientProps) {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,42 +63,17 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
       setLoading(true);
       setError(null);
       try {
-        let finalProducts: Product[] = [];
-        let personalizedProducts: Product[] = [];
+        // Run fetches in parallel
+        const [personalizedProducts, sameCategoryProducts] = await Promise.all([
+          fetchPersonalizedProducts(),
+          getRelatedProducts(categoryName, productId, 4),
+        ]);
         
-        // 1. Get personalized recommendations based on localStorage history
-        if (typeof window !== 'undefined') {
-          const viewedProductIdsJSON = localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY);
-          const viewedProductIds = viewedProductIdsJSON ? JSON.parse(viewedProductIdsJSON) as string[] : [];
-          
-          if (viewedProductIds.length > 1) {
-              const viewedProducts = await getProductsByIds(viewedProductIds);
-              if(viewedProducts.length > 0) {
-                const recommendationRequest: RecommendationRequest = {
-                    viewedProducts: viewedProducts.map(p => ({
-                        name: p.name,
-                        description: p.description,
-                        category: p.category
-                    }))
-                };
-                const recommendations = await getPersonalizedRecommendations(recommendationRequest);
-                
-                if(recommendations.recommendedCategorySlugs.length > 0) {
-                   const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug => getProducts({ categorySlug: slug, limit: 2 }));
-                   const productsByCat = await Promise.all(recommendedProductsPromises);
-                   personalizedProducts = productsByCat.flat();
-                }
-              }
-          }
-        }
-        
-        // 2. Get standard related products from the same category
-        const sameCategoryProducts = await getRelatedProducts(categoryName, productId, 4);
-
-        // 3. Combine and de-duplicate
+        // Combine and de-duplicate
         const combined = [...personalizedProducts, ...sameCategoryProducts];
         const uniqueProductIds = new Set<string>();
-        finalProducts = combined
+        
+        const finalProducts = combined
           .filter(p => p.id !== productId) // Ensure current product is not shown
           .filter(p => {
             if (uniqueProductIds.has(p.id)) {
