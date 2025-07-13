@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { Facebook, Instagram, Mail, MessageSquare, Twitter } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useState, MouseEvent } from 'react';
+import { useEffect, useState } from 'react';
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
@@ -55,11 +55,6 @@ export default function ProductDetailPage() {
 
   const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
   
-  // States for image zoom
-  const [isZooming, setIsZooming] = useState(false);
-  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
-  const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 });
-
   useEffect(() => {
     async function loadProduct() {
       if (!productSlug) {
@@ -139,30 +134,6 @@ export default function ProductDetailPage() {
     if (shareUrl) window.open(shareUrl, '_blank');
   };
 
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-
-    const lensSize = 150; // Size of the magnifier lens
-    const zoomLevel = 2.5;
-
-    // Calculate lens position, clamped to stay within the image bounds
-    let lensX = x - lensSize / 2;
-    let lensY = y - lensSize / 2;
-    if (lensX < 0) lensX = 0;
-    if (lensY < 0) lensY = 0;
-    if (lensX > width - lensSize) lensX = width - lensSize;
-    if (lensY > height - lensSize) lensY = height - lensSize;
-    setLensPosition({ x: lensX, y: lensY });
-
-    // Calculate background position for the zoom panel
-    const bgPosX = -(lensX * zoomLevel);
-    const bgPosY = -(lensY * zoomLevel);
-    setZoomPosition({ x: bgPosX, y: bgPosY });
-  };
-
-
   if (loading) {
     return <div className="container mx-auto px-4 py-12 min-h-[calc(100vh-8rem)] flex items-center justify-center"><p className="text-2xl text-muted-foreground">Cargando detalles del producto...</p></div>;
   }
@@ -184,7 +155,7 @@ export default function ProductDetailPage() {
                     key={`thumbnail-${index}`}
                     onClick={() => setCurrentImageIndex(index)}
                     className={cn(
-                      "w-20 h-20 rounded-md overflow-hidden border-2 transition-all relative bg-card",
+                      "w-16 h-16 rounded-md overflow-hidden border-2 transition-all relative bg-card",
                       currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
                     )}
                     aria-label={`Ver imagen ${index + 1}`}
@@ -193,7 +164,7 @@ export default function ProductDetailPage() {
                       src={img} 
                       alt={`${product.name} miniatura ${index + 1}`} 
                       fill
-                      sizes="20vw"
+                      sizes="10vw"
                       className="object-cover hover:opacity-80"
                       data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
                     />
@@ -202,12 +173,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Main Image Column */}
-              <div 
-                className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative"
-                onMouseEnter={() => setIsZooming(true)}
-                onMouseLeave={() => setIsZooming(false)}
-                onMouseMove={handleMouseMove}
-              >
+              <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
                 {imagesToDisplay.length > 0 && (
                   <Image 
                     src={imagesToDisplay[currentImageIndex]}
@@ -219,17 +185,6 @@ export default function ProductDetailPage() {
                     data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
                   />
                 )}
-                 {isZooming && (
-                  <div
-                    className="absolute pointer-events-none border-2 border-primary/50 bg-white/20"
-                    style={{
-                      width: '150px',
-                      height: '150px',
-                      top: `${lensPosition.y}px`,
-                      left: `${lensPosition.x}px`,
-                    }}
-                  />
-                )}
               </div>
           </div>
           
@@ -237,8 +192,7 @@ export default function ProductDetailPage() {
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
               
               <div className="text-4xl lg:text-5xl font-bold text-price">
-                <span className="text-3xl lg:text-4xl align-top">$</span>
-                <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
 
               <div className="flex items-center space-x-2 flex-wrap">
@@ -255,102 +209,89 @@ export default function ProductDetailPage() {
         
         {/* Right Column: Purchase Box */}
         <div className="sticky top-24 self-start">
-          <div className="relative">
-            <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
-              {product.colors.length > 0 && (
-                <div>
-                  <Label className="text-base font-medium text-foreground">Color:</Label>
-                  <TooltipProvider>
-                    <div className="flex items-center gap-3 mt-2 flex-wrap">
-                      {product.colors.map((color) => {
-                         const hex = getColorHex(color);
-                         const isSelected = selectedColor === color;
-                         return (
-                           <Tooltip key={color} delayDuration={150}>
-                             <TooltipTrigger asChild>
-                               <button
-                                 type="button"
-                                 onClick={() => setSelectedColor(color)}
-                                 className={cn(
-                                   "h-8 w-8 rounded-full border-2 transition-all duration-200",
-                                   isSelected ? 'ring-2 ring-offset-2 ring-primary' : 'hover:scale-110',
-                                   color.toLowerCase() === 'blanco' ? 'border-gray-300' : 'border-transparent'
-                                 )}
-                                 style={{ backgroundColor: hex }}
-                                 aria-label={`Seleccionar color ${color}`}
-                                 disabled={product.stock <= 0}
-                               />
-                             </TooltipTrigger>
-                             <TooltipContent>
-                               <p>{color}</p>
-                             </TooltipContent>
-                           </Tooltip>
-                         );
-                      })}
-                    </div>
-                  </TooltipProvider>
-                </div>
-              )}
-              
-              <Separator className="my-4"/>
-
-              <p className="text-lg font-semibold text-foreground">
-                {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
-                {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
-              </p>
-              {product.stock > 0 && product.stock < 10 && <Badge variant="destructive">¡Pocas unidades!</Badge>}
-           
-              {product.stock > 0 && (
-                <div>
-                  <Label htmlFor="quantity-input-purchasebox" className="text-base font-medium text-foreground">Cantidad:</Label>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Input 
-                      id="quantity-input-purchasebox" 
-                      type="number" 
-                      value={quantity === 0 ? "" : quantity.toString()} 
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        const parsedQuantity = parseInt(value, 10);
-                        setQuantity(isNaN(parsedQuantity) ? 0 : parsedQuantity);
-                      }}
-                      className="w-24 h-10"
-                      aria-label="Cantidad"
-                      disabled={product.stock <=0}
-                      min="1"
-                      max={product.stock.toString()}
-                    />
-                  </div>
-                </div>
-              )}
-              
-              <div className="space-y-4">
-                 <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
-              </div>
-              
-              <Separator className="my-4"/>
-            
+          <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
+            {product.colors.length > 0 && (
               <div>
-                <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3>
-                <div className="flex space-x-2 flex-wrap gap-y-2">
-                  <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5 text-accent" /></Button>
-                  <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5 text-accent" /></Button>
-                  <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5 text-accent" /></Button>
-                  <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Compartir en WhatsApp"><MessageSquare className="h-5 w-5 text-accent" /></Button>
-                  <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email"><Mail className="h-5 w-5 text-accent" /></Button>
+                <Label className="text-base font-medium text-foreground">Color:</Label>
+                <TooltipProvider>
+                  <div className="flex items-center gap-3 mt-2 flex-wrap">
+                    {product.colors.map((color) => {
+                       const hex = getColorHex(color);
+                       const isSelected = selectedColor === color;
+                       return (
+                         <Tooltip key={color} delayDuration={150}>
+                           <TooltipTrigger asChild>
+                             <button
+                               type="button"
+                               onClick={() => setSelectedColor(color)}
+                               className={cn(
+                                 "h-8 w-8 rounded-full border-2 transition-all duration-200",
+                                 isSelected ? 'ring-2 ring-offset-2 ring-primary' : 'hover:scale-110',
+                                 color.toLowerCase() === 'blanco' ? 'border-gray-300' : 'border-transparent'
+                               )}
+                               style={{ backgroundColor: hex }}
+                               aria-label={`Seleccionar color ${color}`}
+                               disabled={product.stock <= 0}
+                             />
+                           </TooltipTrigger>
+                           <TooltipContent>
+                             <p>{color}</p>
+                           </TooltipContent>
+                         </Tooltip>
+                       );
+                    })}
+                  </div>
+                </TooltipProvider>
+              </div>
+            )}
+            
+            <Separator className="my-4"/>
+
+            <p className="text-lg font-semibold text-foreground">
+              {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
+              {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
+            </p>
+            {product.stock > 0 && product.stock < 10 && <Badge variant="destructive">¡Pocas unidades!</Badge>}
+         
+            {product.stock > 0 && (
+              <div>
+                <Label htmlFor="quantity-input-purchasebox" className="text-base font-medium text-foreground">Cantidad:</Label>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Input 
+                    id="quantity-input-purchasebox" 
+                    type="number" 
+                    value={quantity === 0 ? "" : quantity.toString()} 
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const parsedQuantity = parseInt(value, 10);
+                      setQuantity(isNaN(parsedQuantity) ? 0 : parsedQuantity);
+                    }}
+                    className="w-24 h-10"
+                    aria-label="Cantidad"
+                    disabled={product.stock <=0}
+                    min="1"
+                    max={product.stock.toString()}
+                  />
                 </div>
+              </div>
+            )}
+            
+            <div className="space-y-4">
+               <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
+            </div>
+            
+            <Separator className="my-4"/>
+          
+            <div>
+              <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3>
+              <div className="flex space-x-2 flex-wrap gap-y-2">
+                <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter"><Twitter className="h-5 w-5 text-accent" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook"><Facebook className="h-5 w-5 text-accent" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram"><Instagram className="h-5 w-5 text-accent" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Compartir en WhatsApp"><MessageSquare className="h-5 w-5 text-accent" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email"><Mail className="h-5 w-5 text-accent" /></Button>
               </div>
             </div>
-
-            {isZooming && (
-              <div
-                className="absolute left-full top-0 ml-6 w-[500px] h-[400px] bg-no-repeat pointer-events-none rounded-lg shadow-2xl border bg-white hidden lg:block"
-                style={{
-                  backgroundImage: `url(${imagesToDisplay[currentImageIndex]})`,
-                  backgroundPosition: `${zoomPosition.x}px ${zoomPosition.y}px`,
-                  backgroundSize: `${2.5 * 100 * (6 / 5)}% ${2.5 * 100}%`, // Adjust based on aspect ratio
-                }}
-              />
-            )}
           </div>
         </div>
       </div>
