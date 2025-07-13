@@ -276,9 +276,6 @@ export default function ProductDetailPage() {
             
             <div className="space-y-4">
                <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
-              <Button size="lg" variant="accent" className="w-full">
-                Solicitar Presupuesto
-              </Button>
             </div>
             
             <Separator className="my-4"/>
