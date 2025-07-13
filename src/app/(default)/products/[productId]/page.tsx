@@ -45,7 +45,7 @@ const getColorHex = (colorName: string) => {
 export default function ProductDetailPage() {
   const { toast } = useToast();
   const params = useParams<{ productId: string }>(); 
-  const productSlug = params ? params.productId : null;
+  const productSlug = params.productId;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -147,25 +147,35 @@ export default function ProductDetailPage() {
       <div className="grid lg:grid-cols-5 gap-12 items-start">
         {/* Left Column: Image Gallery & Description */}
         <div className="lg:col-span-3 space-y-6">
-            <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
-                {imagesToDisplay.length > 0 && (
-                <Image 
-                    src={imagesToDisplay[currentImageIndex]}
-                    alt={product.name} 
-                    fill
-                    sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
-                    className="object-contain transition-opacity duration-300 ease-in-out" 
-                    priority 
-                    data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-                />
-                )}
+           <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
+              <Image 
+                  src={imagesToDisplay[currentImageIndex]}
+                  alt={product.name} 
+                  fill
+                  sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
+                  className="object-contain transition-opacity duration-300 ease-in-out" 
+                  priority 
+                  data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+              />
             </div>
 
             <div className="space-y-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
-              <div className="text-4xl lg:text-5xl font-bold text-price">
-                  ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
+                {product.compare_at_price && product.compare_at_price > product.price ? (
+                    <div className="flex items-end gap-2">
+                        <span className="text-2xl text-muted-foreground line-through">
+                            ${product.compare_at_price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                        <span className="text-4xl lg:text-5xl font-bold text-success-bg">
+                            ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                    </div>
+                ) : (
+                    <div className="text-4xl lg:text-5xl font-bold text-price">
+                        <span className="text-2xl align-baseline text-muted-foreground mr-1">$</span>
+                        {product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                )}
               <div className="flex items-center space-x-2 flex-wrap">
                   <Badge variant="secondary">Categoría: {product.category}</Badge>
                   <Badge variant="outline">Código: {product.productCode}</Badge>
