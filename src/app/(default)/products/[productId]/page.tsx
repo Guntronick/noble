@@ -176,7 +176,32 @@ export default function ProductDetailPage() {
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Left Column: Image Gallery & Info */}
         <div className="space-y-6">
-          <div className="w-full">
+          <div className="grid grid-cols-[auto,1fr] gap-4 items-start">
+              {/* Thumbnails Column */}
+              <div className="flex flex-col gap-2">
+                {imagesToDisplay.length > 1 && imagesToDisplay.map((img, index) => (
+                  <button
+                    key={`thumbnail-${index}`}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={cn(
+                      "w-20 h-20 rounded-md overflow-hidden border-2 transition-all relative bg-card",
+                      currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
+                    )}
+                    aria-label={`Ver imagen ${index + 1}`}
+                  >
+                    <Image 
+                      src={img} 
+                      alt={`${product.name} miniatura ${index + 1}`} 
+                      fill
+                      sizes="20vw"
+                      className="object-cover hover:opacity-80"
+                      data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
+                    />
+                  </button>
+                ))}
+              </div>
+
+              {/* Main Image Column */}
               <div 
                 className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card"
                 onMouseEnter={() => setIsZooming(true)}
@@ -206,33 +231,8 @@ export default function ProductDetailPage() {
                   />
                 )}
               </div>
-              
-              {imagesToDisplay.length > 1 && (
-                <div className="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-2">
-                  {imagesToDisplay.map((img, index) => (
-                    <button
-                      key={`thumbnail-${index}`}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={cn(
-                        "aspect-square rounded-md overflow-hidden border-2 transition-all relative bg-card",
-                        currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
-                      )}
-                      aria-label={`Ver imagen ${index + 1}`}
-                    >
-                      <Image 
-                        src={img} 
-                        alt={`${product.name} miniatura ${index + 1}`} 
-                        fill
-                        sizes="20vw"
-                        className="object-cover hover:opacity-80"
-                        data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
           </div>
-
+          
           <div className="space-y-4 pt-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
               
@@ -246,7 +246,7 @@ export default function ProductDetailPage() {
                 <Badge variant="outline">Código: {product.productCode}</Badge>
               </div>
           </div>
-          
+
           <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
               <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
               <p>{product.description}</p>
