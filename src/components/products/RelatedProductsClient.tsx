@@ -1,10 +1,10 @@
 
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './ProductCard';
-import { getRelatedProducts, getProductsByIds, getProducts } from '@/lib/data';
+import { getRelatedProducts, getProductsByIds, getProducts } from '@/app/actions';
 import { getPersonalizedRecommendations, type RecommendationRequest } from '@/ai/flows/recommend-products-flow';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -29,25 +29,29 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
         let personalizedProducts: Product[] = [];
         
         // 1. Get personalized recommendations based on localStorage history
-        const viewedProductIds = JSON.parse(localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY) || '[]') as string[];
-        if (viewedProductIds.length > 1) {
-            const viewedProducts = await getProductsByIds(viewedProductIds);
-            if(viewedProducts.length > 0) {
-              const recommendationRequest: RecommendationRequest = {
-                  viewedProducts: viewedProducts.map(p => ({
-                      name: p.name,
-                      description: p.description,
-                      category: p.category
-                  }))
-              };
-              const recommendations = await getPersonalizedRecommendations(recommendationRequest);
-              
-              if(recommendations.recommendedCategorySlugs.length > 0) {
-                 const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug => getProducts({ categorySlug: slug, limit: 2 }));
-                 const productsByCat = await Promise.all(recommendedProductsPromises);
-                 personalizedProducts = productsByCat.flat();
+        if (typeof window !== 'undefined') {
+          const viewedProductIdsJSON = localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY);
+          const viewedProductIds = viewedProductIdsJSON ? JSON.parse(viewedProductIdsJSON) as string[] : [];
+          
+          if (viewedProductIds.length > 1) {
+              const viewedProducts = await getProductsByIds(viewedProductIds);
+              if(viewedProducts.length > 0) {
+                const recommendationRequest: RecommendationRequest = {
+                    viewedProducts: viewedProducts.map(p => ({
+                        name: p.name,
+                        description: p.description,
+                        category: p.category
+                    }))
+                };
+                const recommendations = await getPersonalizedRecommendations(recommendationRequest);
+                
+                if(recommendations.recommendedCategorySlugs.length > 0) {
+                   const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug => getProducts({ categorySlug: slug, limit: 2 }));
+                   const productsByCat = await Promise.all(recommendedProductsPromises);
+                   personalizedProducts = productsByCat.flat();
+                }
               }
-            }
+          }
         }
         
         // 2. Get standard related products from the same category

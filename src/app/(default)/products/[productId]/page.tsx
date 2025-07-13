@@ -2,7 +2,7 @@
 "use client"; 
 
 import type { Product } from '@/lib/types';
-import { getProductBySlug } from '@/lib/data';
+import { getProductBySlug } from '@/app/actions';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
 import { Badge } from '@/components/ui/badge';
@@ -88,9 +88,11 @@ export default function ProductDetailPage() {
           setQuantity(1);
 
           // Add to recently viewed
-          const viewedProducts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY) || '[]');
-          const updatedViewed = [fetchedProduct.id, ...viewedProducts.filter((id: string) => id !== fetchedProduct.id)].slice(0, MAX_VIEWED_PRODUCTS);
-          localStorage.setItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY, JSON.stringify(updatedViewed));
+          if(typeof window !== 'undefined'){
+            const viewedProducts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY) || '[]');
+            const updatedViewed = [fetchedProduct.id, ...viewedProducts.filter((id: string) => id !== fetchedProduct.id)].slice(0, MAX_VIEWED_PRODUCTS);
+            localStorage.setItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY, JSON.stringify(updatedViewed));
+          }
         }
       } catch (error) {
         console.error("Failed to load product:", error);
@@ -580,5 +582,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-
-    
