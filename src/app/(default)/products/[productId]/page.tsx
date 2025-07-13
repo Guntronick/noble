@@ -147,55 +147,20 @@ export default function ProductDetailPage() {
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Left Column: Image Gallery & Description */}
         <div className="space-y-6">
-            <div className="grid grid-cols-[auto,1fr] gap-4 items-start">
-                {/* Thumbnails Column */}
-                <div className="flex flex-col gap-2">
-                    {imagesToDisplay.length > 1 && imagesToDisplay.map((img, index) => (
-                    <button
-                        key={`thumbnail-${index}`}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={cn(
-                        "w-16 h-16 rounded-md overflow-hidden border-2 transition-all relative bg-card",
-                        currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
-                        )}
-                        aria-label={`Ver imagen ${index + 1}`}
-                    >
-                        <Image 
-                        src={img} 
-                        alt={`${product.name} miniatura ${index + 1}`} 
-                        fill
-                        sizes="10vw"
-                        className="object-cover hover:opacity-80"
-                        data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
-                        />
-                    </button>
-                    ))}
-                </div>
-
-                {/* Main Image Column */}
-                <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
-                    {imagesToDisplay.length > 0 && (
-                    <Image 
-                        src={imagesToDisplay[currentImageIndex]}
-                        alt={product.name} 
-                        fill
-                        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
-                        className="object-contain transition-opacity duration-300 ease-in-out" 
-                        priority 
-                        data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-                    />
-                    )}
-                </div>
+            <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
+                {imagesToDisplay.length > 0 && (
+                <Image 
+                    src={imagesToDisplay[currentImageIndex]}
+                    alt={product.name} 
+                    fill
+                    sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
+                    className="object-contain transition-opacity duration-300 ease-in-out" 
+                    priority 
+                    data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+                />
+                )}
             </div>
-
-            <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
-                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
-                <p>{product.description}</p>
-            </div>
-        </div>
-        
-        {/* Right Column: Purchase Box & Info */}
-        <div className="sticky top-24 self-start space-y-6">
+            
             <div className="space-y-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
               <div className="text-4xl lg:text-5xl font-bold text-price">
@@ -206,9 +171,15 @@ export default function ProductDetailPage() {
                 <Badge variant="outline">Código: {product.productCode}</Badge>
               </div>
             </div>
-            
-            <Separator className="my-4"/>
 
+            <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
+                <p>{product.description}</p>
+            </div>
+        </div>
+        
+        {/* Right Column: Purchase Box & Info */}
+        <div className="sticky top-24 self-start space-y-6">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             {product.colors.length > 0 && (
               <div>
@@ -302,6 +273,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-
-
-    
