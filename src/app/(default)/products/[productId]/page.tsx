@@ -319,7 +319,25 @@ export default function ProductDetailPage() {
                 <Badge variant="outline">Código: {product.productCode}</Badge>
               </div>
               <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
-              <p className="text-4xl lg:text-5xl font-bold text-price">${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              
+              <div className="flex items-baseline gap-2">
+                {product.compareAtPrice && product.compareAtPrice > product.price ? (
+                  <>
+                    <span className="text-2xl text-muted-foreground line-through">
+                      ${product.compareAtPrice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <div className="text-4xl lg:text-5xl font-bold text-price">
+                      <span className="text-3xl lg:text-4xl align-top">$</span>
+                      <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-4xl lg:text-5xl font-bold text-price">
+                    <span className="text-3xl lg:text-4xl align-top">$</span>
+                    <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+                )}
+              </div>
               
               <Separator/>
               

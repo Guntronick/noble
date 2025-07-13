@@ -40,6 +40,7 @@ export type Database = {
         Row: {
           category_id: string | null
           colors: Json | null
+          compare_at_price: number | null
           created_at: string
           data_ai_hint: string | null
           description: string | null
@@ -54,6 +55,7 @@ export type Database = {
         Insert: {
           category_id?: string | null
           colors?: Json | null
+          compare_at_price?: number | null
           created_at?: string
           data_ai_hint?: string | null
           description?: string | null
@@ -68,6 +70,7 @@ export type Database = {
         Update: {
           category_id?: string | null
           colors?: Json | null
+          compare_at_price?: number | null
           created_at?: string
           data_ai_hint?: string | null
           description?: string | null
