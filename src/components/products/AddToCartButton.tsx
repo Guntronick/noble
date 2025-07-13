@@ -1,11 +1,14 @@
+
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowDown, CheckCircle, X } from 'lucide-react';
+import { ShoppingCart, ArrowDown, CheckCircle } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { ToastClose } from '@/components/ui/toast';
+
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 
