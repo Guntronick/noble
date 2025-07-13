@@ -115,7 +115,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
                     <Link href="/cart">Ver carrito</Link>
                 </Button>
                 <Button variant="ghost" onClick={() => dismiss()}>
-                    Seguir navegando
+                    Cerrar
                 </Button>
             </div>
         </div>
