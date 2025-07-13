@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react";
 import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
@@ -12,6 +13,16 @@ import {
 
 export function Toaster() {
   const { toasts } = useToast()
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Render nothing on the server and until the component has mounted on the client
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <ToastProvider>
