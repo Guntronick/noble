@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './ProductCard';
 import { getRelatedProducts, getProductsByIds, getProducts } from '@/app/actions';
@@ -15,41 +15,43 @@ interface RelatedProductsClientProps {
   categoryName: string; 
 }
 
-async function fetchPersonalizedProducts(): Promise<Product[]> {
-  if (typeof window === 'undefined') {
-    return [];
-  }
+// Fetches personalized products based on user's viewing history
+async function fetchPersonalizedProducts(currentProductId: string): Promise<Product[]> {
+  if (typeof window === 'undefined') return [];
+  
   const viewedProductIdsJSON = localStorage.getItem(LOCAL_STORAGE_VIEWED_PRODUCTS_KEY);
   const viewedProductIds = viewedProductIdsJSON ? (JSON.parse(viewedProductIdsJSON) as string[]) : [];
 
-  if (viewedProductIds.length < 2) {
+  if (viewedProductIds.length < 2) return [];
+
+  try {
+    const viewedProducts = await getProductsByIds(viewedProductIds);
+    if (viewedProducts.length < 2) return [];
+
+    const recommendationRequest: RecommendationRequest = {
+      viewedProducts: viewedProducts.map(p => ({
+        name: p.name,
+        description: p.description,
+        category: p.category,
+      })),
+    };
+    
+    const recommendations = await getPersonalizedRecommendations(recommendationRequest);
+    if (recommendations.recommendedCategorySlugs.length === 0) return [];
+
+    const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug =>
+      getProducts({ categorySlug: slug, limit: 2 })
+    );
+
+    const productsByCat = await Promise.all(recommendedProductsPromises);
+    const flatProducts = productsByCat.flat();
+    
+    // Filter out the current product from AI recommendations
+    return flatProducts.filter(p => p.id !== currentProductId);
+  } catch (error) {
+    console.error("Failed to fetch personalized products:", error);
     return [];
   }
-
-  const viewedProducts = await getProductsByIds(viewedProductIds);
-  if (viewedProducts.length === 0) {
-    return [];
-  }
-
-  const recommendationRequest: RecommendationRequest = {
-    viewedProducts: viewedProducts.map(p => ({
-      name: p.name,
-      description: p.description,
-      category: p.category,
-    })),
-  };
-
-  const recommendations = await getPersonalizedRecommendations(recommendationRequest);
-
-  if (recommendations.recommendedCategorySlugs.length === 0) {
-    return [];
-  }
-
-  const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug =>
-    getProducts({ categorySlug: slug, limit: 2 })
-  );
-  const productsByCat = await Promise.all(recommendedProductsPromises);
-  return productsByCat.flat();
 }
 
 
@@ -57,47 +59,50 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const personalizedFetchTriggered = useRef(false);
 
   useEffect(() => {
-    async function fetchRelated() {
+    async function fetchInitialAndThenPersonalized() {
       setLoading(true);
       setError(null);
+      
       try {
-        // Run fetches in parallel
-        const [personalizedProducts, sameCategoryProducts] = await Promise.all([
-          fetchPersonalizedProducts(),
-          getRelatedProducts(categoryName, productId, 4),
-        ]);
-        
-        // Combine and de-duplicate
-        const combined = [...personalizedProducts, ...sameCategoryProducts];
-        const uniqueProductIds = new Set<string>();
-        
-        const finalProducts = combined
-          .filter(p => p.id !== productId) // Ensure current product is not shown
-          .filter(p => {
-            if (uniqueProductIds.has(p.id)) {
-              return false;
-            }
-            uniqueProductIds.add(p.id);
-            return true;
-          });
+        // --- Step 1: Immediately fetch and display related products from the same category ---
+        const sameCategoryProducts = await getRelatedProducts(categoryName, productId, 4);
+        setRelatedProducts(sameCategoryProducts);
+        setLoading(false); // Stop loading, show initial results
 
-        setRelatedProducts(finalProducts.slice(0, 4)); // Limit to 4
-        
-      } catch (err) {
-        let errorMessage = 'Error al cargar productos relacionados.';
-        if (err instanceof Error) {
-          errorMessage = `${errorMessage} ${err.message}`;
+        // --- Step 2: Asynchronously fetch personalized products in the background ---
+        if (!personalizedFetchTriggered.current) {
+          personalizedFetchTriggered.current = true;
+          const personalized = await fetchPersonalizedProducts(productId);
+
+          if (personalized.length > 0) {
+            setRelatedProducts(currentProducts => {
+              // Combine and de-duplicate, giving priority to personalized items
+              const combined = [...personalized, ...currentProducts];
+              const uniqueProductIds = new Set<string>();
+              
+              const finalProducts = combined.filter(p => {
+                if (uniqueProductIds.has(p.id)) {
+                  return false;
+                }
+                uniqueProductIds.add(p.id);
+                return true;
+              });
+
+              return finalProducts.slice(0, 4);
+            });
+          }
         }
-        console.error('Error al cargar productos relacionados:', err);
-        setError(errorMessage);
-      } finally {
+      } catch (err) {
+        console.error('Error loading related products:', err);
+        setError('No se pudieron cargar los productos relacionados.');
         setLoading(false);
       }
     }
 
-    fetchRelated();
+    fetchInitialAndThenPersonalized();
   }, [productId, categoryName]);
 
   if (loading) {
@@ -129,7 +134,7 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
   }
 
   if (relatedProducts.length === 0) {
-    return null;
+    return null; // Don't render the section if there are no products to show
   }
 
   return (
