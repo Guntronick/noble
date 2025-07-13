@@ -3,14 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 import type { Product, Category, ProductImageStructure } from '@/lib/types';
 
-// WARNING: Hardcoding credentials is not recommended for production.
-// This is a temporary measure for the development environment.
-const supabaseUrl = "https://dphbgqoqmyxcxsumgyjw.supabase.co";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwaGJncW9xbXl4Y3hzdW1neWp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyNjQ1NjAsImV4cCI6MjA2NTg0MDU2MH0.uKbUXyUhgIBCpxDmSKf_OaQPrApnGjLwoTxJGFcH0u0";
+// Read server-side environment variables
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("❌ Crucial Supabase environment variables are missing.");
-  throw new Error("Supabase environment variables are not defined. The application cannot start.");
+  console.error("❌ Crucial Supabase environment variables are missing on the server-side.");
+  throw new Error("Server-side Supabase environment variables are not defined. Check your .env.local file or hosting configuration.");
 }
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
