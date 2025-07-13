@@ -14,8 +14,11 @@ const navItems = [
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-panel text-panel-foreground backdrop-blur supports-[backdrop-filter]:bg-panel/90">
-      <div className="container flex h-16 items-center justify-between">
+    <header 
+      style={{ height: 'var(--header-height)' }}
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-panel text-panel-foreground backdrop-blur supports-[backdrop-filter]:bg-panel/90"
+    >
+      <div className="container flex h-full items-center justify-between">
         <Logo />
         <nav className="hidden md:flex items-center space-x-6">
           {navItems.map((item) => (

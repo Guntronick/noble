@@ -6,6 +6,8 @@
 @layer base {
   :root {
     /* Paleta Noble - Basada en la última especificación */
+    --header-height: 4rem; /* Altura del Navbar (h-16) */
+    
     --background: 210 20% 98%; /* Blanco Humo #F8F9FA */
     --foreground: 208 12% 15%; /* Negro Carbón #212529 */
 
@@ -97,8 +99,8 @@
     --accent: 34 81% 54%; /* Cobre #E67E22 - Copiado de modo claro */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF - Copiado de modo claro */
     
-    --success-bg: 145 50% 30%; /* Verde oscuro para fondo #275C3B */
-    --success-foreground: 145 50% 90%; /* Verde muy claro para texto #D0E8D9 */
+    --success-bg: 145 60% 35%; /* Verde para el botón #3E8C5F */
+    --success-foreground: 0 0% 100%; /* Blanco para el texto del botón */
     
     --price-text-color: 87 45% 55%; /* Verde Precio más brillante para modo oscuro */
 
