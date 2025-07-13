@@ -6,7 +6,6 @@
 @layer base {
   :root {
     /* Paleta Noble - Basada en la última especificación */
-    --header-height: 4rem; /* Altura del Navbar (h-16) */
     
     --background: 210 20% 98%; /* Blanco Humo #F8F9FA */
     --foreground: 208 12% 15%; /* Negro Carbón #212529 */

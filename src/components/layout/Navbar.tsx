@@ -15,8 +15,7 @@ const navItems = [
 export function Navbar() {
   return (
     <header 
-      style={{ height: 'var(--header-height)' }}
-      className="sticky top-0 z-50 w-full border-b border-border/40 bg-panel text-panel-foreground backdrop-blur supports-[backdrop-filter]:bg-panel/90"
+      className="sticky top-0 z-50 w-full h-16 border-b border-border/40 bg-panel text-panel-foreground backdrop-blur supports-[backdrop-filter]:bg-panel/90"
     >
       <div className="container flex h-full items-center justify-between">
         <Logo />
