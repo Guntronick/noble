@@ -2,10 +2,11 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowDown } from 'lucide-react';
+import { ShoppingCart, ArrowDown, CheckCircle, X } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 
@@ -24,7 +25,7 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ product, selectedColor, quantity: rawQuantityFromProp, className }: AddToCartButtonProps) {
-  const { toast } = useToast();
+  const { toast, dismiss } = useToast();
 
   const getValidatedQuantity = (currentQty: number): number => {
     if (!product) return 1;
@@ -97,8 +98,29 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cart));
 
     toast({
-      title: "¡Artículo Añadido!",
-      description: `${validatedQuantityForAction} x "${product.name}" ${product.colors.length > 0 && selectedColor ? `(Color: ${selectedColor})` : ''} fue añadido a tu carrito.`,
+      variant: 'success',
+      duration: 5000,
+      description: (
+        <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+                <CheckCircle className="h-6 w-6 text-success-foreground" />
+                <div className="flex flex-col">
+                  <p className="font-semibold text-success-foreground">¡Agregado al Carrito!</p>
+                  <p className="text-sm text-success-foreground/90">
+                    {product.name}
+                  </p>
+                </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 mt-2">
+                <Button variant="outline" size="sm" asChild onClick={() => dismiss()}>
+                    <Link href="/cart">Ver carrito</Link>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => dismiss()} className="hover:bg-white/20">
+                    Seguir navegando
+                </Button>
+            </div>
+        </div>
+      )
     });
   };
 
@@ -131,5 +153,3 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     </Button>
   );
 }
-
-    
