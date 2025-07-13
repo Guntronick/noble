@@ -29,11 +29,11 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
+        default: "border bg-background/95 backdrop-blur-sm text-foreground",
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
         success: 
-          "success group border-success-bg/50 bg-success-bg text-success-foreground"
+          "success group border-success-foreground/20 bg-success text-success-foreground backdrop-blur-sm"
       },
     },
     defaultVariants: {
@@ -65,7 +65,7 @@ const ToastAction = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
-      "group-[.success]:border-transparent group-[.success]:hover:bg-white/20 group-[.success]:focus:ring-success-foreground"
+      "group-[.success]:border-transparent group-[.success]:bg-success-foreground/10 group-[.success]:hover:bg-success-foreground/20 group-[.success]:text-success-foreground"
     )}
     {...props}
   />

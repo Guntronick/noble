@@ -30,8 +30,8 @@
     --accent: 34 81% 54%; /* Cobre #E67E22 - Saturación y brillo aumentados */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
-    --success-bg: 145 50% 40%; /* Verde #3DAA60 */
-    --success-foreground: 0 0% 100%; /* Blanco #FFFFFF */
+    --success-bg: 145 63% 90%; /* Verde muy claro #D9F2E6 */
+    --success-foreground: 145 60% 25%; /* Verde oscuro para texto #2A6347 */
     
     --price-text-color: 87 45% 44%; /* Verde Precio #7AA33F */
 
@@ -97,8 +97,8 @@
     --accent: 34 81% 54%; /* Cobre #E67E22 - Copiado de modo claro */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF - Copiado de modo claro */
     
-    --success-bg: 145 50% 40%; /* Verde #3DAA60 - Copiado de modo claro */
-    --success-foreground: 0 0% 100%; /* Blanco #FFFFFF - Copiado de modo claro */
+    --success-bg: 145 50% 30%; /* Verde oscuro para fondo #275C3B */
+    --success-foreground: 145 50% 90%; /* Verde muy claro para texto #D0E8D9 */
     
     --price-text-color: 87 45% 55%; /* Verde Precio más brillante para modo oscuro */
 
