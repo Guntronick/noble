@@ -203,7 +203,7 @@ export default function ProductDetailPage() {
 
               {/* Main Image Column */}
               <div 
-                className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card"
+                className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative"
                 onMouseEnter={() => setIsZooming(true)}
                 onMouseLeave={() => setIsZooming(false)}
                 onMouseMove={handleMouseMove}
@@ -361,3 +361,5 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
+  
