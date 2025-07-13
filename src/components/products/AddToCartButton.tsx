@@ -119,7 +119,8 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
                 </Button>
             </div>
         </div>
-      )
+      ),
+      close: <ToastClose aria-label="Cerrar notificación" />,
     });
   };
 

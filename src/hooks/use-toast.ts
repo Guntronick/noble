@@ -16,6 +16,7 @@ type ToasterToast = ToastProps & {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  close?: React.ReactNode // Add close button prop
 }
 
 const actionTypes = {
