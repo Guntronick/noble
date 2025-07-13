@@ -102,10 +102,10 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       description: (
         <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3">
-                <CheckCircle className="h-6 w-6 text-success-foreground" />
+                <CheckCircle className="h-6 w-6 text-green-500" />
                 <div className="flex flex-col">
-                  <p className="font-semibold text-success-foreground">¡Agregado al Carrito!</p>
-                  <p className="text-sm text-success-foreground/90">
+                  <p className="font-semibold">¡Agregado al Carrito!</p>
+                  <p className="text-sm text-muted-foreground">
                     {product.name}
                   </p>
                 </div>

@@ -30,8 +30,8 @@
     --accent: 34 81% 54%; /* Cobre #E67E22 - Saturación y brillo aumentados */
     --accent-foreground: 0 0% 100%; /* Blanco #FFFFFF */
 
-    --success-bg: 145 63% 90%; /* Verde muy claro #D9F2E6 */
-    --success-foreground: 145 60% 25%; /* Verde oscuro para texto #2A6347 */
+    --success-bg: 145 60% 35%; /* Verde para el botón #3E8C5F */
+    --success-foreground: 0 0% 100%; /* Blanco para el texto del botón */
     
     --price-text-color: 87 45% 44%; /* Verde Precio #7AA33F */
 
