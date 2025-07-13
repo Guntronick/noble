@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Twitter, Facebook, Instagram, Mail, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -41,7 +41,6 @@ const getColorHex = (colorName: string) => {
   }
   return lowerCaseColor.startsWith('#') ? lowerCaseColor : '#a1a1aa';
 };
-
 
 export default function ProductDetailPage() {
   const { toast } = useToast();
@@ -145,114 +144,85 @@ export default function ProductDetailPage() {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        {/* Image Gallery */}
-        <div className="w-full mb-8">
-            <div className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card">
-              {imagesToDisplay.length > 0 && (
-                <Image 
-                  src={imagesToDisplay[currentImageIndex]}
-                  alt={product.name} 
-                  fill
-                  sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
-                  className="object-contain transition-opacity duration-300 ease-in-out" 
-                  priority 
-                  data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-                />
-              )}
-            </div>
-            
-            {imagesToDisplay.length > 1 && (
-              <div className="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-2">
-                {imagesToDisplay.map((img, index) => (
-                  <button
-                    key={`thumbnail-${index}`}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={cn(
-                      "aspect-square rounded-md overflow-hidden border-2 transition-all relative bg-card",
-                      currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
-                    )}
-                    aria-label={`Ver imagen ${index + 1}`}
-                  >
-                    <Image 
-                      src={img} 
-                      alt={`${product.name} miniatura ${index + 1}`} 
-                      fill
-                      sizes="20vw"
-                      className="object-cover hover:opacity-80"
-                      data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
-                    />
-                  </button>
-                ))}
+      <div className="grid md:grid-cols-2 gap-12 items-start">
+        {/* Left Column: Image Gallery and Product Info */}
+        <div className="space-y-8">
+          {/* Image Gallery */}
+          <div className="w-full">
+              <div className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card">
+                {imagesToDisplay.length > 0 && (
+                  <Image 
+                    src={imagesToDisplay[currentImageIndex]}
+                    alt={product.name} 
+                    fill
+                    sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
+                    className="object-contain transition-opacity duration-300 ease-in-out" 
+                    priority 
+                    data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+                  />
+                )}
               </div>
-            )}
-        </div>
-        
-        {/* Product Info Card */}
-        <div className="p-6 bg-card rounded-xl shadow-2xl space-y-5">
-            <div className="flex items-center space-x-2 flex-wrap">
-              <Badge variant="secondary">Categoría: {product.category}</Badge>
-              <Badge variant="outline">Código: {product.productCode}</Badge>
-            </div>
-
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
+              
+              {imagesToDisplay.length > 1 && (
+                <div className="mt-4 grid grid-cols-4 sm:grid-cols-5 gap-2">
+                  {imagesToDisplay.map((img, index) => (
+                    <button
+                      key={`thumbnail-${index}`}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={cn(
+                        "aspect-square rounded-md overflow-hidden border-2 transition-all relative bg-card",
+                        currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
+                      )}
+                      aria-label={`Ver imagen ${index + 1}`}
+                    >
+                      <Image 
+                        src={img} 
+                        alt={`${product.name} miniatura ${index + 1}`} 
+                        fill
+                        sizes="20vw"
+                        className="object-cover hover:opacity-80"
+                        data-ai-hint={product.dataAiHint ? `${product.dataAiHint} thumb ${index+1}` : `${product.name.toLowerCase().split(' ').slice(0,2).join(' ')} thumb ${index+1}`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+          </div>
           
-            <div className="flex items-baseline gap-2">
-              {product.compareAtPrice && product.compareAtPrice > product.price ? (
-                <>
-                  <span className="text-2xl text-muted-foreground line-through">
-                    ${product.compareAtPrice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
+          {/* Product Info Card */}
+          <div className="p-6 bg-card rounded-xl shadow-lg space-y-5">
+              <div className="flex items-center space-x-2 flex-wrap">
+                <Badge variant="secondary">Categoría: {product.category}</Badge>
+                <Badge variant="outline">Código: {product.productCode}</Badge>
+              </div>
+
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
+            
+              <div className="flex items-baseline gap-2">
+                {product.compareAtPrice && product.compareAtPrice > product.price ? (
+                  <>
+                    <span className="text-2xl text-muted-foreground line-through">
+                      ${product.compareAtPrice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <div className="text-4xl lg:text-5xl font-bold text-price">
+                      <span className="text-3xl lg:text-4xl align-top">$</span>
+                      <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    </div>
+                  </>
+                ) : (
                   <div className="text-4xl lg:text-5xl font-bold text-price">
                     <span className="text-3xl lg:text-4xl align-top">$</span>
                     <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
-                </>
-              ) : (
-                <div className="text-4xl lg:text-5xl font-bold text-price">
-                  <span className="text-3xl lg:text-4xl align-top">$</span>
-                  <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
-                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
-                <p>{product.description}</p>
-            </div>
-
-            <Separator />
-
-            <p className="text-lg font-semibold text-foreground">
-              {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
-              {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
-            </p>
-            {product.stock > 0 && product.stock < 10 && <Badge variant="destructive" className="mt-1">¡Pocas unidades!</Badge>}
-         
-            {product.stock > 0 && (
-              <div>
-                <Label htmlFor="quantity-input-purchasebox" className="text-base font-medium text-foreground">Cantidad:</Label>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Input 
-                    id="quantity-input-purchasebox" 
-                    type="number" 
-                    value={quantity === 0 ? "" : quantity.toString()} 
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      const parsedQuantity = parseInt(value, 10);
-                      setQuantity(isNaN(parsedQuantity) ? 0 : parsedQuantity);
-                    }}
-                    className="w-24 h-10"
-                    aria-label="Cantidad"
-                    disabled={product.stock <=0}
-                    min="1"
-                    max={product.stock.toString()}
-                  />
-                </div>
+                )}
               </div>
-            )}
+              
+              <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
+                  <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
+                  <p>{product.description}</p>
+              </div>
 
-            {product.colors.length > 0 && (
+              {product.colors.length > 0 && (
                 <div>
                   <Label className="text-base font-medium text-foreground">Color:</Label>
                   <TooltipProvider>
@@ -286,11 +256,43 @@ export default function ProductDetailPage() {
                   </TooltipProvider>
                 </div>
               )}
-          
-            <div className="space-y-3 pt-2">
-              <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
-            </div>
-          
+          </div>
+        </div>
+        
+        {/* Right Column: Purchase Box */}
+        <div className="sticky top-24 self-start">
+          <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
+            <p className="text-lg font-semibold text-foreground">
+              {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
+              {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
+            </p>
+            {product.stock > 0 && product.stock < 10 && <Badge variant="destructive">¡Pocas unidades!</Badge>}
+         
+            {product.stock > 0 && (
+              <div>
+                <Label htmlFor="quantity-input-purchasebox" className="text-base font-medium text-foreground">Cantidad:</Label>
+                <div className="flex items-center space-x-2 mt-1">
+                  <Input 
+                    id="quantity-input-purchasebox" 
+                    type="number" 
+                    value={quantity === 0 ? "" : quantity.toString()} 
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const parsedQuantity = parseInt(value, 10);
+                      setQuantity(isNaN(parsedQuantity) ? 0 : parsedQuantity);
+                    }}
+                    className="w-24 h-10"
+                    aria-label="Cantidad"
+                    disabled={product.stock <=0}
+                    min="1"
+                    max={product.stock.toString()}
+                  />
+                </div>
+              </div>
+            )}
+            
+            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
+            
             <Separator className="my-4"/>
           
             <div>
@@ -303,6 +305,7 @@ export default function ProductDetailPage() {
                 <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email"><Mail className="h-5 w-5 text-accent" /></Button>
               </div>
             </div>
+          </div>
         </div>
       </div>
       
