@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './ProductCard';
 import { getRelatedProducts, getProductsByIds, getProducts } from '@/app/actions';
@@ -59,50 +59,42 @@ export function RelatedProductsClient({ productId, categoryName }: RelatedProduc
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const personalizedFetchTriggered = useRef(false);
 
   useEffect(() => {
-    async function fetchInitialAndThenPersonalized() {
+    async function fetchAllRelatedProducts() {
       setLoading(true);
       setError(null);
       
       try {
-        // --- Step 1: Immediately fetch and display related products from the same category ---
-        const sameCategoryProducts = await getRelatedProducts(categoryName, productId, 4);
-        setRelatedProducts(sameCategoryProducts);
-        setLoading(false); // Stop loading, show initial results
+        // Fetch both standard related and AI-powered personalized products concurrently
+        const [sameCategoryProducts, personalized] = await Promise.all([
+            getRelatedProducts(categoryName, productId, 4),
+            fetchPersonalizedProducts(productId)
+        ]);
 
-        // --- Step 2: Asynchronously fetch personalized products in the background ---
-        if (!personalizedFetchTriggered.current) {
-          personalizedFetchTriggered.current = true;
-          const personalized = await fetchPersonalizedProducts(productId);
-
-          if (personalized.length > 0) {
-            setRelatedProducts(currentProducts => {
-              // Combine and de-duplicate, giving priority to personalized items
-              const combined = [...personalized, ...currentProducts];
-              const uniqueProductIds = new Set<string>();
-              
-              const finalProducts = combined.filter(p => {
-                if (uniqueProductIds.has(p.id)) {
-                  return false;
-                }
-                uniqueProductIds.add(p.id);
-                return true;
-              });
-
-              return finalProducts.slice(0, 4);
-            });
+        // Combine and de-duplicate, giving priority to personalized items
+        const combined = [...personalized, ...sameCategoryProducts];
+        const uniqueProductIds = new Set<string>();
+        
+        const finalProducts = combined.filter(p => {
+          if (uniqueProductIds.has(p.id)) {
+            return false;
           }
-        }
+          uniqueProductIds.add(p.id);
+          return true;
+        }).slice(0, 4); // Ensure we only show a maximum of 4 products
+
+        setRelatedProducts(finalProducts);
+
       } catch (err) {
         console.error('Error loading related products:', err);
         setError('No se pudieron cargar los productos relacionados.');
+      } finally {
         setLoading(false);
       }
     }
 
-    fetchInitialAndThenPersonalized();
+    fetchAllRelatedProducts();
   }, [productId, categoryName]);
 
   if (loading) {
