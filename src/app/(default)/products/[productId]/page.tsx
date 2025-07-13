@@ -18,17 +18,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 
-const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
 const ZOOM_FACTOR = 2.5; 
-
-// This will be the new, simpler structure for localStorage
-type StoredCartItem = {
-  id: string;
-  selectedColor?: string;
-  quantityInCart: number;
-};
 
 
 export default function ProductDetailPage() {
@@ -190,71 +182,6 @@ export default function ProductDetailPage() {
         break;
     }
     if (shareUrl) window.open(shareUrl, '_blank');
-  };
-  
- const getValidatedQuantity = (currentQty: number): number => {
-    if (!product) return 1; 
-    let newQuantity = currentQty;
-    if (typeof newQuantity !== 'number' || isNaN(newQuantity) || newQuantity <= 0) {
-      newQuantity = 1;
-    } else if (product.stock > 0 && newQuantity > product.stock) {
-      newQuantity = product.stock;
-    }
-    return newQuantity;
-  };
-  
-  const addItemToCartStorage = (quantityToAdd: number) => {
-    if (!product || typeof window === 'undefined') return false;
-
-    if (!selectedColor && product.colors.length > 0) {
-       toast({
-        title: "Selecciona un color",
-        description: "Por favor, elige un color antes de añadir al carrito.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    if (quantityToAdd <= 0) { 
-      toast({
-        title: "Cantidad inválida",
-        description: "Por favor, introduce una cantidad mayor que cero.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    const storedCartJson = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
-    let cart: StoredCartItem[] = storedCartJson ? JSON.parse(storedCartJson) : [];
-    
-    // Check if an item with the same ID and color already exists, but don't sum quantities.
-    const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedColor === (product.colors.length > 0 ? selectedColor : undefined));
-
-    if (existingItemIndex > -1) {
-      // If item exists, overwrite its quantity with the new one.
-      cart[existingItemIndex].quantityInCart = Math.min(quantityToAdd, product.stock);
-    } else {
-      // If item doesn't exist, add it as a new item.
-      const newItem: StoredCartItem = {
-        id: product.id,
-        selectedColor: product.colors.length > 0 ? selectedColor : undefined,
-        quantityInCart: Math.min(quantityToAdd, product.stock),
-      };
-      cart.push(newItem);
-    }
-
-    localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cart));
-    return true;
-  };
-
-  const handleRequestQuote = () => {
-    if (!product) return;
-    const validatedQuantity = getValidatedQuantity(quantity);
-    
-    const wasAdded = addItemToCartStorage(validatedQuantity);
-    if (wasAdded) {
-      router.push('/cart');
-    }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -454,16 +381,6 @@ export default function ProductDetailPage() {
           )}
           
           <div className="space-y-3 pt-2">
-            <Button 
-              size="lg" 
-              variant="accent"
-              className="w-full text-base py-3"
-              disabled={product.stock <= 0}
-              onClick={handleRequestQuote}
-            >
-              Solicitar Presupuesto
-            </Button>
-            
             <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
           </div>
           
