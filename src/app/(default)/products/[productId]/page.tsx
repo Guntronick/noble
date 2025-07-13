@@ -144,9 +144,9 @@ export default function ProductDetailPage() {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="grid md:grid-cols-2 gap-12 items-start">
+      <div className="grid lg:grid-cols-3 gap-12 items-start">
         {/* Left Column: Image Gallery & Description */}
-        <div className="space-y-6">
+        <div className="lg:col-span-2 space-y-6">
             <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
                 {imagesToDisplay.length > 0 && (
                 <Image 
@@ -179,7 +179,7 @@ export default function ProductDetailPage() {
         </div>
         
         {/* Right Column: Purchase Box & Info */}
-        <div className="sticky top-24 self-start space-y-6">
+        <div className="sticky top-24 self-start space-y-6 lg:col-span-1">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             {product.colors.length > 0 && (
               <div>
