@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -112,10 +111,10 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
                 </div>
             </div>
             <div className="flex items-center justify-end gap-2 mt-2">
-                <Button variant="outline" size="sm" asChild onClick={() => dismiss()}>
+                <Button variant="outline" asChild onClick={() => dismiss()}>
                     <Link href="/cart">Ver carrito</Link>
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => dismiss()} className="hover:bg-white/20">
+                <Button variant="ghost" onClick={() => dismiss()}>
                     Seguir navegando
                 </Button>
             </div>
