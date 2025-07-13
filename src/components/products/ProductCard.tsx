@@ -16,8 +16,6 @@ export function ProductCard({ product }: ProductCardProps) {
     ? product.images.default[0] 
     : 'https://placehold.co/300x400.png';
 
-  const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
-
   return (
     <Card className="overflow-hidden bg-card text-card-foreground shadow-lg dark:border dark:border-border dark:hover:border-primary hover:-translate-y-0.5 transition-all duration-300 flex flex-col h-full group">
       <CardHeader className="p-0 relative">
@@ -30,9 +28,6 @@ export function ProductCard({ product }: ProductCardProps) {
             className="transition-transform duration-300 group-hover:scale-105"
             data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
           />
-          {hasDiscount && (
-             <Badge variant="destructive" className="absolute top-3 right-3">OFERTA</Badge>
-          )}
         </Link>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
@@ -43,24 +38,9 @@ export function ProductCard({ product }: ProductCardProps) {
         </CardTitle>
         <p className="text-sm text-muted-foreground mb-2 h-10 overflow-hidden line-clamp-2">{product.description}</p>
         <div className="flex items-center justify-between">
-           <div className="flex items-baseline gap-2">
-            {hasDiscount ? (
-              <>
-                <p className="text-xl font-bold text-price">
-                  <span className="text-lg align-top">$</span>
-                  {product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-                <p className="text-md text-muted-foreground line-through">
-                  ${product.compareAtPrice?.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </p>
-              </>
-            ) : (
-              <p className="text-2xl font-bold text-price">
-                 <span className="text-xl align-top">$</span>
-                 {product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
-            )}
-          </div>
+           <p className="text-2xl font-bold text-price">
+              ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
           <Badge variant="secondary">{product.category}</Badge>
         </div>
       </CardContent>

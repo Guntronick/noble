@@ -6,17 +6,17 @@ import { getProductBySlug } from '@/app/actions';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Twitter, Facebook, Instagram, Mail, MessageSquare } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Facebook, Instagram, Mail, MessageSquare, Twitter } from 'lucide-react';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
@@ -145,9 +145,8 @@ export default function ProductDetailPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="grid md:grid-cols-2 gap-12 items-start">
-        {/* Left Column: Image Gallery and Product Info */}
-        <div className="space-y-8">
-          {/* Image Gallery */}
+        {/* Left Column: Image Gallery */}
+        <div className="space-y-6">
           <div className="w-full">
               <div className="relative w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card">
                 {imagesToDisplay.length > 0 && (
@@ -189,79 +188,63 @@ export default function ProductDetailPage() {
               )}
           </div>
           
-          {/* Product Info Card */}
-          <div className="p-6 bg-card rounded-xl shadow-lg space-y-5">
-              <div className="flex items-center space-x-2 flex-wrap">
-                <Badge variant="secondary">Categoría: {product.category}</Badge>
-                <Badge variant="outline">Código: {product.productCode}</Badge>
-              </div>
-
-              <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
-            
-              <div className="flex items-baseline gap-2">
-                {product.compareAtPrice && product.compareAtPrice > product.price ? (
-                  <>
-                    <span className="text-2xl text-muted-foreground line-through">
-                      ${product.compareAtPrice.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                    <div className="text-4xl lg:text-5xl font-bold text-price">
-                      <span className="text-3xl lg:text-4xl align-top">$</span>
-                      <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-4xl lg:text-5xl font-bold text-price">
-                    <span className="text-3xl lg:text-4xl align-top">$</span>
-                    <span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
-                  <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
-                  <p>{product.description}</p>
-              </div>
-
-              {product.colors.length > 0 && (
-                <div>
-                  <Label className="text-base font-medium text-foreground">Color:</Label>
-                  <TooltipProvider>
-                    <div className="flex items-center gap-3 mt-2 flex-wrap">
-                      {product.colors.map((color) => {
-                         const hex = getColorHex(color);
-                         const isSelected = selectedColor === color;
-                         return (
-                           <Tooltip key={color} delayDuration={150}>
-                             <TooltipTrigger asChild>
-                               <button
-                                 type="button"
-                                 onClick={() => setSelectedColor(color)}
-                                 className={cn(
-                                   "h-8 w-8 rounded-full border-2 transition-all duration-200",
-                                   isSelected ? 'ring-2 ring-offset-2 ring-primary' : 'hover:scale-110',
-                                   color.toLowerCase() === 'blanco' ? 'border-gray-300' : 'border-transparent'
-                                 )}
-                                 style={{ backgroundColor: hex }}
-                                 aria-label={`Seleccionar color ${color}`}
-                                 disabled={product.stock <= 0}
-                               />
-                             </TooltipTrigger>
-                             <TooltipContent>
-                               <p>{color}</p>
-                             </TooltipContent>
-                           </Tooltip>
-                         );
-                      })}
-                    </div>
-                  </TooltipProvider>
-                </div>
-              )}
+          <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
+              <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
+              <p>{product.description}</p>
           </div>
         </div>
         
         {/* Right Column: Purchase Box */}
         <div className="sticky top-24 self-start">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
+            
+             <div className="text-4xl lg:text-5xl font-bold text-price">
+                 ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+             </div>
+
+            <div className="flex items-center space-x-2 flex-wrap">
+              <Badge variant="secondary">Categoría: {product.category}</Badge>
+              <Badge variant="outline">Código: {product.productCode}</Badge>
+            </div>
+
+            {product.colors.length > 0 && (
+              <div>
+                <Label className="text-base font-medium text-foreground">Color:</Label>
+                <TooltipProvider>
+                  <div className="flex items-center gap-3 mt-2 flex-wrap">
+                    {product.colors.map((color) => {
+                       const hex = getColorHex(color);
+                       const isSelected = selectedColor === color;
+                       return (
+                         <Tooltip key={color} delayDuration={150}>
+                           <TooltipTrigger asChild>
+                             <button
+                               type="button"
+                               onClick={() => setSelectedColor(color)}
+                               className={cn(
+                                 "h-8 w-8 rounded-full border-2 transition-all duration-200",
+                                 isSelected ? 'ring-2 ring-offset-2 ring-primary' : 'hover:scale-110',
+                                 color.toLowerCase() === 'blanco' ? 'border-gray-300' : 'border-transparent'
+                               )}
+                               style={{ backgroundColor: hex }}
+                               aria-label={`Seleccionar color ${color}`}
+                               disabled={product.stock <= 0}
+                             />
+                           </TooltipTrigger>
+                           <TooltipContent>
+                             <p>{color}</p>
+                           </TooltipContent>
+                         </Tooltip>
+                       );
+                    })}
+                  </div>
+                </TooltipProvider>
+              </div>
+            )}
+            
+            <Separator className="my-4"/>
+
             <p className="text-lg font-semibold text-foreground">
               {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
               {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
@@ -291,7 +274,12 @@ export default function ProductDetailPage() {
               </div>
             )}
             
-            <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
+            <div className="space-y-4">
+               <AddToCartButton product={product} selectedColor={selectedColor} quantity={quantity} />
+              <Button size="lg" variant="accent" className="w-full">
+                Solicitar Presupuesto
+              </Button>
+            </div>
             
             <Separator className="my-4"/>
           

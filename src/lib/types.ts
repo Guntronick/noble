@@ -10,7 +10,6 @@ export interface Product {
   description: string;
   images: ProductImageStructure; // Updated structure
   price: number;
-  compareAtPrice?: number; // Optional price for discounts
   colors: string[];
   category: string;
   productCode: string;
@@ -33,7 +32,6 @@ export interface CartItemBase {
   description: string;
   images: string[]; // Will store default images for cart display
   price: number;
-  compareAtPrice?: number;
   selectedColor?: string;
   category: string;
   productCode: string;

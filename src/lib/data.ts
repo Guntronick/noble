@@ -50,7 +50,6 @@ function mapSupabaseProductToAppProduct(supabaseProduct: any): Product {
     description: supabaseProduct.description,
     images: imagesData, 
     price: supabaseProduct.price,
-    compareAtPrice: supabaseProduct.compare_at_price,
     colors: supabaseProduct.colors || [],
     category: supabaseProduct.categories?.name || 'Uncategorized',
     productCode: supabaseProduct.product_code,

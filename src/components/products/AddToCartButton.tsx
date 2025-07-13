@@ -135,7 +135,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center justify-center gap-2 text-base py-3 group transition-transform duration-150 ease-in-out active:scale-[0.98]",
+        "w-full flex items-center justify-center gap-2 text-base py-3 group",
         className
       )}
       disabled={product.stock <= 0}
