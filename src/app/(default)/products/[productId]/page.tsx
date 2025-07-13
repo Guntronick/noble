@@ -144,9 +144,9 @@ export default function ProductDetailPage() {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="grid lg:grid-cols-3 gap-12 items-start">
+      <div className="grid lg:grid-cols-5 gap-12 items-start">
         {/* Left Column: Image Gallery & Description */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-3 space-y-6">
             <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
                 {imagesToDisplay.length > 0 && (
                 <Image 
@@ -161,26 +161,29 @@ export default function ProductDetailPage() {
                 )}
             </div>
 
+            <div className="space-y-4">
+              <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
+              <div className="text-4xl lg:text-5xl font-bold text-price">
+                  ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div className="flex items-center space-x-2 flex-wrap">
+                  <Badge variant="secondary">Categoría: {product.category}</Badge>
+                  <Badge variant="outline">Código: {product.productCode}</Badge>
+              </div>
+            </div>
+
+            <Separator/>
+
             <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
-                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
+                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Descripción del producto:</h2>
                 <p>{product.description}</p>
             </div>
         </div>
         
         {/* Right Column: Purchase Box & Info */}
-        <div className="sticky top-24 self-start space-y-6 lg:col-span-1">
+        <div className="sticky top-24 self-start space-y-6 lg:col-span-2">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
-            <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
-            <div className="text-4xl lg:text-5xl font-bold text-price">
-                ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </div>
-            <div className="flex items-center space-x-2 flex-wrap">
-                <Badge variant="secondary">Categoría: {product.category}</Badge>
-                <Badge variant="outline">Código: {product.productCode}</Badge>
-            </div>
             
-            <Separator className="my-4"/>
-
             <p className="text-lg font-semibold text-foreground">
               {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
               {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
