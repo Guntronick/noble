@@ -166,13 +166,13 @@ export default function ProductDetailPage() {
                         <span className="text-2xl text-muted-foreground line-through">
                             ${product.compare_at_price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
-                        <span className="text-4xl lg:text-5xl font-bold text-success-bg">
+                        <span className="text-4xl lg:text-5xl font-bold text-success">
                             ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                     </div>
                 ) : (
                     <div className="text-4xl lg:text-5xl font-bold text-price">
-                        <span className="text-2xl align-baseline text-muted-foreground mr-1">$</span>
+                        <span className="text-2xl align-top text-muted-foreground mr-1">$</span>
                         {product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                 )}
