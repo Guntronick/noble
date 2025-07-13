@@ -188,6 +188,14 @@ export default function ProductDetailPage() {
                 </div>
             </div>
 
+            <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
+                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
+                <p>{product.description}</p>
+            </div>
+        </div>
+        
+        {/* Right Column: Purchase Box & Info */}
+        <div className="sticky top-24 self-start space-y-6">
             <div className="space-y-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
               <div className="text-4xl lg:text-5xl font-bold text-price">
@@ -198,15 +206,9 @@ export default function ProductDetailPage() {
                 <Badge variant="outline">Código: {product.productCode}</Badge>
               </div>
             </div>
+            
+            <Separator className="my-4"/>
 
-            <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
-                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Lo que tenés que saber de este producto:</h2>
-                <p>{product.description}</p>
-            </div>
-        </div>
-        
-        {/* Right Column: Purchase Box & Info */}
-        <div className="sticky top-24 self-start space-y-6">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             {product.colors.length > 0 && (
               <div>
@@ -300,3 +302,6 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
+
+    
