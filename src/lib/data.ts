@@ -1,8 +1,9 @@
 
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/database.types';
 import type { Product, Category, ProductImageStructure } from '@/lib/types';
+import type { RecommendationResponse } from '@/ai/flows/recommend-products-flow';
+import { createHash } from 'crypto';
 
 // Read server-side environment variables
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -69,6 +70,53 @@ function mapSupabaseCategoryToAppCategory(supabaseCategory: any): Category {
     dataAiHint: supabaseCategory.data_ai_hint,
   };
 }
+
+// --- Caching Functions ---
+
+function createCacheKey(productIds: string[]): string {
+  // Sort IDs to ensure consistency, then hash them.
+  const sortedIds = [...productIds].sort().join(',');
+  return createHash('sha256').update(sortedIds).digest('hex');
+}
+
+export async function getRecommendationFromCache(productIds: string[]): Promise<RecommendationResponse | null> {
+    if (productIds.length === 0) return null;
+    
+    const key = createCacheKey(productIds);
+    const { data, error } = await supabase
+        .from('recommendation_cache')
+        .select('recommendation')
+        .eq('product_ids_hash', key)
+        .single();
+    
+    if (error || !data) {
+        if (error && error.code !== 'PGRST116') { // Ignore "no rows found" error
+          console.error("Error fetching from recommendation cache:", error);
+        }
+        return null;
+    }
+    
+    return data.recommendation as RecommendationResponse;
+}
+
+export async function saveRecommendationToCache(productIds: string[], recommendation: RecommendationResponse): Promise<void> {
+    if (productIds.length === 0) return;
+
+    const key = createCacheKey(productIds);
+    const { error } = await supabase
+        .from('recommendation_cache')
+        .insert({
+            product_ids_hash: key,
+            recommendation: recommendation as any, // Cast to 'any' to satisfy Supabase JSONB type
+        });
+    
+    if (error) {
+        console.error("Error saving to recommendation cache:", error);
+    }
+}
+
+
+// --- Original Data Functions ---
 
 export async function getCategories(): Promise<Category[]> {
   const { data, error } = await supabase

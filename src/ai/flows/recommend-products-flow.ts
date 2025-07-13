@@ -9,6 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { getRecommendationFromCache, saveRecommendationToCache } from '@/lib/data';
 import { z } from 'zod';
 
 const ViewedProductSchema = z.object({
@@ -71,9 +72,30 @@ const recommendFlow = ai.defineFlow(
   }
 );
 
-
+// This is the function that will be called from our components.
+// It now includes the caching logic.
 export async function getPersonalizedRecommendations(
-  input: RecommendationRequest
+  request: RecommendationRequest,
+  viewedProductIds: string[],
 ): Promise<RecommendationResponse> {
-  return await recommendFlow(input);
+
+  // 1. Check the cache first
+  const cachedRecommendation = await getRecommendationFromCache(viewedProductIds);
+  if (cachedRecommendation) {
+    console.log("✅ Cache hit! Serving recommendation from cache.");
+    return cachedRecommendation;
+  }
+  
+  console.log("⚠️ Cache miss. Calling AI to generate new recommendation.");
+
+  // 2. If not in cache, call the AI flow
+  const newRecommendation = await recommendFlow(request);
+
+  // 3. Save the new recommendation to the cache for future requests
+  if (newRecommendation && newRecommendation.recommendedCategorySlugs.length > 0) {
+    await saveRecommendationToCache(viewedProductIds, newRecommendation);
+    console.log("💾 New recommendation saved to cache.");
+  }
+  
+  return newRecommendation;
 }

@@ -92,6 +92,27 @@ export type Database = {
           },
         ]
       }
+      recommendation_cache: {
+        Row: {
+          id: string
+          created_at: string
+          product_ids_hash: string
+          recommendation: Json
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          product_ids_hash: string
+          recommendation: Json
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          product_ids_hash?: string
+          recommendation?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

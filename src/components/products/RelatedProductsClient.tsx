@@ -36,7 +36,8 @@ async function fetchPersonalizedProducts(currentProductId: string): Promise<Prod
       })),
     };
     
-    const recommendations = await getPersonalizedRecommendations(recommendationRequest);
+    // Pass the raw IDs to the flow for caching purposes
+    const recommendations = await getPersonalizedRecommendations(recommendationRequest, viewedProductIds);
     if (recommendations.recommendedCategorySlugs.length === 0) return [];
 
     const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug =>
