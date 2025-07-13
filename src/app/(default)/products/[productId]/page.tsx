@@ -191,7 +191,7 @@ export default function ProductDetailPage() {
         </div>
         
         {/* Right Column: Purchase Box & Info */}
-        <div className="sticky top-24 self-start space-y-6 lg:col-span-2">
+        <div className="space-y-6 lg:col-span-2">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">
