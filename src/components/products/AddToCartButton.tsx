@@ -2,12 +2,19 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowDown } from 'lucide-react'; // Cambiado a ArrowDown
-import type { Product, CartItemBase } from '@/lib/types';
+import { ShoppingCart, ArrowDown } from 'lucide-react';
+import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
+
+// This will be the new, simpler structure for localStorage
+type StoredCartItem = {
+  id: string;
+  selectedColor?: string;
+  quantityInCart: number;
+};
 
 interface AddToCartButtonProps {
   product: Product;
@@ -70,8 +77,8 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       return;
     }
 
-    const storedCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
-    let cart: CartItemBase[] = storedCart ? JSON.parse(storedCart) : [];
+    const storedCartJson = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
+    let cart: StoredCartItem[] = storedCartJson ? JSON.parse(storedCartJson) : [];
 
     const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedColor === (product.colors.length > 0 ? selectedColor : undefined));
 
@@ -79,19 +86,10 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       const newTotalQuantity = cart[existingItemIndex].quantityInCart + validatedQuantityForAction;
       cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock);
     } else {
-      const newItem: CartItemBase = {
+      const newItem: StoredCartItem = {
         id: product.id,
-        name: product.name,
-        description: product.description,
-        images: product.images.default && product.images.default.length > 0 ? product.images.default : ['https://placehold.co/100x100.png'],
-        price: product.price,
         selectedColor: product.colors.length > 0 ? selectedColor : undefined,
-        category: product.category,
-        productCode: product.productCode,
-        slug: product.slug,
-        stock: product.stock,
         quantityInCart: Math.min(validatedQuantityForAction, product.stock),
-        dataAiHint: product.dataAiHint,
       };
       cart.push(newItem);
     }
@@ -115,15 +113,15 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       )}
       disabled={product.stock <= 0}
     >
-      <span className="relative inline-flex items-center justify-center h-6 w-6"> {/* Contenedor de icono más grande */}
+      <span className="relative inline-flex items-center justify-center h-6 w-6">
         <ShoppingCart
-          className="h-full w-full" 
+          className="h-full w-full"
         />
-        <ArrowDown // Cambiado a ArrowDown
+        <ArrowDown
           className={cn(
             "absolute h-4 w-4 opacity-0 transition-all duration-300 ease-in-out transform",
-            "-translate-y-2 scale-75", // Empieza arriba, invisible y pequeña
-            "group-hover:opacity-100 group-hover:translate-y-0.5 group-hover:scale-100" // En hover: visible, se mueve hacia abajo (dentro del carrito), escala normal
+            "-translate-y-2 scale-75",
+            "group-hover:opacity-100 group-hover:translate-y-0.5 group-hover:scale-100"
           )}
         />
       </span>
@@ -133,3 +131,5 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     </Button>
   );
 }
+
+    

@@ -1,7 +1,7 @@
 
 "use client"; 
 
-import type { Product, CartItemBase, ProductImageStructure } from '@/lib/types';
+import type { Product } from '@/lib/types';
 import { getProductBySlug } from '@/lib/data';
 import { AddToCartButton } from '@/components/products/AddToCartButton';
 import { RelatedProductsClient } from '@/components/products/RelatedProductsClient';
@@ -33,6 +33,14 @@ const LOCAL_STORAGE_CART_KEY = 'nobleCart';
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
 const ZOOM_FACTOR = 2.5; 
+
+// This will be the new, simpler structure for localStorage
+type StoredCartItem = {
+  id: string;
+  selectedColor?: string;
+  quantityInCart: number;
+};
+
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -226,27 +234,19 @@ export default function ProductDetailPage() {
       return false;
     }
 
-    const storedCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
-    let cart: CartItemBase[] = storedCart ? JSON.parse(storedCart) : [];
+    const storedCartJson = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
+    let cart: StoredCartItem[] = storedCartJson ? JSON.parse(storedCartJson) : [];
+    
     const existingItemIndex = cart.findIndex(item => item.id === product.id && item.selectedColor === (product.colors.length > 0 ? selectedColor : undefined));
 
     if (existingItemIndex > -1) {
       const newTotalQuantity = cart[existingItemIndex].quantityInCart + quantityToAdd;
       cart[existingItemIndex].quantityInCart = Math.min(newTotalQuantity, product.stock);
     } else {
-      const newItem: CartItemBase = {
+      const newItem: StoredCartItem = {
         id: product.id,
-        name: product.name,
-        description: product.description,
-        images: product.images.default && product.images.default.length > 0 ? product.images.default : ['https://placehold.co/100x100.png'],
-        price: product.price,
         selectedColor: product.colors.length > 0 ? selectedColor : undefined,
-        category: product.category, 
-        productCode: product.productCode,
-        slug: product.slug,
-        stock: product.stock,
         quantityInCart: Math.min(quantityToAdd, product.stock),
-        dataAiHint: product.dataAiHint,
       };
       cart.push(newItem);
     }
@@ -580,3 +580,5 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
+    

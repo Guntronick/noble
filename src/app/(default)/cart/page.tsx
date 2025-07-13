@@ -2,7 +2,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import type { CartItemType } from '@/lib/types';
+import type { CartItemType, Product } from '@/lib/types';
+import { getProductsByIds } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,13 +12,20 @@ import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import { X as XIcon, Minus, Plus, XCircle } from 'lucide-react';
+import { X as XIcon, Minus, Plus, XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const ITEM_REMOVAL_ANIMATION_DURATION = 300;
 const TOAST_TIMER_DURATION = 1200;
 const TOAST_ANIMATION_DURATION = 500;
 const LOCAL_STORAGE_CART_KEY = 'nobleCart';
+
+// A simpler type for what's stored in localStorage
+type StoredCartItem = {
+  id: string;
+  selectedColor?: string;
+  quantityInCart: number;
+};
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
@@ -38,27 +46,69 @@ export default function CartPage() {
   const animationFrameIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedCartItems = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
-      if (storedCartItems) {
-        try {
-          const parsedItems: Omit<CartItemType, 'isRemoving'>[] = JSON.parse(storedCartItems);
-          setCartItems(parsedItems.map(item => ({ ...item, isRemoving: false })));
-        } catch (error) {
-          console.error("Error parsing cart items from localStorage:", error);
-          localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
+    async function loadAndVerifyCart() {
+      if (typeof window !== 'undefined') {
+        const storedCartJson = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
+        if (storedCartJson) {
+          try {
+            const storedItems: StoredCartItem[] = JSON.parse(storedCartJson);
+            if (storedItems.length === 0) {
+              setCartItems([]);
+              setIsCartLoaded(true);
+              return;
+            }
+
+            const productIds = storedItems.map(item => item.id);
+            const productsFromDB = await getProductsByIds(productIds);
+
+            const verifiedCartItems: CartItemType[] = storedItems
+              .map(storedItem => {
+                const productInfo = productsFromDB.find(p => p.id === storedItem.id);
+                // If product doesn't exist in DB anymore, discard it
+                if (!productInfo) return null;
+
+                return {
+                  ...productInfo,
+                  // The price and other details now come from the DB, not localStorage
+                  quantityInCart: Math.min(storedItem.quantityInCart, productInfo.stock),
+                  selectedColor: storedItem.selectedColor,
+                  isRemoving: false,
+                  // Ensure images array is valid for the cart display
+                  images: productInfo.images.default || ['https://placehold.co/100x100.png']
+                };
+              })
+              .filter((item): item is CartItemType => item !== null); // Filter out nulls
+
+            setCartItems(verifiedCartItems);
+            // Update localStorage with verified data
+            updateLocalStorage(verifiedCartItems);
+
+          } catch (error) {
+            console.error("Error processing cart:", error);
+            localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
+            setCartItems([]);
+          }
         }
+        setIsCartLoaded(true);
       }
-      setIsCartLoaded(true);
     }
+    loadAndVerifyCart();
   }, []);
 
+  const updateLocalStorage = (currentCartItems: CartItemType[]) => {
+      if (typeof window !== 'undefined') {
+        const itemsToStore: StoredCartItem[] = currentCartItems.map(item => ({
+          id: item.id,
+          selectedColor: item.selectedColor,
+          quantityInCart: item.quantityInCart,
+        }));
+        localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(itemsToStore));
+      }
+  };
+
   useEffect(() => {
-    if (typeof window !== 'undefined' && isCartLoaded) {
-      const itemsToStore = cartItems.map(({ isRemoving, ...rest }) => rest);
-      localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(itemsToStore));
-    }
-  }, [cartItems, isCartLoaded]);
+    updateLocalStorage(cartItems);
+  }, [cartItems]);
 
 
   useEffect(() => {
@@ -111,7 +161,6 @@ export default function CartPage() {
   const handleQuantityChange = (productId: string, selectedColor: string | undefined, newQuantity: number) => {
     setCartItems(prevItems =>
       prevItems.map(item => {
-        // Check both productId and selectedColor for uniqueness
         if (item.id === productId && item.selectedColor === selectedColor) {
           const quantity = Math.max(1, Math.min(newQuantity, item.stock));
           return { ...item, quantityInCart: quantity };
@@ -122,21 +171,17 @@ export default function CartPage() {
   };
 
   const handleRemoveItem = (productId: string, selectedColor?: string) => {
-    // Find the specific item to ensure it exists before proceeding (optional, but good practice)
     const itemToRemove = cartItems.find(item => item.id === productId && item.selectedColor === selectedColor);
     if (!itemToRemove) {
-      // console.warn("Attempted to remove an item not found in cart:", productId, selectedColor);
       return;
     }
 
-    // First, mark the specific item for removal animation
     setCartItems(prevItems =>
       prevItems.map(it =>
         (it.id === productId && it.selectedColor === selectedColor) ? { ...it, isRemoving: true } : it
       )
     );
 
-    // Then, after a delay, filter out the item
     setTimeout(() => {
       setCartItems(prevItems => prevItems.filter(item => !(item.id === productId && item.selectedColor === selectedColor)));
       setShowRemovedProductToast(true);
@@ -163,11 +208,20 @@ export default function CartPage() {
     const orderItems = cartItems.filter(item => !item.isRemoving).map(({ isRemoving, ...rest}) => rest);
     console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: orderItems, total });
     alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
+    localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
+    setCartItems([]);
   };
 
 
   if (!isCartLoaded) {
-    return <div className="container mx-auto px-4 py-12 text-center">Cargando carrito...</div>;
+    return (
+      <div className="container mx-auto px-4 py-12 text-center flex items-center justify-center min-h-[50vh]">
+        <div className="flex flex-col items-center gap-4">
+           <Loader2 className="h-10 w-10 animate-spin text-primary" />
+           <p className="text-lg text-muted-foreground">Cargando y verificando tu carrito...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -378,3 +432,5 @@ export default function CartPage() {
     </div>
   );
 }
+
+    
