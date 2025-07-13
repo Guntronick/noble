@@ -172,7 +172,7 @@ export default function ProductDetailPage() {
                     </div>
                 ) : (
                     <div className="text-4xl lg:text-5xl font-bold text-price">
-                        <span className="text-2xl align-top text-muted-foreground mr-1">$</span>
+                        <span className="text-3xl align-top mr-1">$</span>
                         {product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                 )}
