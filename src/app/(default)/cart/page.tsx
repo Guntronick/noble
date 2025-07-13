@@ -14,6 +14,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { X as XIcon, Minus, Plus, XCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from "@/hooks/use-toast";
 
 const ITEM_REMOVAL_ANIMATION_DURATION = 300;
 const TOAST_TIMER_DURATION = 1200;
@@ -28,8 +29,10 @@ type StoredCartItem = {
 };
 
 export default function CartPage() {
+  const { toast } = useToast();
   const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [isCartLoaded, setIsCartLoaded] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -107,8 +110,11 @@ export default function CartPage() {
   };
 
   useEffect(() => {
-    updateLocalStorage(cartItems);
-  }, [cartItems]);
+    // We prevent updating local storage while submitting to avoid race conditions
+    if(!isSubmitting) {
+      updateLocalStorage(cartItems);
+    }
+  }, [cartItems, isSubmitting]);
 
 
   useEffect(() => {
@@ -203,13 +209,52 @@ export default function CartPage() {
   const subtotal = calculateSubtotal();
   const total = subtotal;
 
-  const handleSubmitOrder = (e: React.FormEvent) => {
+  const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    const orderItems = cartItems.filter(item => !item.isRemoving).map(({ isRemoving, ...rest}) => rest);
-    console.log("Pedido/Presupuesto Enviado:", { formData, cartItems: orderItems, total });
-    alert("Pedido/Presupuesto enviado. Nos pondremos en contacto pronto.");
-    localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
-    setCartItems([]);
+    setIsSubmitting(true);
+
+    const itemsToSubmit = cartItems
+        .filter(item => !item.isRemoving)
+        .map(item => ({ id: item.id, quantity: item.quantityInCart }));
+
+    try {
+        const response = await fetch('/api/create-quote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                items: itemsToSubmit,
+                formData: formData,
+            }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            toast({
+                title: "¡Presupuesto Enviado!",
+                description: "Gracias por tu solicitud. Nos pondremos en contacto pronto.",
+            });
+            localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
+            setCartItems([]);
+        } else {
+             toast({
+                title: "Error al Enviar",
+                description: result.message || "Ocurrió un error al procesar tu solicitud.",
+                variant: "destructive",
+            });
+        }
+    } catch (error) {
+         toast({
+            title: "Error de Conexión",
+            description: "No se pudo conectar con el servidor. Por favor, revisa tu conexión a internet.",
+            variant: "destructive",
+        });
+        console.error("Error submitting quote:", error);
+    } finally {
+        setIsSubmitting(false);
+    }
   };
 
 
@@ -422,8 +467,12 @@ export default function CartPage() {
                 <p className="font-semibold text-foreground">Solicitar Presupuesto</p>
                 <p>No efectuaremos cargos de ningún tipo. En breve te enviaremos el presupuesto por los productos solicitados.</p>
               </div>
-              <Button type="submit" size="lg" variant="accent" className="w-full mt-6 text-base py-3" disabled={cartItems.filter(item => !item.isRemoving).length === 0}>
-                REALIZAR EL PEDIDO
+              <Button type="submit" size="lg" variant="accent" className="w-full mt-6 text-base py-3" disabled={isSubmitting || cartItems.filter(item => !item.isRemoving).length === 0}>
+                {isSubmitting ? (
+                    <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Procesando...</>
+                ) : (
+                    'REALIZAR EL PEDIDO'
+                )}
               </Button>
             </CardContent>
           </Card>
@@ -432,5 +481,3 @@ export default function CartPage() {
     </div>
   );
 }
-
-    
