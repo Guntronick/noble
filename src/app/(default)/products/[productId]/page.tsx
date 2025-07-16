@@ -335,11 +335,11 @@ export default function ProductDetailPage() {
             <div>
               <h3 className="text-base font-semibold mb-2 text-foreground">Comparte este producto:</h3>
               <div className="flex space-x-2 flex-wrap gap-y-2">
-                <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter" className="group"><Twitter className="h-5 w-5 text-accent group-hover:text-accent-foreground" /></Button>
-                <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook" className="group"><Facebook className="h-5 w-5 text-accent group-hover:text-accent-foreground" /></Button>
-                <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram" className="group"><Instagram className="h-5 w-5 text-accent group-hover:text-accent-foreground" /></Button>
-                <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Compartir en WhatsApp" className="group"><MessageSquare className="h-5 w-5 text-accent group-hover:text-accent-foreground" /></Button>
-                <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email" className="group"><Mail className="h-5 w-5 text-accent group-hover:text-accent-foreground" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('twitter')} aria-label="Compartir en Twitter" className="group"><Twitter className="h-5 w-5 text-accent group-hover:text-accent-foreground transition-colors duration-300" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('facebook')} aria-label="Compartir en Facebook" className="group"><Facebook className="h-5 w-5 text-accent group-hover:text-accent-foreground transition-colors duration-300" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('instagram')} aria-label="Compartir en Instagram" className="group"><Instagram className="h-5 w-5 text-accent group-hover:text-accent-foreground transition-colors duration-300" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('whatsapp')} aria-label="Compartir en WhatsApp" className="group"><MessageSquare className="h-5 w-5 text-accent group-hover:text-accent-foreground transition-colors duration-300" /></Button>
+                <Button variant="outline" size="icon" onClick={() => handleShare('email')} aria-label="Compartir por Email" className="group"><Mail className="h-5 w-5 text-accent group-hover:text-accent-foreground transition-colors duration-300" /></Button>
               </div>
             </div>
           </div>
