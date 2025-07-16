@@ -55,7 +55,7 @@ const ProductImageThumbnails = ({
   selectedImage: string,
   productName: string 
 }) => {
-  if (images.length <= 1) return null;
+  if (images.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2">
