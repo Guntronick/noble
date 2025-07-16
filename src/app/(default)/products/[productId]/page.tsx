@@ -74,8 +74,8 @@ const ProductImageThumbnails = ({
           <Image
             src={image}
             alt={`${productName} - Miniatura ${index + 1}`}
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: 'cover' }}
             className="hover:opacity-80"
           />
         </button>
@@ -205,8 +205,8 @@ export default function ProductDetailPage() {
               <Image
                 src={selectedImage}
                 alt={`${product.name} - Imagen principal`}
-                layout="fill"
-                objectFit="contain"
+                fill
+                style={{ objectFit: 'contain' }}
                 className="transition-opacity duration-300"
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
               />
@@ -222,7 +222,7 @@ export default function ProductDetailPage() {
                             selectedImage === image ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
                         )}
                     >
-                        <Image src={image} alt={`Miniatura ${index + 1}`} layout="fill" objectFit="cover" />
+                        <Image src={image} alt={`Miniatura ${index + 1}`} fill style={{ objectFit: 'cover' }} />
                     </button>
                 ))}
             </div>
