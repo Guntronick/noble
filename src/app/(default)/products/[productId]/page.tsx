@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
 
         {/* Columna Central: Imagen Principal */}
         <div className="lg:col-span-7 space-y-8">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-card">
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-transparent">
               <Image
                 src={selectedImage}
                 alt={`${product.name} - Imagen principal`}
@@ -228,7 +228,7 @@ export default function ProductDetailPage() {
         </div>
         
         {/* Columna Derecha: Cuadro de Compra */}
-        <div className="lg:col-span-4 self-start">
+        <div className="lg:col-span-4">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">
@@ -315,7 +315,7 @@ export default function ProductDetailPage() {
         </div>
       </div>
       
-      {/* Product Info Section - Moved here to span full width */}
+      {/* Product Info Section */}
       <div className="mt-12 space-y-8">
         <div className="space-y-4">
           <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
