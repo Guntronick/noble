@@ -67,7 +67,7 @@ const ProductImageThumbnails = ({
             "relative aspect-square w-full overflow-hidden rounded-md border-2 transition-all duration-200",
             selectedImage === image 
               ? "border-primary ring-2 ring-primary" 
-              : "border-transparent hover:border-muted-foreground/50"
+              : "border-border hover:border-muted-foreground/50"
           )}
         >
           <Image
@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
 
         {/* Columna Central: Imagen Principal */}
         <div className="lg:col-span-7">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-transparent">
+            <div className="relative w-[600px] h-[500px] overflow-hidden rounded-lg bg-transparent">
               <Image
                 src={selectedImage}
                 alt={`${product.name} - Imagen principal`}
