@@ -1,4 +1,5 @@
 
+
 "use client"; 
 
 import type { Product } from '@/lib/types';
@@ -13,7 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
-import { Facebook, Instagram, Mail, MessageSquare, Twitter } from 'lucide-react';
+import { ArrowDown, Facebook, Instagram, Mail, MessageSquare, ShoppingCart, Twitter } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
@@ -236,7 +237,7 @@ export default function ProductDetailPage() {
             </div>
              {isZooming && (
                 <div
-                    className="absolute right-full top-0 mr-4 hidden lg:block w-[500px] h-[500px] bg-white border border-border rounded-lg overflow-hidden shadow-2xl z-20 pointer-events-none"
+                    className="absolute top-1/2 left-1/2 -translate-y-1/2 translate-x-[calc(100%+1rem)] hidden lg:block w-[500px] h-[500px] bg-white border border-border rounded-lg overflow-hidden shadow-2xl z-20 pointer-events-none"
                 >
                   <div
                     style={{
