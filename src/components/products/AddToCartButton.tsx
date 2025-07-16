@@ -56,7 +56,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     }
 
     if (userOriginalQuantity !== validatedQuantityForAction) {
-      if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
+      if (userOriginalquantity === 0 && validatedQuantityForAction === 1) {
         toast({
           title: "Cantidad ajustada",
           description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
