@@ -144,9 +144,9 @@ export default function ProductDetailPage() {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="grid lg:grid-cols-5 gap-12 items-start">
+      <div className="grid lg:grid-cols-2 gap-12 items-start">
         {/* Left Column: Image Gallery & Description */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="space-y-6 lg:col-span-1">
            <div className="grid grid-cols-5 gap-4">
               {/* Vertical Thumbnails */}
               <div className="col-span-1 flex flex-col gap-2">
@@ -216,7 +216,7 @@ export default function ProductDetailPage() {
         </div>
         
         {/* Right Column: Purchase Box & Info */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-6 lg:sticky lg:top-24 lg:col-span-1">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">
