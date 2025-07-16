@@ -142,11 +142,9 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     >
       <span className="relative h-7 w-7">
         <ArrowDown className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-in-out h-5 w-5" />
-        <ShoppingCart className="h-7 w-7 transition-transform duration-300 ease-in-out" />
+        <ShoppingCart className="h-7 w-7" />
       </span>
-      <span>
-        {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
-      </span>
+      {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
     </Button>
   );
 }
