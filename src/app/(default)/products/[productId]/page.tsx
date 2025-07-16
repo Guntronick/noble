@@ -258,7 +258,7 @@ export default function ProductDetailPage() {
         </div>
         
         {/* Columna Derecha: Cuadro de Compra */}
-        <div className="lg:col-span-4 lg:sticky lg:top-24">
+        <div className="lg:col-span-4">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">
