@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowDown } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -135,22 +135,14 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center justify-center gap-2 text-base py-3 group active:scale-[0.98] overflow-hidden",
+        "w-full flex items-center justify-center gap-2 text-base py-3 active:scale-[0.98]",
         className
       )}
       disabled={product.stock <= 0}
     >
-      <ShoppingCart
-        className="h-6 w-6 transition-transform duration-300 ease-in-out group-hover:-translate-y-8"
-      />
-       <ArrowDown
-        className="absolute h-6 w-6 transition-transform duration-300 ease-in-out translate-y-8 group-hover:translate-y-0"
-      />
-      <span className="transition-transform duration-300 ease-in-out group-hover:-translate-y-16">
+      <ShoppingCart className="h-6 w-6" />
+      <span>
         {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
-      </span>
-      <span className="absolute transition-transform duration-300 ease-in-out translate-y-16 group-hover:translate-y-0">
-        ¡Añadir ahora!
       </span>
     </Button>
   );
