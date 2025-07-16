@@ -16,9 +16,7 @@ import { cn } from '@/lib/utils';
 import { Facebook, Instagram, Mail, MessageSquare, Twitter } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useState, useMemo, useRef } from 'react';
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
+import { useEffect, useState, useRef } from 'react';
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
@@ -44,8 +42,6 @@ const getColorHex = (colorName: string) => {
   return lowerCaseColor.startsWith('#') ? lowerCaseColor : '#a1a1aa';
 };
 
-
-// Component for Vertical Image Thumbnails
 const ProductImageThumbnails = ({ 
   images, 
   onSelectImage, 
@@ -105,7 +101,6 @@ export default function ProductDetailPage() {
 
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
-
   useEffect(() => {
     async function loadProduct() {
       if (!productSlug) {
@@ -152,33 +147,29 @@ export default function ProductDetailPage() {
         newImages = ['https://placehold.co/600x500.png'];
       }
       setImagesToDisplay(newImages);
-      setSelectedImage(newImages[0]); // Select the first image by default
+      setSelectedImage(newImages[0]);
     } else {
       setImagesToDisplay(['https://placehold.co/600x500.png']);
       setSelectedImage('https://placehold.co/600x500.png');
     }
   }, [product, selectedColor]);
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!imageContainerRef.current) return;
-        const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
-        
-        const x = e.clientX - left;
-        const y = e.clientY - top;
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!imageContainerRef.current) return;
+      const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
+      
+      const x = e.clientX - left;
+      const y = e.clientY - top;
 
-        setPosition({ x, y });
+      setPosition({ x, y });
 
+      if (imgWidth === 0 || imgHeight === 0) {
         setImgSize([width, height]);
-    };
+      }
+  };
 
-    const handleMouseEnter = () => {
-        setIsZooming(true);
-    };
-
-    const handleMouseLeave = () => {
-        setIsZooming(false);
-    };
-
+  const handleMouseEnter = () => setIsZooming(true);
+  const handleMouseLeave = () => setIsZooming(false);
 
   const handleShare = (platform: string) => {
     if (typeof window === "undefined" || !product) return;
@@ -217,8 +208,6 @@ export default function ProductDetailPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-        {/* Columna Izquierda: Miniaturas */}
         <div className="lg:col-span-1 lg:block">
           <ProductImageThumbnails 
             images={imagesToDisplay}
@@ -228,7 +217,6 @@ export default function ProductDetailPage() {
           />
         </div>
 
-        {/* Columna Central: Imagen Principal con Zoom */}
         <div className="lg:col-span-7 flex relative">
             <div 
               ref={imageContainerRef}
@@ -253,17 +241,17 @@ export default function ProductDetailPage() {
                   <div
                     style={{
                         position: 'absolute',
-                        top: `-${position.y * 1.5}px`, // 1.5 es el factor de zoom
+                        top: `-${position.y * 1.5}px`,
                         left: `-${position.x * 1.5}px`,
-                        width: `${imgWidth * 2.5}px`, // 2.5 es el tamaño de la imagen zoomeada
+                        width: `${imgWidth * 2.5}px`,
                         height: `${imgHeight * 2.5}px`,
                     }}
                   >
                      <Image
                         src={selectedImage}
                         alt="Zoomed product"
-                        layout="fill"
-                        objectFit="contain"
+                        fill
+                        style={{ objectFit: 'contain' }}
                      />
                   </div>
                 </div>
@@ -271,7 +259,6 @@ export default function ProductDetailPage() {
             
         </div>
         
-        {/* Columna Derecha: Cuadro de Compra */}
         <div className="lg:col-span-4 self-start">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
@@ -358,8 +345,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
-       {/* Mobile Thumbnails below central image */}
-        <div className="lg:hidden grid grid-cols-5 gap-2 mt-4">
+       <div className="lg:hidden grid grid-cols-5 gap-2 mt-4">
             {imagesToDisplay.map((image, index) => (
                 <button
                     key={index}
@@ -374,7 +360,6 @@ export default function ProductDetailPage() {
             ))}
         </div>
       
-      {/* Product Info Section */}
        <div className="mt-12 space-y-8">
         <div className="space-y-4">
           <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
@@ -407,7 +392,6 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Productos Relacionados */}
       <Separator className="my-12 lg:my-16" />
       {product && <RelatedProductsClient productId={product.id} categoryName={product.category} />}
     </div>
