@@ -2,7 +2,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, ArrowDown } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -56,7 +56,7 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
     }
 
     if (userOriginalQuantity !== validatedQuantityForAction) {
-      if (userOriginalquantity === 0 && validatedQuantityForAction === 1) {
+      if (userOriginalQuantity === 0 && validatedQuantityForAction === 1) {
         toast({
           title: "Cantidad ajustada",
           description: `Se añadió ${validatedQuantityForAction} unidad al carrito. El mínimo es 1.`,
@@ -135,20 +135,13 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center justify-center text-base py-3 active:scale-[0.98] group overflow-hidden",
+        "w-full flex items-center justify-center text-base py-3 active:scale-[0.98]",
         className
       )}
       disabled={product.stock <= 0}
     >
-      <span className="flex items-center justify-center gap-2">
-        <span className="relative h-7 w-7">
-          <ArrowDown className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-in-out h-5 w-5" />
-          <ShoppingCart className="h-7 w-7" />
-        </span>
-        <span>
-          {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
-        </span>
-      </span>
+      <ShoppingCart className="h-5 w-5 mr-2" />
+      {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
     </Button>
   );
 }
