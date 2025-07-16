@@ -17,8 +17,7 @@ import { cn } from '@/lib/utils';
 import { Facebook, Instagram, Mail, MessageSquare, Twitter } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { ProductImageCarousel } from '@/components/products/ProductImageCarousel';
+import { useEffect, useState, useMemo } from 'react';
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
@@ -44,6 +43,48 @@ const getColorHex = (colorName: string) => {
   return lowerCaseColor.startsWith('#') ? lowerCaseColor : '#a1a1aa';
 };
 
+
+// Component for Vertical Image Thumbnails
+const ProductImageThumbnails = ({ 
+  images, 
+  onSelectImage, 
+  selectedImage,
+  productName
+}: { 
+  images: string[], 
+  onSelectImage: (image: string) => void, 
+  selectedImage: string,
+  productName: string 
+}) => {
+  if (images.length <= 1) return null;
+
+  return (
+    <div className="flex flex-col gap-2">
+      {images.map((image, index) => (
+        <button
+          key={index}
+          onClick={() => onSelectImage(image)}
+          className={cn(
+            "relative aspect-square w-full overflow-hidden rounded-md border-2 transition-all duration-200",
+            selectedImage === image 
+              ? "border-primary ring-2 ring-primary" 
+              : "border-transparent hover:border-muted-foreground/50"
+          )}
+        >
+          <Image
+            src={image}
+            alt={`${productName} - Miniatura ${index + 1}`}
+            layout="fill"
+            objectFit="cover"
+            className="hover:opacity-80"
+          />
+        </button>
+      ))}
+    </div>
+  );
+};
+
+
 export default function ProductDetailPage() {
   const { toast } = useToast();
   const params = useParams<{ productId: string }>(); 
@@ -55,6 +96,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState<number>(1); 
 
   const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string>('');
   
   useEffect(() => {
     async function loadProduct() {
@@ -102,8 +144,10 @@ export default function ProductDetailPage() {
         newImages = ['https://placehold.co/600x500.png'];
       }
       setImagesToDisplay(newImages);
+      setSelectedImage(newImages[0]); // Select the first image by default
     } else {
       setImagesToDisplay(['https://placehold.co/600x500.png']);
+      setSelectedImage('https://placehold.co/600x500.png');
     }
   }, [product, selectedColor]);
 
@@ -143,15 +187,46 @@ export default function ProductDetailPage() {
   
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="grid lg:grid-cols-2 gap-12 items-start">
-        {/* Left Column: Image Gallery & Description */}
-        <div className="space-y-6">
-            <ProductImageCarousel 
-              images={imagesToDisplay} 
-              productName={product.name}
-              dataAiHint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-              imageClassName="w-full aspect-[4/5] overflow-hidden rounded-lg shadow-xl bg-card relative"
-            />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        {/* Columna Izquierda: Miniaturas */}
+        <div className="hidden lg:block lg:col-span-1">
+          <ProductImageThumbnails 
+            images={imagesToDisplay}
+            onSelectImage={setSelectedImage}
+            selectedImage={selectedImage}
+            productName={product.name}
+          />
+        </div>
+
+        {/* Columna Central: Imagen Principal y Descripción */}
+        <div className="lg:col-span-7 space-y-8">
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg shadow-xl bg-card">
+              <Image
+                src={selectedImage}
+                alt={`${product.name} - Imagen principal`}
+                layout="fill"
+                objectFit="contain"
+                className="transition-opacity duration-300"
+                data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+              />
+            </div>
+            {/* Mobile Thumbnails */}
+             <div className="lg:hidden grid grid-cols-5 gap-2">
+                {imagesToDisplay.map((image, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setSelectedImage(image)}
+                        className={cn(
+                            "relative aspect-square w-full overflow-hidden rounded-md border-2 transition-all duration-200",
+                            selectedImage === image ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
+                        )}
+                    >
+                        <Image src={image} alt={`Miniatura ${index + 1}`} layout="fill" objectFit="cover" />
+                    </button>
+                ))}
+            </div>
+
             <div className="space-y-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
                 {product.compare_at_price && product.compare_at_price > product.price ? (
@@ -183,8 +258,8 @@ export default function ProductDetailPage() {
             </div>
         </div>
         
-        {/* Right Column: Purchase Box & Info */}
-        <div className="space-y-6 lg:sticky lg:top-24">
+        {/* Columna Derecha: Cuadro de Compra */}
+        <div className="lg:col-span-4 lg:sticky lg:top-24">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">

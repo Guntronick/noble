@@ -11,10 +11,9 @@ interface ProductImageCarouselProps {
   productName: string;
   imageClassName?: string;
   dataAiHint?: string;
-  showThumbnails?: boolean;
 }
 
-export function ProductImageCarousel({ images, productName, imageClassName, dataAiHint, showThumbnails = false }: ProductImageCarouselProps) {
+export function ProductImageCarousel({ images, productName, imageClassName, dataAiHint }: ProductImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!images || images.length === 0) {
@@ -84,28 +83,6 @@ export function ProductImageCarousel({ images, productName, imageClassName, data
           </>
         )}
       </div>
-      {showThumbnails && images.length > 1 && (
-        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-          {images.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => handleThumbnailClick(index)}
-              className={cn(
-                "aspect-square rounded-md overflow-hidden border-2 transition-all",
-                currentIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
-              )}
-            >
-              <Image
-                src={image}
-                alt={`${productName} - Miniatura ${index + 1}`}
-                layout="fill"
-                objectFit="cover"
-                className="hover:opacity-80"
-              />
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
