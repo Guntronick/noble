@@ -147,16 +147,41 @@ export default function ProductDetailPage() {
       <div className="grid lg:grid-cols-5 gap-12 items-start">
         {/* Left Column: Image Gallery & Description */}
         <div className="lg:col-span-3 space-y-6">
-           <div className="w-full aspect-[6/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
-              <Image 
-                  src={imagesToDisplay[currentImageIndex]}
-                  alt={product.name} 
-                  fill
-                  sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
-                  className="object-contain transition-opacity duration-300 ease-in-out" 
-                  priority 
-                  data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-              />
+           <div className="grid grid-cols-5 gap-4">
+              {/* Vertical Thumbnails */}
+              <div className="col-span-1 flex flex-col gap-2">
+                {imagesToDisplay.length > 1 && imagesToDisplay.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={cn(
+                      "aspect-square relative w-full rounded-md overflow-hidden border-2 transition-all",
+                      currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
+                    )}
+                  >
+                    <Image
+                      src={img}
+                      alt={`${product.name} thumbnail ${index + 1}`}
+                      fill
+                      sizes="10vw"
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+
+              {/* Main Image */}
+              <div className="col-span-4 w-full aspect-[4/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
+                  <Image 
+                      src={imagesToDisplay[currentImageIndex]}
+                      alt={product.name} 
+                      fill
+                      sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
+                      className="object-contain transition-opacity duration-300 ease-in-out" 
+                      priority 
+                      data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+                  />
+              </div>
             </div>
 
             <div className="space-y-4">
