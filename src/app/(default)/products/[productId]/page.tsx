@@ -200,7 +200,7 @@ export default function ProductDetailPage() {
 
         {/* Columna Central: Imagen Principal */}
         <div className="lg:col-span-7">
-            <div className="relative w-[600px] h-[500px] overflow-hidden rounded-lg bg-transparent">
+            <div className="relative w-full h-[500px] overflow-hidden rounded-lg bg-transparent">
               <Image
                 src={selectedImage}
                 alt={`${product.name} - Imagen principal`}
