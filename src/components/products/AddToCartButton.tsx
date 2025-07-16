@@ -135,12 +135,12 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center justify-center gap-2 text-base py-3 active:scale-[0.98]",
+        "w-full flex items-center justify-center gap-2 text-base py-3 active:scale-[0.98] group",
         className
       )}
       disabled={product.stock <= 0}
     >
-      <ShoppingCart className="h-6 w-6" />
+      <ShoppingCart className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1" />
       <span>
         {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
       </span>
