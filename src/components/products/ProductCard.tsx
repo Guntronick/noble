@@ -30,14 +30,16 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         </Link>
       </CardHeader>
-      <CardContent className="p-4 flex-grow">
-        <CardTitle className="text-lg mb-1 font-headline">
-          <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
-            {product.name}
-          </Link>
-        </CardTitle>
-        <p className="text-sm text-muted-foreground mb-2 h-10 overflow-hidden line-clamp-2">{product.description}</p>
-        <div className="flex items-center justify-between">
+      <CardContent className="p-4 flex-grow flex flex-col">
+        <div>
+          <CardTitle className="text-lg mb-1 font-headline">
+            <Link href={`/products/${product.slug}`} className="hover:text-primary transition-colors">
+              {product.name}
+            </Link>
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mb-2 h-10 overflow-hidden line-clamp-2">{product.description}</p>
+        </div>
+        <div className="flex items-center justify-between mt-auto pt-2">
            <p className="text-2xl font-bold text-price">
               ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
