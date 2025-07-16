@@ -8,10 +8,9 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggleButton() {
-  const { setTheme, theme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
-  // When mounted on client, now we can show the UI
   React.useEffect(() => {
     setMounted(true);
   }, []);
@@ -21,11 +20,15 @@ export function ThemeToggleButton() {
     return <Button variant="ghost" size="icon" disabled className="text-panel-foreground" />;
   }
 
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
+
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(theme === "light" || theme === 'system' ? "dark" : "light")}
+      onClick={toggleTheme}
       className="hover:bg-panel-foreground/10 text-panel-foreground group"
       aria-label="Toggle theme"
     >
