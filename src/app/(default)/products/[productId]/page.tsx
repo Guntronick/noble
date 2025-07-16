@@ -198,7 +198,7 @@ export default function ProductDetailPage() {
           />
         </div>
 
-        {/* Columna Central: Imagen Principal y Descripción */}
+        {/* Columna Central: Imagen Principal */}
         <div className="lg:col-span-7 space-y-8">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg shadow-xl bg-card">
               <Image
@@ -224,36 +224,6 @@ export default function ProductDetailPage() {
                         <Image src={image} alt={`Miniatura ${index + 1}`} fill style={{ objectFit: 'cover' }} />
                     </button>
                 ))}
-            </div>
-
-            <div className="space-y-4">
-              <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
-                {product.compare_at_price && product.compare_at_price > product.price ? (
-                    <div className="flex items-end gap-2">
-                        <span className="text-2xl text-muted-foreground line-through">
-                            ${product.compare_at_price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
-                        <span className="text-4xl lg:text-5xl font-bold text-success">
-                            ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
-                    </div>
-                ) : (
-                    <div className="text-4xl lg:text-5xl font-bold text-price">
-                        <span className="text-3xl align-top mr-1">$</span>
-                        {product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </div>
-                )}
-              <div className="flex items-center space-x-2 flex-wrap">
-                  <Badge variant="secondary">Categoría: {product.category}</Badge>
-                  <Badge variant="outline">Código: {product.productCode}</Badge>
-              </div>
-            </div>
-
-            <Separator/>
-
-            <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
-                <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Descripción del producto:</h2>
-                <p>{product.description}</p>
             </div>
         </div>
         
@@ -345,6 +315,39 @@ export default function ProductDetailPage() {
         </div>
       </div>
       
+      {/* Product Info Section - Moved here to span full width */}
+      <div className="mt-12 space-y-8">
+        <div className="space-y-4">
+          <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
+            {product.compare_at_price && product.compare_at_price > product.price ? (
+                <div className="flex items-end gap-2">
+                    <span className="text-2xl text-muted-foreground line-through">
+                        ${product.compare_at_price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <span className="text-4xl lg:text-5xl font-bold text-success">
+                        ${product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                </div>
+            ) : (
+                <div className="text-4xl lg:text-5xl font-bold text-price">
+                    <span className="text-3xl align-top mr-1">$</span>
+                    {product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+            )}
+          <div className="flex items-center space-x-2 flex-wrap">
+              <Badge variant="secondary">Categoría: {product.category}</Badge>
+              <Badge variant="outline">Código: {product.productCode}</Badge>
+          </div>
+        </div>
+
+        <Separator/>
+
+        <div className="prose prose-lg dark:prose-invert max-w-none text-muted-foreground">
+            <h2 className="text-xl font-bold mb-2 font-headline text-foreground">Descripción del producto:</h2>
+            <p>{product.description}</p>
+        </div>
+      </div>
+
       {/* Productos Relacionados */}
       <Separator className="my-12 lg:my-16" />
       {product && <RelatedProductsClient productId={product.id} categoryName={product.category} />}
