@@ -264,7 +264,6 @@ export default function ProductDetailPage() {
             
             <p className="text-lg font-semibold text-foreground">
               {product.stock > 0 ? "Stock disponible" : <span className="text-destructive">Agotado</span>}
-              {product.stock > 0 && <span className="text-muted-foreground text-sm"> ({product.stock} unidades)</span>}
             </p>
             {product.stock > 0 && product.stock < 10 && <Badge variant="destructive">¡Pocas unidades!</Badge>}
 
