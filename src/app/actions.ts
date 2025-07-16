@@ -7,6 +7,8 @@ import {
   getProducts as getProductsFromServer,
 } from '@/lib/data';
 import type { Product } from '@/lib/types';
+import { getPersonalizedRecommendations, RecommendationRequest, RecommendationResponse } from '@/ai/flows/recommend-products-flow';
+
 
 /**
  * A Server Action that safely exposes the server-only getProductsByIds function
@@ -48,4 +50,18 @@ export async function getRelatedProducts(categoryName: string, currentProductId:
  */
 export async function getProducts(options?: { categorySlug?: string; limit?: number }): Promise<Product[]> {
     return await getProductsFromServer(options);
+}
+
+/**
+ * A Server Action that safely exposes the AI recommendation flow to client components.
+ * It includes the caching logic.
+ * @param request - The request object for recommendations.
+ * @param viewedProductIds - The array of viewed product IDs for the cache key.
+ * @returns A promise that resolves to a RecommendationResponse object.
+ */
+export async function getPersonalizedRecommendationsAction(
+    request: RecommendationRequest,
+    viewedProductIds: string[],
+): Promise<RecommendationResponse> {
+    return getPersonalizedRecommendations(request, viewedProductIds);
 }

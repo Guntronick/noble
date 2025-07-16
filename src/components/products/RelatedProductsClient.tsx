@@ -4,16 +4,11 @@
 import { useEffect, useState } from 'react';
 import type { Product } from '@/lib/types';
 import { ProductCard } from './ProductCard';
-import { getRelatedProducts, getProductsByIds, getProducts } from '@/app/actions';
-import { getPersonalizedRecommendations, type RecommendationRequest } from '@/ai/flows/recommend-products-flow';
+import { getRelatedProducts, getProductsByIds, getProducts, getPersonalizedRecommendationsAction } from '@/app/actions';
+import type { RecommendationRequest } from '@/ai/flows/recommend-products-flow';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
-
-interface RelatedProductsClientProps {
-  productId: string; 
-  categoryName: string; 
-}
 
 // Fetches personalized products based on user's viewing history
 async function fetchPersonalizedProducts(currentProductId: string): Promise<Product[]> {
@@ -37,7 +32,7 @@ async function fetchPersonalizedProducts(currentProductId: string): Promise<Prod
     };
     
     // Pass the raw IDs to the flow for caching purposes
-    const recommendations = await getPersonalizedRecommendations(recommendationRequest, viewedProductIds);
+    const recommendations = await getPersonalizedRecommendationsAction(recommendationRequest, viewedProductIds);
     if (recommendations.recommendedCategorySlugs.length === 0) return [];
 
     const recommendedProductsPromises = recommendations.recommendedCategorySlugs.map(slug =>
