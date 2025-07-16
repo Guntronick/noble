@@ -199,7 +199,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Columna Central: Imagen Principal */}
-        <div className="lg:col-span-7 space-y-8">
+        <div className="lg:col-span-7">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-transparent">
               <Image
                 src={selectedImage}
@@ -211,7 +211,7 @@ export default function ProductDetailPage() {
               />
             </div>
             {/* Mobile Thumbnails */}
-             <div className="lg:hidden grid grid-cols-5 gap-2">
+             <div className="lg:hidden grid grid-cols-5 gap-2 mt-4">
                 {imagesToDisplay.map((image, index) => (
                     <button
                         key={index}
