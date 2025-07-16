@@ -237,7 +237,7 @@ export default function ProductDetailPage() {
             </div>
              {isZooming && (
                 <div
-                    className="absolute top-1/2 left-1/2 -translate-y-1/2 translate-x-[calc(100%+1rem)] hidden lg:block w-[500px] h-[500px] bg-white border border-border rounded-lg overflow-hidden shadow-2xl z-20 pointer-events-none"
+                    className="absolute top-0 left-full ml-4 hidden lg:block w-[500px] h-[500px] bg-white border border-border rounded-lg overflow-hidden shadow-2xl z-20 pointer-events-none"
                 >
                   <div
                     style={{
