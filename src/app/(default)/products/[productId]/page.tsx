@@ -189,7 +189,7 @@ export default function ProductDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
         {/* Columna Izquierda: Miniaturas */}
-        <div className="lg:block lg:col-span-1">
+        <div className="lg:col-span-1 lg:block">
           <ProductImageThumbnails 
             images={imagesToDisplay}
             onSelectImage={setSelectedImage}
@@ -228,7 +228,7 @@ export default function ProductDetailPage() {
         </div>
         
         {/* Columna Derecha: Cuadro de Compra */}
-        <div className="lg:col-span-4 self-start">
+        <div className="lg:col-span-4">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">
