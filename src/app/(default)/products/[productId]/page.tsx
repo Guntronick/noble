@@ -17,6 +17,7 @@ import { Facebook, Instagram, Mail, MessageSquare, Twitter } from 'lucide-react'
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { ProductImageCarousel } from '@/components/products/ProductImageCarousel';
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
@@ -51,7 +52,6 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1); 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
   
@@ -101,10 +101,8 @@ export default function ProductDetailPage() {
         newImages = ['https://placehold.co/600x500.png'];
       }
       setImagesToDisplay(newImages);
-      setCurrentImageIndex(0);
     } else {
       setImagesToDisplay(['https://placehold.co/600x500.png']);
-      setCurrentImageIndex(0);
     }
   }, [product, selectedColor]);
 
@@ -146,44 +144,13 @@ export default function ProductDetailPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="grid lg:grid-cols-2 gap-12 items-start">
         {/* Left Column: Image Gallery & Description */}
-        <div className="space-y-6 lg:col-span-1">
-           <div className="grid grid-cols-5 gap-4">
-              {/* Vertical Thumbnails */}
-              <div className="col-span-1 flex flex-col gap-2">
-                {imagesToDisplay.length > 1 && imagesToDisplay.map((img, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={cn(
-                      "aspect-square relative w-full rounded-md overflow-hidden border-2 transition-all",
-                      currentImageIndex === index ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
-                    )}
-                  >
-                    <Image
-                      src={img}
-                      alt={`${product.name} thumbnail ${index + 1}`}
-                      fill
-                      sizes="10vw"
-                      className="object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-
-              {/* Main Image */}
-              <div className="col-span-4 w-full aspect-[4/5] overflow-hidden rounded-lg shadow-xl bg-card relative">
-                  <Image 
-                      src={imagesToDisplay[currentImageIndex]}
-                      alt={product.name} 
-                      fill
-                      sizes="(max-width: 767px) 100vw, (max-width: 1023px) 70vw, 1024px"
-                      className="object-contain transition-opacity duration-300 ease-in-out" 
-                      priority 
-                      data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
-                  />
-              </div>
-            </div>
-
+        <div className="space-y-6">
+            <ProductImageCarousel 
+              images={imagesToDisplay} 
+              productName={product.name}
+              dataAiHint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
+              imageClassName="w-full aspect-[4/5] overflow-hidden rounded-lg shadow-xl bg-card relative"
+            />
             <div className="space-y-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground font-headline">{product.name}</h1>
                 {product.compare_at_price && product.compare_at_price > product.price ? (
@@ -216,7 +183,7 @@ export default function ProductDetailPage() {
         </div>
         
         {/* Right Column: Purchase Box & Info */}
-        <div className="space-y-6 lg:sticky lg:top-24 lg:col-span-1">
+        <div className="space-y-6 lg:sticky lg:top-24">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">
