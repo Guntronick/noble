@@ -135,25 +135,22 @@ export function AddToCartButton({ product, selectedColor, quantity: rawQuantityF
       size="lg"
       variant="success"
       className={cn(
-        "w-full flex items-center justify-center gap-2 text-base py-3 group active:scale-[0.98]",
+        "w-full flex items-center justify-center gap-2 text-base py-3 group active:scale-[0.98] overflow-hidden",
         className
       )}
       disabled={product.stock <= 0}
     >
-      <span className="relative inline-flex items-center justify-center h-6 w-6">
-        <ShoppingCart
-          className="h-full w-full"
-        />
-        <ArrowDown
-          className={cn(
-            "absolute h-4 w-4 opacity-0 transition-all duration-300 ease-in-out transform",
-            "-translate-y-2 scale-75",
-            "group-hover:opacity-100 group-hover:translate-y-0.5 group-hover:scale-100"
-          )}
-        />
-      </span>
-      <span>
+      <ShoppingCart
+        className="h-6 w-6 transition-transform duration-300 ease-in-out group-hover:-translate-y-8"
+      />
+       <ArrowDown
+        className="absolute h-6 w-6 transition-transform duration-300 ease-in-out translate-y-8 group-hover:translate-y-0"
+      />
+      <span className="transition-transform duration-300 ease-in-out group-hover:-translate-y-16">
         {product.stock > 0 ? 'Agregar al carrito' : 'Agotado'}
+      </span>
+      <span className="absolute transition-transform duration-300 ease-in-out translate-y-16 group-hover:translate-y-0">
+        ¡Añadir ahora!
       </span>
     </Button>
   );
