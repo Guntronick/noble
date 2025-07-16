@@ -16,7 +16,9 @@ import { cn } from '@/lib/utils';
 import { Facebook, Instagram, Mail, MessageSquare, Twitter } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+
 
 const LOCAL_STORAGE_VIEWED_PRODUCTS_KEY = 'nobleViewedProducts';
 const MAX_VIEWED_PRODUCTS = 20;
@@ -97,6 +99,13 @@ export default function ProductDetailPage() {
   const [imagesToDisplay, setImagesToDisplay] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<string>('');
   
+  const [isZooming, setIsZooming] = useState(false);
+  const [[imgWidth, imgHeight], setImgSize] = useState([0, 0]);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+
+
   useEffect(() => {
     async function loadProduct() {
       if (!productSlug) {
@@ -150,6 +159,27 @@ export default function ProductDetailPage() {
     }
   }, [product, selectedColor]);
 
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!imageContainerRef.current) return;
+        const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
+        
+        const x = e.clientX - left;
+        const y = e.clientY - top;
+
+        setPosition({ x, y });
+
+        setImgSize([width, height]);
+    };
+
+    const handleMouseEnter = () => {
+        setIsZooming(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsZooming(false);
+    };
+
+
   const handleShare = (platform: string) => {
     if (typeof window === "undefined" || !product) return;
     const url = window.location.href;
@@ -198,9 +228,15 @@ export default function ProductDetailPage() {
           />
         </div>
 
-        {/* Columna Central: Imagen Principal */}
-        <div className="lg:col-span-7">
-            <div className="relative w-full h-[500px] overflow-hidden rounded-lg bg-transparent">
+        {/* Columna Central: Imagen Principal con Zoom */}
+        <div className="lg:col-span-7 flex relative">
+            <div 
+              ref={imageContainerRef}
+              className="relative w-full h-[500px] overflow-hidden rounded-lg bg-transparent"
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <Image
                 src={selectedImage}
                 alt={`${product.name} - Imagen principal`}
@@ -210,25 +246,33 @@ export default function ProductDetailPage() {
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
               />
             </div>
-            {/* Mobile Thumbnails */}
-             <div className="lg:hidden grid grid-cols-5 gap-2 mt-4">
-                {imagesToDisplay.map((image, index) => (
-                    <button
-                        key={index}
-                        onClick={() => setSelectedImage(image)}
-                        className={cn(
-                            "relative aspect-square w-full overflow-hidden rounded-md border-2 transition-all duration-200",
-                            selectedImage === image ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
-                        )}
-                    >
-                        <Image src={image} alt={`Miniatura ${index + 1}`} fill style={{ objectFit: 'cover' }} />
-                    </button>
-                ))}
-            </div>
+             {isZooming && (
+                <div
+                    className="absolute left-full top-0 ml-4 hidden lg:block w-[500px] h-[500px] bg-white border border-border rounded-lg overflow-hidden shadow-2xl z-20 pointer-events-none"
+                >
+                  <div
+                    style={{
+                        position: 'absolute',
+                        top: `-${position.y * 1.5}px`, // 1.5 es el factor de zoom
+                        left: `-${position.x * 1.5}px`,
+                        width: `${imgWidth * 2.5}px`, // 2.5 es el tamaño de la imagen zoomeada
+                        height: `${imgHeight * 2.5}px`,
+                    }}
+                  >
+                     <Image
+                        src={selectedImage}
+                        alt="Zoomed product"
+                        layout="fill"
+                        objectFit="contain"
+                     />
+                  </div>
+                </div>
+            )}
+            
         </div>
         
         {/* Columna Derecha: Cuadro de Compra */}
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 self-start">
           <div className="p-6 bg-card rounded-xl shadow-2xl space-y-6">
             
             <p className="text-lg font-semibold text-foreground">
@@ -314,9 +358,24 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+       {/* Mobile Thumbnails below central image */}
+        <div className="lg:hidden grid grid-cols-5 gap-2 mt-4">
+            {imagesToDisplay.map((image, index) => (
+                <button
+                    key={index}
+                    onClick={() => setSelectedImage(image)}
+                    className={cn(
+                        "relative aspect-square w-full overflow-hidden rounded-md border-2 transition-all duration-200",
+                        selectedImage === image ? "border-primary ring-2 ring-primary" : "border-transparent hover:border-muted-foreground/50"
+                    )}
+                >
+                    <Image src={image} alt={`Miniatura ${index + 1}`} fill style={{ objectFit: 'cover' }} />
+                </button>
+            ))}
+        </div>
       
       {/* Product Info Section */}
-      <div className="mt-12 space-y-8">
+       <div className="mt-12 space-y-8">
         <div className="space-y-4">
           <h1 className="text-3xl lg:text-4xl font-bold text-foreground font-headline">{product.name}</h1>
             {product.compare_at_price && product.compare_at_price > product.price ? (
