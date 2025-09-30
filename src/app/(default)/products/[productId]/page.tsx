@@ -218,7 +218,7 @@ export default function ProductDetailPage() {
           />
         </div>
 
-        <div className="lg:col-span-7 flex relative">
+        <div className="lg:col-span-7 relative">
             <div 
               ref={imageContainerRef}
               className="relative w-full h-[500px] overflow-hidden rounded-lg bg-transparent"
@@ -235,29 +235,28 @@ export default function ProductDetailPage() {
                 data-ai-hint={product.dataAiHint || product.name.toLowerCase().split(' ').slice(0,2).join(' ')}
               />
             </div>
-             {isZooming && (
+            {isZooming && (
+              <div
+                  className="absolute top-0 right-[calc(-100%-12px)] hidden lg:block w-[500px] h-[500px] bg-white border border-border rounded-lg overflow-hidden shadow-2xl z-20 pointer-events-none"
+              >
                 <div
-                    className="absolute top-0 left-full ml-[3px] hidden lg:block w-[500px] h-[500px] bg-white border border-border rounded-lg overflow-hidden shadow-2xl z-20 pointer-events-none"
+                  style={{
+                      position: 'absolute',
+                      top: `-${position.y * 1.5}px`,
+                      left: `-${position.x * 1.5}px`,
+                      width: `${imgWidth * 2.5}px`,
+                      height: `${imgHeight * 2.5}px`,
+                  }}
                 >
-                  <div
-                    style={{
-                        position: 'absolute',
-                        top: `-${position.y * 1.5}px`,
-                        left: `-${position.x * 1.5}px`,
-                        width: `${imgWidth * 2.5}px`,
-                        height: `${imgHeight * 2.5}px`,
-                    }}
-                  >
-                     <Image
-                        src={selectedImage}
-                        alt="Zoomed product"
-                        fill
-                        style={{ objectFit: 'contain' }}
-                     />
-                  </div>
+                    <Image
+                      src={selectedImage}
+                      alt="Zoomed product"
+                      fill
+                      style={{ objectFit: 'contain' }}
+                    />
                 </div>
-            )}
-            
+              </div>
+          )}
         </div>
         
         <div className="lg:col-span-4 self-start">
@@ -397,3 +396,5 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
+    
